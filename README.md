@@ -1,6 +1,6 @@
 # CSCI334
 
---How to clone this repo-- 
+--How to clone this repo-- <br />
 Make sure you have git installed on your computer 
 Create a new directory 
 cd to that directory and type the command: git clone https://github.com/steamedHams11/CSCI334.git 
