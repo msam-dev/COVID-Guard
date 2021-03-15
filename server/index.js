@@ -1,4 +1,4 @@
-// Initial serv setup based on: https://github.com/mars/heroku-cra-node
+// Initial server setup based on: https://github.com/mars/heroku-cra-node
 const express = require('express');
 const path = require('path');
 const cluster = require('cluster');
