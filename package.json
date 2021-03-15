@@ -5,7 +5,8 @@
   "scripts": {
     "start": "node server",
     "dev-server": "nodemon server",
-    "client": "npm start --prefix client/covid19-app",
+    "client-install": "cd client/covid19-app && npm install",
+    "client": "cd client/covid19-app && npm start",
     "dev": "concurrently \"npm run dev-server\" \"npm run client\"",
     "build": "cd client/covid19-app && npm install && npm run build"
   },
