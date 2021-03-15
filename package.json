@@ -1,0 +1,12 @@
+{
+  "name": "covid19-app",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node server",
+    "build": "cd client/covid19-app && npm install && npm run build"
+  },
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
