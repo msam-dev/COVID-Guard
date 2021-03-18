@@ -4,6 +4,9 @@ const path = require('path');
 const cluster = require('cluster');
 const numCPUs = require('os').cpus().length;
 const config = require('config');
+
+const mongoose = require('mongoose');
+
 // access config variables using config.get('db.name');
 
 const isDev = process.env.NODE_ENV !== 'production';
@@ -23,23 +26,38 @@ if (!isDev && cluster.isMaster) {
     });
 
 } else {
+    mongoose.connect(`mongodb+srv://${config.get('db.username')}:${config.get('db.password')}@${config.get('db.host')}/${config.get('db.name')}?retryWrites=true&w=majority`, {
+        useNewUrlParser: true,
+        useUnifiedTopology:  true
+    });
+
+    const db = mongoose.connection;
+    db.on('error', () => console.error('connection error:'));
+    // check database is connected and then continue running app
+    db.once('open', function() {
+        console.log('Connected to database');
+        run_app();
+    });
+}
+
+function run_app(){
     const app = express();
 
     // Priority serve any static files.
     app.use(express.static(path.resolve(__dirname, '..', 'client', 'covid19-app', 'build')));
 
     // Answer API requests.
-    app.get('/api', function (req, res) {
+    app.get('/api', (req, res) => {
         res.set('Content-Type', 'application/json');
         res.send('{"message":"Hello from the covid19-app server!"}');
     });
 
     // All remaining requests return the React app, so it can handle routing.
-    app.get('*', function(request, response) {
+    app.get('*', (request, response) => {
         response.sendFile(path.resolve(__dirname, '..', 'client', 'covid19-app', 'build', 'index.html'));
     });
 
-    app.listen(PORT, function () {
+    app.listen(PORT, () => {
         console.error(`Node ${isDev ? 'dev server' : 'cluster worker '+process.pid}: listening on port ${PORT}`);
     });
 }

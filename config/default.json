@@ -1,6 +1,8 @@
 {
   "db": {
-    "port": 27017,
-    "name": "dev_db_name"
+    "host": "cluster0.dmxc1.mongodb.net",
+    "name": "dev_db_name",
+    "username": "CSCI334",
+    "password": "A8foqpKHmmm5"
   }
 }
