@@ -1,0 +1,6 @@
+{
+  "db": {
+    "port": 27017,
+    "name": "dev_db_name"
+  }
+}
