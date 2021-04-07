@@ -26,7 +26,7 @@ const GoogleMap = props => {
           bootstrapURLKeys={{ key: process.env.REACT_APP_GOOGLE_API_KEY}}
           defaultCenter={{lat: lat, lng: lng}}
           fullscreenControl={false}
-          defaultZoom={11}
+          defaultZoom={14}
           options={{fullscreenControl: false}}
         >
             <Marker

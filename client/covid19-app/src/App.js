@@ -6,9 +6,6 @@ import AuthProvider from './Components/AuthContext/AuthContext';
 
 import Login from './Screens/Login/Login';
 
-
-
-
 function App() {
   return (
     <div className="App">
