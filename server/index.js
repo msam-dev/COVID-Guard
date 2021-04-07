@@ -39,6 +39,8 @@ app.get('*', (request, response) => {
 
 
 
-module.exports = app.listen(PORT, () => {
+app.listen(PORT, () => {
     console.error(`Node ${isDev ? 'dev server' : 'cluster worker '+process.pid}: listening on port ${PORT}`);
 });
+
+module.exports = app;
