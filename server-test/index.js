@@ -1,18 +1,20 @@
-var expect  = require("chai").expect;
-var request = require("request");
+var chai  = require("chai");
+var chaiHttp = require("chai-http");
+var app = require("../server/index");
 
-describe("Covid App Server API", function() {
-        var url = "http://localhost:5000/api";
+// Configure chai
+chai.use(chaiHttp);
+chai.should();
 
-        it("returns status 200", function() {
-            request(url, function(error, response, body) {
-                expect(response.statusCode).to.equal(200);
-            });
+describe("Covid App Server API", () => {
+    describe("GET /", () => {
+        it("returns the message", (done) => {
+            chai.request(app)
+                .get('/api')
+                .end((err, res) => {
+                    res.should.have.status(200);
+                    done();
+                });
         });
-
-        it("returns the message", function() {
-            request(url, function(error, response, body) {
-                expect(body).to.equal("{\"message\":\"Hello from the covid19-app server!\"}");
-            });
-        });
+    });
 });
