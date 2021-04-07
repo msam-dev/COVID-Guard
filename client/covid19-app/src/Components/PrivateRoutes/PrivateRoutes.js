@@ -1,6 +1,6 @@
 import { Route, Redirect } from 'react-router';
 import { useAuth } from './AuthContext'; 
-import  USER_TYPE  from '../_constants/userTypes';
+import  USER_TYPE  from '../../_constants/userTypes';
 
 export const GeneralPrivateRoute = ({component: Component, ...rest}) => {
     const auth = useAuth();

@@ -1,5 +1,5 @@
 import { useState, useContext, createContext } from "react"
-import  USER_TYPE  from '../_constants/userTypes';
+import  USER_TYPE  from '../../_constants/userTypes';
 
 const AuthContext = createContext();
 const AuthUpdateContext = createContext();
