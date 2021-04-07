@@ -1,5 +1,5 @@
-const Path = {
+const PATH = {
     login: "/login"
 }
 
-export default Path;
+export default PATH;
