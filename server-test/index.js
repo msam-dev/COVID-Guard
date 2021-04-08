@@ -7,12 +7,13 @@ chai.use(chaiHttp);
 chai.should();
 
 describe("Covid App Server API", () => {
-    describe("GET /", () => {
+    describe("POST /api/login", () => {
         it("returns the message", (done) => {
             chai.request(app)
-                .get('/api')
+                .get('/api/login')
                 .end((err, res) => {
-                    res.should.have.status(200);
+                    res.body.should.be.a("object");
+                    res.body.status.should.be.eq("logged in");
                     done();
                 });
         });

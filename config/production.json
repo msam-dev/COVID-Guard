@@ -1,6 +1,8 @@
 {
   "db": {
-    "port": 27000,
-    "name": "prod_db_name"
+    "host": "cluster0.dmxc1.mongodb.net",
+    "name": "prod_db_name",
+    "username": "CSCI334",
+    "password": "A8foqpKHmmm5"
   }
 }

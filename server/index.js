@@ -1,9 +1,10 @@
-// Initial server setup based on: https://github.com/mars/heroku-cra-node
 const express = require('express');
 const path = require('path');
 const config = require('config');
-
 const mongoose = require('mongoose');
+
+// Routes
+const loginRoutes = require('./routes/api/login');
 
 const isDev = process.env.NODE_ENV !== 'production';
 
@@ -27,17 +28,12 @@ db.once('open', function() {
 app.use(express.static(path.resolve(__dirname, '..', 'client', 'covid19-app', 'build')));
 
 // Answer API requests.
-app.get('/api', (req, res) => {
-    res.set('Content-Type', 'application/json');
-    res.send('{"message":"Hello from the covid19-app server!"}');
-});
+app.use('/api/login', loginRoutes);
 
 // All remaining requests return the React app, so it can handle routing.
 app.get('*', (request, response) => {
     response.sendFile(path.resolve(__dirname, '..', 'client', 'covid19-app', 'build', 'index.html'));
 });
-
-
 
 app.listen(PORT, () => {
     console.error(`Node ${isDev ? 'dev server' : 'cluster worker '+process.pid}: listening on port ${PORT}`);
