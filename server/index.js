@@ -15,14 +15,9 @@ const app = express();
 mongoose.connect(`mongodb+srv://${config.get('db.username')}:${config.get('db.password')}@${config.get('db.host')}/${config.get('db.name')}?retryWrites=true&w=majority`, {
     useNewUrlParser: true,
     useUnifiedTopology:  true
-});
-
-const db = mongoose.connection;
-db.on('error', () => console.error('connection error:'));
-// check database is connected and then continue running app
-db.once('open', function() {
-    console.log('Connected to database');
-});
+})
+    .then(() => console.log('MongoDB Connected...'))
+    .catch(err => console.log(err));
 
 // Priority serve any static files.
 app.use(express.static(path.resolve(__dirname, '..', 'client', 'covid19-app', 'build')));
