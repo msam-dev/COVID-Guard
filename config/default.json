@@ -1,6 +1,6 @@
 {
   "db": {
-    "host": "cluster0.dmxc1.mongodb.net",
+    "host": "csci334-shard-00-00.dmxc1.mongodb.net:27017,csci334-shard-00-01.dmxc1.mongodb.net:27017,csci334-shard-00-02.dmxc1.mongodb.net:27017",
     "name": "dev_db_name"
   }
 }
