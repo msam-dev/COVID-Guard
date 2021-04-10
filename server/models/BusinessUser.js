@@ -4,7 +4,7 @@ const registeredUserSchema = require('./RegisteredUser');
 
 // Create Schema
 const BusinessUserSchema = extendSchema(registeredUserSchema, {
-    // need to link to business
+    business: { type: mongoose.Schema.Types.ObjectId, ref: 'Business' },
 })
 
 const BusinessUser = mongoose.model('BusinessUser', BusinessUserSchema);

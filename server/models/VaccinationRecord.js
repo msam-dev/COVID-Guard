@@ -18,8 +18,8 @@ const VaccinationRecordSchema = new mongoose.Schema({
     dateAdministered: {
         type : Date,
         required: true
-    }
-    // needs link to RegisteredGeneralPublic
+    },
+    patient: { type: mongoose.Schema.Types.ObjectId, ref: 'RegisteredGeneralPublic' }
 });
 
 

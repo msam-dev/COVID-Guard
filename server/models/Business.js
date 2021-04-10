@@ -14,7 +14,8 @@ const BusinessSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true
-    }
+    },
+    address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address' },
 });
 
 

@@ -5,8 +5,8 @@ const VaccinationCentreSchema = new mongoose.Schema({
     clinicName: {
         type : String,
         required: true
-    }
-    // needs link to address
+    },
+    address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address' }
 });
 
 

@@ -24,8 +24,8 @@ const AddressSchema = new mongoose.Schema({
     postcode: {
         type: Number,
         required: true
-    }
-    // need to link to optional location
+    },
+    coordinates: { type: mongoose.Schema.Types.ObjectId, ref: 'Coordinates' },
 });
 
 
