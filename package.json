@@ -14,9 +14,11 @@
     "server-test": "mocha server-test"
   },
   "devDependencies": {
+    "jsonwebtoken": "^8.5.1",
     "nodemon": "^1.14.6"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "chai": "^4.3.4",
     "chai-http": "^4.3.0",
     "concurrently": "^6.0.0",
@@ -27,6 +29,7 @@
     "mongoose": "^5.11.15",
     "mongoose-extend-schema": "^1.0.0",
     "request": "^2.88.2",
+    "should": "^13.2.3",
     "uuid": "^8.3.2"
   }
 }
