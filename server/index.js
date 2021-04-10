@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 // Routes
-const loginRoutes = require('./routes/api/registeredgeneralpublic/auth');
+const registeredGeneralPublicAuthRoutes = require('./routes/api/registeredgeneralpublic/auth');
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -13,7 +13,7 @@ db.connect();
 app.use(express.static(path.resolve(__dirname, '..', 'client', 'covid19-app', 'build')));
 
 // Answer API requests.
-app.use('/api/login', loginRoutes);
+app.use('/api/registeredgeneralpublic/auth', registeredGeneralPublicAuthRoutes);
 
 // All remaining requests return the React app, so it can handle routing.
 app.get('*', (request, response) => {

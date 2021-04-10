@@ -5,8 +5,7 @@ const userTypes = require('../_constants/usertypes');
 
 // Create Schema
 const BusinessUserSchema = extendSchema(registeredUserSchema, {
-    business: { type: mongoose.Schema.Types.ObjectId, ref: 'Business' },
-
+    business: { type: mongoose.Schema.Types.ObjectId, ref: 'Business', required: true },
 })
 
 BusinessUserSchema.virtual('type').get(function () {
