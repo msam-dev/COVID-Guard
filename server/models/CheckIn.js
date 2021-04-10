@@ -11,7 +11,7 @@ const CheckInSchema = new mongoose.Schema({
         type: Schema.Types.ObjectId,
         required: true,
         // Instead of a hardcoded model name in `ref`, `refPath` means Mongoose
-        // will look at the `onModel` property to find the right model.
+        // will look at the `userModel` property to find the right model.
         refPath: 'userModel'
     },
     userModel: {

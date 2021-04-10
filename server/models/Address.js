@@ -25,7 +25,7 @@ const AddressSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    coordinates: { type: mongoose.Schema.Types.ObjectId, ref: 'Coordinates' },
+    coordinates: { type: mongoose.Schema.Types.ObjectId, ref: 'Coordinates' }
 });
 
 

@@ -1,13 +1,8 @@
 process.env.NODE_ENV = 'testing';
-let mongoose = require("mongoose")
-let RegisteredGeneralPublic = require('../server/models/RegisteredGeneralPublic');
-let db = require("../server/db");
-let should = require("should");
+const RegisteredGeneralPublic = require('../server/models/RegisteredGeneralPublic');
+const should = require("should");
 
 describe('RegisteredGeneralPublic', () => {
-    before((done) => {
-        db.connect().then(() => {done();});
-    });
     describe('Add user', () => {
         it('it should add a Registered General Public User', (done) => {
             let user = new RegisteredGeneralPublic({
@@ -48,12 +43,6 @@ describe('RegisteredGeneralPublic', () => {
                     });
                 });
             });
-        });
-    });
-    after((done) => {
-        mongoose.connection.db.dropDatabase((err)=>{
-            if(err) return console.error(err);
-            done();
         });
     });
 });
