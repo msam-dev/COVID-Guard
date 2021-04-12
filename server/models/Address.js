@@ -28,7 +28,6 @@ const AddressSchema = new mongoose.Schema({
     coordinates: { type: mongoose.Schema.Types.ObjectId, ref: 'Coordinates' }
 });
 
-
 const Address = mongoose.model('Address', AddressSchema);
 
 module.exports = Address;
