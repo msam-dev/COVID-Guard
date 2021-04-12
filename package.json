@@ -11,7 +11,7 @@
     "dev-client": "cd client/covid19-app && npm start",
     "dev": "concurrently \"npm run dev-server\" \"npm run dev-client\"",
     "build": "cd client/covid19-app && npm install && npm run build",
-    "server-test": "mocha server-test"
+    "server-test": "mocha server-test --require ./server-test/fixtures.js"
   },
   "devDependencies": {
     "jsonwebtoken": "^8.5.1",
