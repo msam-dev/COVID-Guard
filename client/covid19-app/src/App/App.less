@@ -1,9 +1,7 @@
 @import '~antd/dist/antd.less';
 
 #navbar-wrapper {
-    position: fixed;
-    top: 0;
-    width: 100%;
+    overflow: hidden;
 }
 
 #footer-wrapper {
@@ -12,6 +10,12 @@
     width: 100%;
 }
 
-#body-wrapper {
-    padding-top: 10%;
+.sticky {
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.sticky + #body-wrapper {
+    padding-top: 60px;
 }

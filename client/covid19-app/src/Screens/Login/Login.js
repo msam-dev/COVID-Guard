@@ -16,6 +16,10 @@ const Login = () => {
     
     return (
         <div>
+            <div style={{backgroundColor: "#FDC500"}}>
+                <h1 style={{color: "#0E5F76", paddingLeft: "1%"}}>Login</h1>
+            </div>
+            
             <div style={{textAlign: 'center', padding: '1%'}}>
                 <h1 style={{color: "#0E5F76"}}>COVID Guard Login</h1>
             </div>
