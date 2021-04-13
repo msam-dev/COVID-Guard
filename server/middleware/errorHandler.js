@@ -1,7 +1,7 @@
-const { GeneralError } = require('../utils/errors');
+const { ServerError } = require('../utils/errors');
 
 const errorHandler = (err, req, res, next) => {
-    if (err instanceof GeneralError) {
+    if (err instanceof ServerError) {
         return res.status(err.getCode()).json({
             status: 'error',
             message: err.message

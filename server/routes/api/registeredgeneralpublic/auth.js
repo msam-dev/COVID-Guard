@@ -5,7 +5,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
-const {GeneralError, BadRequest} = require('../../../utils/errors')
+const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
 
 /*

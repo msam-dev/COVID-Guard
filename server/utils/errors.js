@@ -1,4 +1,4 @@
-class GeneralError extends Error {
+class ServerError extends Error {
     constructor(message) {
         super();
         this.message = message;
@@ -9,30 +9,30 @@ class GeneralError extends Error {
     }
 }
 
-class BadRequest extends GeneralError {
+class BadRequest extends ServerError {
     getCode(){
         return 400;
     }
 }
-class NotFound extends GeneralError {
+class NotFound extends ServerError {
     getCode(){
         return 404;
     }
 }
-class Unauthorized extends GeneralError {
+class Unauthorized extends ServerError {
     getCode(){
         return 401;
     }
 }
 
-class Forbidden extends GeneralError {
+class Forbidden extends ServerError {
     getCode(){
         return 403;
     }
 }
 
 module.exports = {
-    GeneralError,
+    ServerError,
     BadRequest,
     Unauthorized,
     Forbidden,
