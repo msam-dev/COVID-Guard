@@ -4,7 +4,7 @@ const RegisteredGeneralPublicUser = require('../../../models/RegisteredGeneralPu
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../../../../middleware/auth');
-
+const userType = require("../../../_constants/usertypes")
 /*
 * @route   POST api/registeredgeneralpublic/auth/login
 * @desc    Login user
@@ -28,15 +28,17 @@ router.post('/login', async (req, res) => {
         if (!isMatch) throw Error('Invalid credentials');
 
         const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: 3600 });
-        if (!token) throw Error('Couldnt sign the token');
+        if (!token) throw Error('Couldn\'t sign the token');
 
         res.status(200).json({
             token,
             user: {
                 id: user._id,
-                name: user.name,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 email: user.email
-            }
+            },
+            type: userType.GENERAL
         });
     } catch (e) {
         res.status(400).json({ msg: e.message });
@@ -77,7 +79,7 @@ router.post('/register', async (req, res) => {
         const savedUser = await newUser.save();
         if (!savedUser) throw Error('Something went wrong saving the user');
 
-        const token = jwt.sign({ id: savedUser._id }, JWT_SECRET, {
+        const token = jwt.sign({ id: savedUser._id, type: userType.GENERAL }, JWT_SECRET, {
             expiresIn: 3600
         });
 
@@ -101,7 +103,7 @@ router.post('/register', async (req, res) => {
  * @access  Private
  */
 
-router.get('/user', authMiddleware, async (req, res) => {
+router.get('/user', authMiddleware(userType.GENERAL), async (req, res) => {
     try {
         const user = await RegisteredGeneralPublicUser.findById(req.user.id).select('-password');
         if (!user) throw Error('User does not exist');
