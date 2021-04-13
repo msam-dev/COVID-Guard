@@ -27,16 +27,13 @@ router.post('/login', async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) throw Error('Invalid credentials');
 
-        const token = jwt.sign({ id: user._id }, JWT_SECRET, { expiresIn: 3600 });
+        const token = jwt.sign({ id: user._id, type: userType.GENERAL }, JWT_SECRET, { expiresIn: 3600 });
         if (!token) throw Error('Couldn\'t sign the token');
 
         res.status(200).json({
             token,
             user: {
                 id: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                email: user.email
             },
             type: userType.GENERAL
         });
@@ -86,11 +83,9 @@ router.post('/register', async (req, res) => {
         res.status(200).json({
             token,
             user: {
-                id: savedUser.id,
-                firstName: savedUser.firstName,
-                lastName: savedUser.lastName,
-                email: savedUser.email
-            }
+                id: user._id
+            },
+            type: userType.GENERAL
         });
     } catch (e) {
         res.status(400).json({ error: e.message });
@@ -98,8 +93,8 @@ router.post('/register', async (req, res) => {
 });
 
 /**
- * @route   GET api/registeredgeneralpublic/auth/login
- * @desc    Get user data
+ * @route   GET api/registeredgeneralpublic/auth/user
+ * @desc    Check user valid
  * @access  Private
  */
 
@@ -107,7 +102,7 @@ router.get('/user', authMiddleware(userType.GENERAL), async (req, res) => {
     try {
         const user = await RegisteredGeneralPublicUser.findById(req.user.id).select('-password');
         if (!user) throw Error('User does not exist');
-        res.json(user);
+        res.json({id: user.id, type: userType.GENERAL});
     } catch (e) {
         res.status(400).json({ msg: e.message });
     }

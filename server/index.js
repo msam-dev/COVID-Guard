@@ -9,6 +9,9 @@ const db = require("./db");
 
 db.connect();
 
+// parse json body content
+app.use(express.json());
+
 // Priority serve any static files.
 app.use(express.static(path.resolve(__dirname, '..', 'client', 'covid19-app', 'build')));
 

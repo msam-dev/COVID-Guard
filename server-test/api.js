@@ -1,23 +1,20 @@
 process.env.NODE_ENV = 'testing';
 
-var chai  = require("chai");
-var chaiHttp = require("chai-http");
-var app = require("../server/index");
-var should  = require("should");
-
+const chai = require("chai");
+const chaiHttp = require("chai-http");
+const app = require("../server/index");
+const assert = require('chai').assert
 // Configure chai
 chai.use(chaiHttp);
-chai.should();
 
 describe("Covid App Server API", () => {
-    describe("POST /api/login", () => {
-        it("returns the message", (done) => {
+    describe("POST /api/registeredgeneralpublic/auth/login", () => {
+        it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
-                .get('/api/login')
+                .post('/api/registeredgeneralpublic/auth/login')
                 .end((err, res) => {
                     if(err) throw new Error(err);
-                    res.body.should.be.a("object");
-                    res.body.should.be.eq("logged in");
+                    assert.property(res.body, 'msg');
                     done();
                 });
         });

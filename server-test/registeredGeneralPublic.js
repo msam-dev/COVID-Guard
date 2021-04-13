@@ -1,6 +1,6 @@
 process.env.NODE_ENV = 'testing';
 const RegisteredGeneralPublic = require('../server/models/RegisteredGeneralPublic');
-const should = require("should");
+const assert = require('chai').assert
 
 describe('RegisteredGeneralPublic', () => {
     describe('Add user', () => {
@@ -14,10 +14,11 @@ describe('RegisteredGeneralPublic', () => {
             user.save(function (err) {
                 if (err) return console.error(err);
                 RegisteredGeneralPublic.findById(user._id, {}, {}, (err, rUser)=>{
-                    rUser.firstName.should.equal("Bill");
-                    rUser.lastName.should.equal("Jones");
-                    rUser.password.should.equal("fdfdfddf");
-                    rUser.email.should.equal("bill@billy.com");
+                    assert.isObject(rUser);
+                    assert.equal(rUser.firstName,"Bill");
+                    assert.equal(rUser.lastName,"Jones");
+                    assert.equal(rUser.password,"fdfdfddf");
+                    assert.equal(rUser.email,"bill@billy.com");
                     if (err) return console.error(err);
                     done();
                 });
@@ -34,10 +35,11 @@ describe('RegisteredGeneralPublic', () => {
                 user.save(function (err) {
                     if (err) return console.error(err);
                     RegisteredGeneralPublic.findById(user._id, {}, {}, (err, rUser)=>{
-                        rUser.firstName.should.equal("John");
-                        rUser.lastName.should.equal("Smith");
-                        rUser.email.should.equal("different@email.com");
-                        rUser.password.should.equal("password");
+                        assert.isObject(rUser);
+                        assert.equal(rUser.firstName,"John");
+                        assert.equal(rUser.lastName,"Smith");
+                        assert.equal(rUser.password,"password");
+                        assert.equal(rUser.email,"different@email.com");
                         if (err) return console.error(err);
                         done();
                     });

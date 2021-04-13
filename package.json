@@ -11,25 +11,24 @@
     "dev-client": "cd client/covid19-app && npm start",
     "dev": "concurrently \"npm run dev-server\" \"npm run dev-client\"",
     "build": "cd client/covid19-app && npm install && npm run build",
-    "server-test": "mocha server-test --require ./server-test/fixtures.js"
+    "server-test": "mocha server-test --require ./server-test/fixtures.js --timeout 10000"
   },
   "devDependencies": {
-    "jsonwebtoken": "^8.5.1",
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0",
+    "concurrently": "^6.0.0",
+    "mocha": "^8.3.2",
     "nodemon": "^1.14.6"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
-    "chai": "^4.3.4",
-    "chai-http": "^4.3.0",
-    "concurrently": "^6.0.0",
     "config": "^3.3.6",
     "express": "^4.16.4",
     "faker": "^5.5.2",
-    "mocha": "^8.3.2",
+    "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.15",
     "mongoose-extend-schema": "^1.0.0",
     "request": "^2.88.2",
-    "should": "^13.2.3",
     "uuid": "^8.3.2"
   }
 }
