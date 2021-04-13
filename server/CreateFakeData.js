@@ -1,5 +1,6 @@
 // generate fake data for seeding database
 const faker = require('faker/locale/en_AU');
+faker.seed(0);
 
 const firstName = faker.name.firstName()
 console.log(firstName);
