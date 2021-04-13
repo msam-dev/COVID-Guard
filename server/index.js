@@ -20,10 +20,6 @@ app.use(express.static(path.resolve(__dirname, '..', 'client', 'covid19-app', 'b
 // Answer API requests.
 app.use('/api/registeredgeneralpublic/auth', registeredGeneralPublicAuthRoutes);
 
-app.get('/test', (request, response) => {
-    throw new GeneralError("Test");
-});
-
 // All remaining requests return the React app, so it can handle routing.
 app.get('*', (request, response) => {
     response.sendFile(path.resolve(__dirname, '..', 'client', 'covid19-app', 'build', 'index.html'));

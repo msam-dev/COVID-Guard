@@ -6,42 +6,40 @@ const jwt = require('jsonwebtoken');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
 const {GeneralError, BadRequest} = require('../../../utils/errors')
+const asyncHandler = require('express-async-handler')
+
 /*
 * @route   POST api/registeredgeneralpublic/auth/login
 * @desc    Login user
 * @access  Public
 */
 
-router.post('/login', async (req, res, next) => {
+router.post('/login', asyncHandler(async (req, res) => {
     const { email, password } = req.body;
 
     // Simple validation
     if (!email || !password) {
-        return next(new BadRequest('Please enter all fields'));
+        throw new BadRequest('Please enter all fields');
     }
 
-    try {
-        // Check for existing user
-        const user = await RegisteredGeneralPublicUser.findOne({ email });
-        if (!user) return next(new BadRequest('User does not exist'));
+    // Check for existing user
+    const user = await RegisteredGeneralPublicUser.findOne({ email });
+    if (!user) throw new BadRequest('User does not exist');
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return next(new BadRequest('Invalid credentials'));
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) throw new BadRequest('Invalid credentials');
 
-        const token = jwt.sign({ id: user._id, type: userType.GENERAL }, JWT_SECRET, { expiresIn: 3600 });
-        if (!token) return next(new BadRequest('Couldn\'t sign the token'));
+    const token = jwt.sign({ id: user._id, type: userType.GENERAL }, JWT_SECRET, { expiresIn: 3600 });
+    if (!token) throw new BadRequest('Couldn\'t sign the token');
 
-        res.status(200).json({
-            token,
-            user: {
-                id: user._id,
-            },
-            type: userType.GENERAL
-        });
-    } catch (e) {
-        return next(new GeneralError(e.message));
-    }
-});
+    res.status(200).json({
+        token,
+        user: {
+            id: user._id,
+        },
+        type: userType.GENERAL
+    });
+}));
 
 /**
  * @route   POST api/registeredgeneralpublic/auth/register
