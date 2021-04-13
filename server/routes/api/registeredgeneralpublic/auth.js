@@ -3,32 +3,33 @@ const router = express.Router();
 const RegisteredGeneralPublicUser = require('../../../models/RegisteredGeneralPublic')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const authMiddleware = require('../../../../middleware/auth');
+const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
+const {GeneralError, BadRequest} = require('../../../utils/errors')
 /*
 * @route   POST api/registeredgeneralpublic/auth/login
 * @desc    Login user
 * @access  Public
 */
 
-router.post('/login', async (req, res) => {
+router.post('/login', async (req, res, next) => {
     const { email, password } = req.body;
 
     // Simple validation
     if (!email || !password) {
-        return res.status(400).json({ msg: 'Please enter all fields' });
+        return next(new BadRequest('Please enter all fields'));
     }
 
     try {
         // Check for existing user
         const user = await RegisteredGeneralPublicUser.findOne({ email });
-        if (!user) throw Error('User does not exist');
+        if (!user) return next(new BadRequest('User does not exist'));
 
         const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) throw Error('Invalid credentials');
+        if (!isMatch) return next(new BadRequest('Invalid credentials'));
 
         const token = jwt.sign({ id: user._id, type: userType.GENERAL }, JWT_SECRET, { expiresIn: 3600 });
-        if (!token) throw Error('Couldn\'t sign the token');
+        if (!token) return next(new BadRequest('Couldn\'t sign the token'));
 
         res.status(200).json({
             token,
@@ -38,7 +39,7 @@ router.post('/login', async (req, res) => {
             type: userType.GENERAL
         });
     } catch (e) {
-        res.status(400).json({ msg: e.message });
+        return next(new GeneralError(e.message));
     }
 });
 
