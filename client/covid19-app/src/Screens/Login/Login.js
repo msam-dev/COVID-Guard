@@ -1,5 +1,6 @@
 import { Form, Input, Button } from 'antd';
 import { layout, tailLayout } from './layouts';
+import PATH from '../../_constants/paths';
 
 
 
@@ -25,6 +26,7 @@ const Login = () => {
             </div>
 
             <Form
+                
                 {...layout}
                 name="basic"
                 onFinish={onFinish}
@@ -61,8 +63,8 @@ const Login = () => {
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
-                    <Button type="primary" htmlType="submit">Submit</Button>
-                    <span style={{paddingLeft: "19%", color: "#0E5F76"}}>Not Registered? <a href="/login"><u>Click here</u></a></span>
+                    <Button type="primary" htmlType="submit">Login</Button>
+                    <span style={{paddingLeft: "19%", color: "#0E5F76"}}>Not Registered? <a href={PATH.regiester}><u>Click here</u></a></span>
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>

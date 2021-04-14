@@ -4,8 +4,9 @@ import history from '../_helpers/history';
 import PATH from '../_constants/paths';
 import AuthProvider from '../Components/AuthContext/AuthContext';
 import Navbar from '../Components/Navbar/Navbar';
-import Login from '../Screens/Login/Login';
 import Footer from '../Components/Footer/Footer';
+import Register from '../Screens/Register/Register';
+import Login from '../Screens/Login/Login';
 
 
 function App() {
@@ -15,10 +16,12 @@ function App() {
             <div id="navbar-wrapper">
                 <Navbar />
             </div>
+            
             <div id="body-wrapper">
                 <Router history={history}>
                     <Switch>
                         <Route path={PATH.login}> <Login/> </Route>
+                        <Route path={PATH.regiester}> <Register/> </Route>
                     </Switch>
                 </Router> 
             </div>

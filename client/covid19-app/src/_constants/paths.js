@@ -1,5 +1,6 @@
 const PATH = {
-    login: "/login"
+    login: "/login",
+    regiester: "/register"
 }
 
 export default PATH;
