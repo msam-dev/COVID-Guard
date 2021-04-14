@@ -8,7 +8,7 @@ const CheckInSchema = new mongoose.Schema({
     },
     // linked to RegisteredGeneralPublic or GeneralPublicUser (https://mongoosejs.com/docs/populate.html)
     user: {
-        type: Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         required: true,
         // Instead of a hardcoded model name in `ref`, `refPath` means Mongoose
         // will look at the `userModel` property to find the right model.

@@ -34,9 +34,7 @@ router.post('/login', asyncHandler(async (req, res) => {
 
     res.status(200).json({
         token,
-        user: {
-            id: user._id,
-        },
+        userId: user._id,
         type: userType.GENERAL
     });
 }));

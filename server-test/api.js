@@ -4,6 +4,7 @@ const chai = require("chai");
 const chaiHttp = require("chai-http");
 const app = require("../server/index");
 const assert = require('chai').assert
+const {createMockRegisteredGeneralPublicUsers} = require('../server/CreateMockData')
 // Configure chai
 chai.use(chaiHttp);
 
@@ -30,7 +31,6 @@ describe("Covid App Server API", () => {
                         assert.equal(res.status, 400);
                         assert.property(res.body, 'message');
                         assert.propertyVal(res.body, 'message', 'User does not exist');
-
                         done();
                     });
             });
