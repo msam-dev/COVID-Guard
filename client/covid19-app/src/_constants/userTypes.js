@@ -1,8 +1,0 @@
-const USER_TYPE = {
-    GENERAL: "GENERAL",
-    HEALTH: "HEALTH",
-    BUSINESS:"BUSINESS",
-    UNREGISTERED: "UNREGISTERED"
-}
-
-export default USER_TYPE;
