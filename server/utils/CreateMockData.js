@@ -231,10 +231,10 @@ async function createDevData(){
     let businessUsersRaw = getRawUserData(businessUsers)
     let healthProfessionalUsers = await createMockHealthProfessionalUsers(true, 100);
     let healthProfessionalUsersRaw = getRawUserData(healthProfessionalUsers)
-    let mockCheckIns = createMockCheckIns(true, 100);
-    let mockPositiveCases = createMockPositiveCases(true, 1);
-    let mockVaccinationRecords = createMockVaccinationRecord(true, 100);
-    let mockVaccinationCentres = createMockVaccinationCentres(true, 100);
+    await createMockCheckIns(true, 100);
+    await createMockPositiveCases(true, 1);
+    await createMockVaccinationRecord(true, 100);
+    await createMockVaccinationCentres(true, 100);
     console.log("dev data created");
 
     const fields = ['userType', 'email', 'password', "id"];
