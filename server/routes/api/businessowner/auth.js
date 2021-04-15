@@ -12,13 +12,13 @@ const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
 
 /**
- * @route   POST api/login
+ * @route   POST api/businessowner/auth/login
  * @desc    logging in user
- * @access  Private
+ * @access  Public
  */
 
 router.post('/login', asyncHandler(async (req, res) => {
-    const { email, password } = req.body;
+    const {email, password} = req.body;
 
     // Simple validation
     if (!email || !password) {
@@ -26,13 +26,13 @@ router.post('/login', asyncHandler(async (req, res) => {
     }
 
     // Check for existing user
-    const user = await BusinessUser.findOne({ email });
+    const user = await BusinessUser.findOne({email});
     if (!user) throw new BadRequest('User does not exist');
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) throw new BadRequest('Invalid credentials');
 
-    const token = jwt.sign({ id: user._id, type: userType.BUSINESS }, JWT_SECRET, { expiresIn: 3600 });
+    const token = jwt.sign({id: user._id, type: userType.BUSINESS}, JWT_SECRET, {expiresIn: 3600});
     if (!token) throw new BadRequest('Couldn\'t sign the token');
 
     res.status(200).json({
@@ -50,14 +50,14 @@ router.post('/login', asyncHandler(async (req, res) => {
  */
 
 router.post('/register', asyncHandler(async (req, res) => {
-    const { firstName, lastName, email, password, phone } = req.body;
+    const {firstName, lastName, email, password, phone} = req.body;
 
     // Simple validation
     if (!firstName || !lastName || !email || !password) {
         throw new BadRequest('Please enter all fields');
     }
 
-    const user = await BusinessUser.findOne({ email });
+    const user = await BusinessUser.findOne({email});
     if (user) throw new BadRequest('User already exists');
 
     const hash = await encryptPassword(password);
@@ -73,7 +73,7 @@ router.post('/register', asyncHandler(async (req, res) => {
     const savedUser = await newUser.save();
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
-    const token = jwt.sign({ id: savedUser._id, type: userType.GENERAL }, JWT_SECRET, {
+    const token = jwt.sign({id: savedUser._id, type: userType.GENERAL}, JWT_SECRET, {
         expiresIn: 3600
     });
 
