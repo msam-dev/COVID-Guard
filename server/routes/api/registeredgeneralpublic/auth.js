@@ -8,6 +8,7 @@ const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
 const encryptPassword = require("../../../utils/encryptPassword");
 const bcrypt = require('bcryptjs');
+const {ServerError} = require("../../../utils/errors");
 
 /*
 * @route   POST api/registeredgeneralpublic/auth/login
@@ -46,45 +47,40 @@ router.post('/login', asyncHandler(async (req, res) => {
  * @access  Public
  */
 
-router.post('/register', async (req, res) => {
-    const { firstName, lastName, email, password } = req.body;
+router.post('/register', asyncHandler(async (req, res) => {
+    const { firstName, lastName, email, password, phone } = req.body;
 
     // Simple validation
-    if (!name || !email || !password) {
-        return res.status(400).json({ msg: 'Please enter all fields' });
+    if (!firstName || !lastName || !email || !password) {
+        throw new BadRequest('Please enter all fields');
     }
 
-    try {
-        const user = await RegisteredGeneralPublicUser.findOne({ email });
-        if (user) throw Error('User already exists');
+    const user = await RegisteredGeneralPublicUser.findOne({ email });
+    if (user) throw new BadRequest('User already exists');
 
-        const hash = encryptPassword(password);
+    const hash = await encryptPassword(password);
 
-        const newUser = new RegisteredGeneralPublicUser({
-            firstName,
-            lastName,
-            email,
-            password: hash
-        });
+    const newUser = new RegisteredGeneralPublicUser({
+        firstName,
+        lastName,
+        email,
+        password: hash,
+        phone: phone
+    });
 
-        const savedUser = await newUser.save();
-        if (!savedUser) throw Error('Something went wrong saving the user');
+    const savedUser = await newUser.save();
+    if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
-        const token = jwt.sign({ id: savedUser._id, type: userType.GENERAL }, JWT_SECRET, {
-            expiresIn: 3600
-        });
+    const token = jwt.sign({ id: savedUser._id, type: userType.GENERAL }, JWT_SECRET, {
+        expiresIn: 3600
+    });
 
-        res.status(200).json({
-            token,
-            user: {
-                id: user.id
-            },
-            type: userType.GENERAL
-        });
-    } catch (e) {
-        res.status(400).json({ error: e.message });
-    }
-});
+    res.status(200).json({
+        token,
+        userId: savedUser._id,
+        type: userType.GENERAL
+    });
+}));
 
 /**
  * @route   GET api/registeredgeneralpublic/auth/user
