@@ -5,8 +5,9 @@ const BusinessUser = require('./models/BusinessUser');
 const HealthProfessional = require('./models/HealthProfessional');
 const GeneralPublicUser = require('./models/GeneralPublic');
 const VaccinationRecord = require('./models/VaccinationRecord');
-
+const PositiveCase = require("./models/PositiveCase");
 const CheckIn = require('./models/CheckIn');
+const encryptPassword = require("./utils/encryptPassword");
 
 // generate fake data for seeding database
 const faker = require('faker/locale/en_AU');
@@ -19,7 +20,9 @@ async function createMockRegisteredGeneralPublicUsers(save=false, numUsers=1){
         user.firstName = faker.name.firstName();
         user.lastName = faker.name.lastName();
         user.email = faker.internet.email(user.firstName, user.lastName)
-        user.password = faker.internet.password();
+        let password = faker.internet.password();
+        user.password = await encryptPassword(password);
+        user.rawPassword = password;
         user.phone = faker.phone.phoneNumber("0#########");
         if (save) await user.save();
         users.push(user);
@@ -55,7 +58,7 @@ async function createMockBusinesses(save=false, numBusinesses=1, address=null){
         if(address) {
             business.address = address;
         } else {
-            // also need to implement if not address
+            business.address = (await createMockAddresses(save))[0];
         }
         if (save) await business.save();
         businesses.push(business);
@@ -70,12 +73,14 @@ async function createMockBusinessUsers(save=false, numUsers=1, business=null){
         user.firstName = faker.name.firstName();
         user.lastName = faker.name.lastName();
         user.email = faker.internet.email(user.firstName, user.lastName)
-        user.password = faker.internet.password();
+        let password = faker.internet.password();
+        user.password = await encryptPassword(password);
+        user.rawPassword = password;
         user.phone = faker.phone.phoneNumber("0#########");
         if (business) {
             user.business = business;
         } else {
-            // need to implement this
+            user.business = (await createMockBusinesses(save))[0];
         }
         if (save) await user.save();
         users.push(user);
@@ -90,7 +95,9 @@ async function createMockHealthProfessionalUsers(save=false, numUsers=1){
         user.firstName = faker.name.firstName();
         user.lastName = faker.name.lastName();
         user.email = faker.internet.email(user.firstName, user.lastName)
-        user.password = faker.internet.password();
+        let password = faker.internet.password();
+        user.password = await encryptPassword(password);
+        user.rawPassword = password;
         user.phone = faker.phone.phoneNumber("0#########");
         user.healthID = faker.datatype.uuid();
         if (save) await user.save();
@@ -106,7 +113,6 @@ async function createMockGeneralPublicUsers(save=false, numUsers=1){
         user.firstName = faker.name.firstName();
         user.lastName = faker.name.lastName();
         user.email = faker.internet.email(user.firstName, user.lastName)
-        user.password = faker.internet.password();
         user.phone = faker.phone.phoneNumber("0#########");
         if (save) await user.save();
         users.push(user);
@@ -162,12 +168,12 @@ async function createMockVaccinationRecord(save=false, numRecords=1, user=null){
     return vRecords;
 }
 
-console.log(faker.address.latitude());
+//console.log(faker.address.latitude());
 
-console.log(faker.address.longitude());
+//console.log(faker.address.longitude());
 
 // can be used for confirmation codes
-console.log(faker.datatype.uuid());
+//console.log(faker.datatype.uuid());
 
 // need to generate random venue codes
 

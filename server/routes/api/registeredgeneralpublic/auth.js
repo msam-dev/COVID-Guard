@@ -1,12 +1,13 @@
 const express = require('express')
 const router = express.Router();
 const RegisteredGeneralPublicUser = require('../../../models/RegisteredGeneralPublic')
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
 const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
+const encryptPassword = require("../../../utils/encryptPassword");
+const bcrypt = require('bcryptjs');
 
 /*
 * @route   POST api/registeredgeneralpublic/auth/login
@@ -34,7 +35,7 @@ router.post('/login', asyncHandler(async (req, res) => {
 
     res.status(200).json({
         token,
-        userId: user._id,
+        userId: user.id,
         type: userType.GENERAL
     });
 }));
@@ -57,11 +58,7 @@ router.post('/register', async (req, res) => {
         const user = await RegisteredGeneralPublicUser.findOne({ email });
         if (user) throw Error('User already exists');
 
-        const salt = await bcrypt.genSalt(10);
-        if (!salt) throw Error('Something went wrong with bcrypt');
-
-        const hash = await bcrypt.hash(password, salt);
-        if (!hash) throw Error('Something went wrong hashing the password');
+        const hash = encryptPassword(password);
 
         const newUser = new RegisteredGeneralPublicUser({
             firstName,
@@ -80,7 +77,7 @@ router.post('/register', async (req, res) => {
         res.status(200).json({
             token,
             user: {
-                id: user._id
+                id: user.id
             },
             type: userType.GENERAL
         });
@@ -97,7 +94,7 @@ router.post('/register', async (req, res) => {
 
 router.get('/user', authMiddleware(userType.GENERAL), async (req, res) => {
     try {
-        const user = await RegisteredGeneralPublicUser.findById(req.user.id).select('-password');
+        const user = await RegisteredGeneralPublicUser.findById(req.userId).select('-password');
         if (!user) throw Error('User does not exist');
         res.json({id: user.id, type: userType.GENERAL});
     } catch (e) {

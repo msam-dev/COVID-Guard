@@ -8,5 +8,10 @@ const RegisteredUserSchema = extendSchema(userSchema, {
         required: true
     }
 })
-
+// this is not persisted and is just used for testing
+RegisteredUserSchema.virtual('rawPassword').get(function() {
+    return this.rawPassword;
+}).set(function(rPassword) {
+    this.rawPassword = rPassword;
+});
 module.exports = RegisteredUserSchema;
