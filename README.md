@@ -15,6 +15,7 @@ This will open your browser at localhost:3000 by default <br />
 Once everything has compiled, add '/login' at the end of the browser URL to see the sample login page I have created <br />
 
 --How to run the server project-- <br />
+You need to set CSCI334_MONGODB_USER and CSCI334_MONGODB_PASS environment variables to respective values <br />
 Make sure you have npm installed on your computer <br />
 Via terminal (or command line), make sure you are located within the git repo folder 'CSCI334' <br />
 Type the command: npm run server-install <br />
@@ -24,6 +25,7 @@ Then you can open your browser at localhost:5000 <br />
 Once everything has compiled, add '/api' at the end of the browser URL to see the sample message I have created <br />
 
 --How to run the client & server project-- <br />
+You need to set CSCI334_MONGODB_USER and CSCI334_MONGODB_PASS environment variables to respective values <br />
 Make sure you have npm installed on your computer <br />
 Via terminal (or command line), make sure you are located within the git repo folder 'CSCI334' <br />
 Type the command: npm run all-install <br />
