@@ -12,7 +12,6 @@ const CoordinatesSchema = new mongoose.Schema({
     }
 });
 
-
 const Coordinates = mongoose.model('Coordinates', CoordinatesSchema);
 
 module.exports = Coordinates;

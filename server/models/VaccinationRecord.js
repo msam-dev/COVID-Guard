@@ -4,16 +4,18 @@ const mongoose = require('mongoose')
 const VaccinationRecordSchema = new mongoose.Schema({
     vaccinationCode: {
         type : String,
-        required: true
-        // need to autogenerate this in model
+        required: true,
+        default: mongoose.Types.ObjectId
     },
     vaccinationType: {
         type : String,
-        required: true
+        required: true,
+        enum: ["Novavax", "AstraZeneca", "Pfizer"]
     },
     vaccinationStatus: {
         type : String,
-        required: true
+        required: true,
+        enum: ["Partial", "Complete"]
     },
     dateAdministered: {
         type : Date,
