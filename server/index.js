@@ -2,12 +2,13 @@ const express = require('express');
 const path = require('path');
 // Routes
 const registeredGeneralPublicAuthRoutes = require('./routes/api/registeredgeneralpublic/auth');
+const registeredBusinessOwnerAuthRoutes = require('./routes/api/businessowner/auth');
+const registeredHealthProfessionalAuthRoutes = require('./routes/api/healthprofessional/auth');
 
 const PORT = process.env.PORT || 5000;
 const app = express();
 const db = require("./db");
 const errorHandler = require('./middleware/errorHandler');
-const {GeneralError} = require('./utils/errors');
 
 db.connect();
 
@@ -19,6 +20,8 @@ app.use(express.static(path.resolve(__dirname, '..', 'client', 'covid19-app', 'b
 
 // Answer API requests.
 app.use('/api/registeredgeneralpublic/auth', registeredGeneralPublicAuthRoutes);
+app.use('/api/businessowner/auth', registeredBusinessOwnerAuthRoutes);
+app.use('/api/healthprofessional/auth', registeredHealthProfessionalAuthRoutes);
 
 // All remaining requests return the React app, so it can handle routing.
 app.get('*', (request, response) => {
