@@ -2,6 +2,8 @@ class ServerError extends Error {
     constructor(message) {
         super();
         this.message = message;
+        this.success = false;
+        this.errCode = this.getCode();
     }
 
     getCode() {

@@ -36,6 +36,7 @@ router.post('/login', asyncHandler(async (req, res) => {
     if (!token) throw new BadRequest('Couldn\'t sign the token');
 
     res.status(200).json({
+        success: true,
         token,
         userId: user.id,
         type: userType.GENERAL
@@ -77,6 +78,7 @@ router.post('/register', asyncHandler(async (req, res) => {
     });
 
     res.status(200).json({
+        success: true,
         token,
         userId: savedUser._id,
         type: userType.GENERAL

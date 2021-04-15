@@ -21,6 +21,8 @@ describe("Covid App Server API Auth", () => {
                 .end((err, res) => {
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
                 });
@@ -32,6 +34,8 @@ describe("Covid App Server API Auth", () => {
                 .end((err, res) => {
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'User does not exist');
                     done();
                 });
@@ -46,6 +50,7 @@ describe("Covid App Server API Auth", () => {
                     .end((err, res) => {
                         if (err) throw new Error(err);
                         assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
                         assert.property(res.body, 'token');
@@ -63,6 +68,8 @@ describe("Covid App Server API Auth", () => {
                 .end((err, res) => {
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
                 });
@@ -80,6 +87,7 @@ describe("Covid App Server API Auth", () => {
                     if (err) throw new Error(err);
                     RegisteredGeneralPublic.findOne({email: "test@email.com"}).then((user) =>{
                         assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
                         assert.property(res.body, 'token');
@@ -107,6 +115,7 @@ describe("Covid App Server API Auth", () => {
                     if (err) throw new Error(err);
                     RegisteredGeneralPublic.findOne({email: "test2@email.com"}).then((user) =>{
                         assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
                         assert.property(res.body, 'token');
@@ -128,7 +137,8 @@ describe("Covid App Server API Auth", () => {
                 .end((err, res) => {
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
-                    assert.property(res.body, 'message');
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
                 });
@@ -140,7 +150,8 @@ describe("Covid App Server API Auth", () => {
                 .end((err, res) => {
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
-                    assert.property(res.body, 'message');
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'User does not exist');
                     done();
                 });
@@ -155,9 +166,8 @@ describe("Covid App Server API Auth", () => {
                     .end((err, res) => {
                         if (err) throw new Error(err);
                         assert.equal(res.status, 200);
-                        assert.property(res.body, 'userId');
+                        assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'userId', user.id);
-                        assert.property(res.body, 'type');
                         assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
                         assert.property(res.body, 'token');
                         // implement this later
@@ -174,7 +184,8 @@ describe("Covid App Server API Auth", () => {
                 .end((err, res) => {
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
-                    assert.property(res.body, 'message');
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
                 });
@@ -186,7 +197,8 @@ describe("Covid App Server API Auth", () => {
                 .end((err, res) => {
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
-                    assert.property(res.body, 'message');
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'User does not exist');
                     done();
                 });
@@ -201,6 +213,7 @@ describe("Covid App Server API Auth", () => {
                     .end((err, res) => {
                         if (err) throw new Error(err);
                         assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
                         assert.property(res.body, 'userId');
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.property(res.body, 'type');
