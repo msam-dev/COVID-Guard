@@ -8,6 +8,7 @@ const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
 const encryptPassword = require("../../../utils/encryptPassword");
 const bcrypt = require('bcryptjs');
+const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
 
 /*
@@ -88,14 +89,10 @@ router.post('/register', asyncHandler(async (req, res) => {
  * @access  Private
  */
 
-router.get('/user', authMiddleware(userType.GENERAL), async (req, res) => {
-    try {
-        const user = await RegisteredGeneralPublicUser.findById(req.userId).select('-password');
-        if (!user) throw Error('User does not exist');
-        res.json({id: user.id, type: userType.GENERAL});
-    } catch (e) {
-        res.status(400).json({ msg: e.message });
-    }
-});
+router.get('/user', authMiddleware(userType.GENERAL), asyncHandler(async (req, res) => {
+    const user = await RegisteredGeneralPublicUser.findById(req.userId).select('-password');
+    if (!user) throw new Unauthorized('User does not exist');
+    res.json({id: user.id, type: userType.GENERAL});
+}));
 
 module.exports = router;
