@@ -17,7 +17,7 @@ const CheckInSchema = new mongoose.Schema({
     userModel: {
         type: String,
         required: true,
-        enum: ['RegisteredGeneralPublic', 'GeneralPublicUser']
+        enum: ['RegisteredGeneralPublic', 'GeneralPublic']
     }
 });
 

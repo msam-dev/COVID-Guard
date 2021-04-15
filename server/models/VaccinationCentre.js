@@ -6,7 +6,7 @@ const VaccinationCentreSchema = new mongoose.Schema({
         type : String,
         required: true
     },
-    address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address' }
+    address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address', required: true }
 });
 
 
