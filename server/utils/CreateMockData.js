@@ -14,9 +14,9 @@ const { parse } = require('json2csv');
 const faker = require('faker/locale/en_AU');
 const db = require('../db');
 const mongoose = require("mongoose");
-const USER_TYPE = require("../_constants/usertypes");
 const fs = require("fs");
 const VaccinationCentre = require("../models/VaccinationCentre");
+const Coordinates = require("../models/Coordinates");
 faker.seed(0);
 
 async function createMockRegisteredGeneralPublicUsers(save=false, numUsers=1){
@@ -36,7 +36,7 @@ async function createMockRegisteredGeneralPublicUsers(save=false, numUsers=1){
     return users;
 }
 
-async function createMockAddresses(save=false, numAddresses=1){
+async function createMockAddresses(save=false, numAddresses=1, addCoordinates=false, coordinates=false){
     let addresses = [];
     for(let i=0; i < numAddresses; i++) {
         let address = new Address();
@@ -46,6 +46,14 @@ async function createMockAddresses(save=false, numAddresses=1){
         address.city = faker.address.city();
         address.state = faker.address.state();
         address.postcode = faker.address.zipCode();
+        if(addCoordinates){
+            if(coordinates){
+                address.coordinates = coordinates;
+            } else {
+                address.coordinates = (await createMockCoordinates(save))[0];
+            }
+        }
+
         if (save) await address.save();
         addresses.push(address);
     }
@@ -196,23 +204,26 @@ async function createMockVaccinationCentres(save=false, numCentres=1, address = 
         if(address){
             vaccinationCentre.address = address;
         } else {
-            vaccinationCentre.address = (await createMockAddresses(save))[0];
+            vaccinationCentre.address = (await createMockAddresses(save, 1, true))[0];
         }
         if (save) await vaccinationCentre.save();
         vaccinationCentres.push(vaccinationCentre);
     }
     return vaccinationCentres;
 }
-//console.log(faker.address.latitude());
 
-//console.log(faker.address.longitude());
+async function createMockCoordinates(save=false, numCoordinates=1){
+    let coordinates = [];
+    for(let i=0; i < numCoordinates; i++) {
+        let coordinate = new Coordinates();
+        coordinate.latitude =  faker.address.latitude();
+        coordinate.longitude =  faker.address.longitude();
+        if (save) await coordinate.save();
+        coordinates.push(coordinate);
+    }
+    return coordinates;
+}
 
-// can be used for confirmation codes
-//console.log(faker.datatype.uuid());
-
-// need to generate random venue codes
-
-// need to generate clinic name
 function getRawUserData(users){
     let rawUsers = []
     for(let user of users) {
@@ -242,7 +253,7 @@ async function createDevData(){
 
     try {
         const csv = parse([].concat(registeredGeneralPublicUsersRaw, businessUsersRaw, healthProfessionalUsersRaw), opts);
-        var path='users_raw.csv';
+        const path = 'users_raw.csv';
         fs.writeFile(path, csv, function(err,data) {});
     } catch(err){
         console.error(err);

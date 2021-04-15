@@ -1,5 +1,5 @@
 process.env.NODE_ENV = 'testing';
-const RegisteredGeneralPublic = require('../server/models/RegisteredGeneralPublic');
+const RegisteredGeneralPublic = require('../../server/models/RegisteredGeneralPublic');
 const assert = require('chai').assert
 
 describe('RegisteredGeneralPublic', () => {

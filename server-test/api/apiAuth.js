@@ -2,12 +2,12 @@ process.env.NODE_ENV = 'testing';
 
 const chai = require("chai");
 const chaiHttp = require("chai-http");
-const app = require("../server/index");
-const USER_TYPE = require("../server/_constants/usertypes");
-const {createMockHealthProfessionalUsers} = require("../server/utils/CreateMockData");
-const {createMockBusinessUsers} = require("../server/utils/CreateMockData");
+const app = require("../../server");
+const USER_TYPE = require("../../server/_constants/usertypes");
+const {createMockHealthProfessionalUsers} = require("../../server/utils/CreateMockData");
+const {createMockBusinessUsers} = require("../../server/utils/CreateMockData");
 const assert = require('chai').assert
-const {createMockRegisteredGeneralPublicUsers} = require('../server/utils/CreateMockData')
+const {createMockRegisteredGeneralPublicUsers} = require('../../server/utils/CreateMockData')
 // Configure chai
 chai.use(chaiHttp);
 
