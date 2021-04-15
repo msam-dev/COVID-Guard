@@ -4,150 +4,59 @@ const chai = require("chai");
 const chaiHttp = require("chai-http");
 const app = require("../../server");
 const USER_TYPE = require("../../server/_constants/usertypes");
-const {createMockHealthProfessionalUsers} = require("../../server/utils/mockData");
-const {createMockBusinessUsers} = require("../../server/utils/mockData");
+const {createMockVaccinationRecord} = require("../../server/utils/mockData");
 const assert = require('chai').assert
-const {createMockRegisteredGeneralPublicUsers} = require('../../server/utils/mockData')
 // Configure chai
 chai.use(chaiHttp);
 
-describe("Covid App Server API Auth", () => {
-    describe("POST /api/registeredgeneralpublic/auth/login", () => {
-        it("returns error message 'Please enter all fields'", (done) => {
+describe("Covid App Server General Public Endpoints", () => {
+    describe("POST /api/generalpublic/checkvaccinationisvalid", () => {
+        it("returns error message 'Please enter vaccination code'", (done) => {
             chai.request(app)
-                .post('/api/registeredgeneralpublic/auth/login')
+                .post('/api/generalpublic/checkvaccinationisvalid')
                 .end((err, res) => {
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
-                    assert.property(res.body, 'message');
-                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
+                    assert.propertyVal(res.body, 'message', 'Please enter vaccination code');
                     done();
                 });
         });
-        it("it returns msg 'User does not exist'", (done) => {
+        it("it returns error message 'Vaccination record does not exist'", (done) => {
             chai.request(app)
-                .post('/api/registeredgeneralpublic/auth/login')
-                .send({"email": "test@test.com", "password": "pass"})
+                .post('/api/generalpublic/checkvaccinationisvalid')
+                .send({"vaccinationCode": "thisisinvalid"})
                 .end((err, res) => {
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
-                    assert.property(res.body, 'message');
-                    assert.propertyVal(res.body, 'message', 'User does not exist');
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
+                    assert.propertyVal(res.body, 'message', 'Vaccination record does not exist');
                     done();
                 });
         });
-        it("it allows successful login", (done) => {
-            createMockRegisteredGeneralPublicUsers(true).then((users)=>
+        it("returns valid vaccination record", (done) => {
+            createMockVaccinationRecord(true).then((vaccinationRecords)=>
                 {
-                    let user = users[0];
-                    chai.request(app)
-                        .post('/api/registeredgeneralpublic/auth/login')
-                        .send({"email": user.email, "password": user.rawPassword})
+                    let vaccinationRecord = vaccinationRecords[0];
+                    vaccinationRecord.populate("patient", "firstName lastName").execPopulate().then(function () {
+                        chai.request(app)
+                        .post('/api/generalpublic/checkvaccinationisvalid')
+                        .send({"vaccinationCode": vaccinationRecord.vaccinationCode})
                         .end((err, res) => {
                             if (err) throw new Error(err);
                             assert.equal(res.status, 200);
-                            assert.property(res.body, 'userId');
-                            assert.propertyVal(res.body, 'userId', user.id);
-                            assert.property(res.body, 'type');
-                            assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
-                            assert.property(res.body, 'token');
-                            // implement this later
-                            // assert.propertyVal(res.body, 'token', '');
+                            assert.propertyVal(res.body, 'success', true);
+                            assert.propertyVal(res.body, 'vaccinationType', vaccinationRecord.vaccinationType);
+                            assert.propertyVal(res.body, 'vaccinationStatus', vaccinationRecord.vaccinationStatus);
+                            assert.propertyVal(res.body, 'dateAdministered', vaccinationRecord.dateAdministered);
+                            assert.propertyVal(res.body, 'patientFirstName', vaccinationRecord.patient.firstName);
+                            assert.propertyVal(res.body, 'patientLastName', vaccinationRecord.patient.lastName);
                             done();
                         });
-                });
-        });
-    });
-    describe("POST /api/businessowner/auth/login", () => {
-        it("returns error message 'Please enter all fields'", (done) => {
-            chai.request(app)
-                .post('/api/businessowner/auth/login')
-                .end((err, res) => {
-                    if (err) throw new Error(err);
-                    assert.equal(res.status, 400);
-                    assert.property(res.body, 'message');
-                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
-                    done();
-                });
-        });
-        it("it returns msg 'User does not exist'", (done) => {
-            chai.request(app)
-                .post('/api/businessowner/auth/login')
-                .send({"email": "test@test.com", "password": "pass"})
-                .end((err, res) => {
-                    if (err) throw new Error(err);
-                    assert.equal(res.status, 400);
-                    assert.property(res.body, 'message');
-                    assert.propertyVal(res.body, 'message', 'User does not exist');
-                    done();
-                });
-        });
-        it("it allows successful login", (done) => {
-            createMockBusinessUsers(true).then((users)=>
-            {
-                let user = users[0];
-                chai.request(app)
-                    .post('/api/businessowner/auth/login')
-                    .send({"email": user.email, "password": user.rawPassword})
-                    .end((err, res) => {
-                        if (err) throw new Error(err);
-                        assert.equal(res.status, 200);
-                        assert.property(res.body, 'userId');
-                        assert.propertyVal(res.body, 'userId', user.id);
-                        assert.property(res.body, 'type');
-                        assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
-                        assert.property(res.body, 'token');
-                        // implement this later
-                        // assert.propertyVal(res.body, 'token', '');
-                        done();
                     });
-            });
-        })
-    });
-    describe("POST /api/healthprofessional/auth/login", () => {
-        it("returns error message 'Please enter all fields'", (done) => {
-            chai.request(app)
-                .post('/api/healthprofessional/auth/login')
-                .end((err, res) => {
-                    if (err) throw new Error(err);
-                    assert.equal(res.status, 400);
-                    assert.property(res.body, 'message');
-                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
-                    done();
                 });
         });
-        it("it returns msg 'User does not exist'", (done) => {
-            chai.request(app)
-                .post('/api/healthprofessional/auth/login')
-                .send({"email": "test@test.com", "password": "pass"})
-                .end((err, res) => {
-                    if (err) throw new Error(err);
-                    assert.equal(res.status, 400);
-                    assert.property(res.body, 'message');
-                    assert.propertyVal(res.body, 'message', 'User does not exist');
-                    done();
-                });
-        });
-        it("it allows successful login", (done) => {
-            createMockHealthProfessionalUsers(true).then((users)=>
-            {
-                let user = users[0];
-                chai.request(app)
-                    .post('/api/healthprofessional/auth/login')
-                    .send({"email": user.email, "password": user.rawPassword})
-                    .end((err, res) => {
-                        if (err) throw new Error(err);
-                        assert.equal(res.status, 200);
-                        assert.property(res.body, 'userId');
-                        assert.propertyVal(res.body, 'userId', user.id);
-                        assert.property(res.body, 'type');
-                        assert.propertyVal(res.body, 'type', USER_TYPE.HEALTH);
-                        assert.property(res.body, 'token');
-                        // implement this later
-                        // assert.propertyVal(res.body, 'token', '');
-                        done();
-                    });
-            });
-        })
     });
 });

@@ -48,9 +48,9 @@ async function createMockAddresses(save=false, numAddresses=1, addCoordinates=fa
         address.postcode = faker.address.zipCode();
         if(addCoordinates){
             if(coordinates){
-                address.coordinates = coordinates;
+                address.coordinates = coordinates.id;
             } else {
-                address.coordinates = (await createMockCoordinates(save))[0];
+                address.coordinates = (await createMockCoordinates(save))[0].id;
             }
         }
 
@@ -68,9 +68,9 @@ async function createMockBusinesses(save=false, numBusinesses=1, address=null){
         // need to update this
         business.name = faker.company.companyName();
         if(address) {
-            business.address = address;
+            business.address = address.id;
         } else {
-            business.address = (await createMockAddresses(save))[0];
+            business.address = (await createMockAddresses(save))[0].id;
         }
         if (save) await business.save();
         businesses.push(business);
@@ -90,9 +90,9 @@ async function createMockBusinessUsers(save=false, numUsers=1, business=null){
         user.rawPassword = password;
         user.phone = faker.phone.phoneNumber("0#########");
         if (business) {
-            user.business = business;
+            user.business = business.id;
         } else {
-            user.business = (await createMockBusinesses(save))[0];
+            user.business = (await createMockBusinesses(save))[0].id;
         }
         if (save) await user.save();
         users.push(user);
@@ -138,16 +138,16 @@ async function createMockCheckIns(save=false, numCheckIns=1, user=null, business
         let checkin = new CheckIn();
         checkin.date = faker.date.recent();
         if(user){
-            checkin.user = user._id;
+            checkin.user = user.id;
             checkin.userModel = user.constructor.modelName;
         } else {
-            checkin.user = (await createMockGeneralPublicUsers(save))[0];
+            checkin.user = (await createMockGeneralPublicUsers(save))[0].id;
             checkin.userModel = checkin.user.constructor.modelName;
         }
         if(business){
-            checkin.business = business;
+            checkin.business = business.id;
         } else {
-            checkin.business = (await createMockBusinesses(save))[0];
+            checkin.business = (await createMockBusinesses(save))[0].id;
         }
 
         if (save) await checkin.save();
@@ -162,10 +162,10 @@ async function createMockPositiveCases(save=false, numCases=1, user=null){
         let pCase = new PositiveCase();
         pCase.testDate = faker.date.recent();
         if(user){
-            pCase.user = user._id;
+            pCase.user = user.id;
             pCase.userModel = user.constructor.modelName;
         } else {
-            pCase.user = (await createMockGeneralPublicUsers(save))[0];
+            pCase.user = (await createMockGeneralPublicUsers(save))[0].id;
             pCase.userModel = pCase.user.constructor.modelName;
         }
         if (save) await pCase.save();
@@ -186,9 +186,9 @@ async function createMockVaccinationRecord(save=false, numRecords=1, user=null){
         vRecord.vaccinationType = randomChoice(["Novavax", "AstraZeneca", "Pfizer"]);
         vRecord.vaccinationStatus = randomChoice(["Partial", "Complete"]);
         if(user){
-            vRecord.patient = user;
+            vRecord.patient = user.id;
         } else {
-            vRecord.patient = (await createMockRegisteredGeneralPublicUsers(save))[0];
+            vRecord.patient = (await createMockRegisteredGeneralPublicUsers(save))[0].id;
         }
         if (save) await vRecord.save();
         vRecords.push(vRecord);
@@ -202,9 +202,9 @@ async function createMockVaccinationCentres(save=false, numCentres=1, address = 
         let vaccinationCentre = new VaccinationCentre();
         vaccinationCentre.clinicName =  faker.company.companyName();
         if(address){
-            vaccinationCentre.address = address;
+            vaccinationCentre.address = address.id;
         } else {
-            vaccinationCentre.address = (await createMockAddresses(save, 1, true))[0];
+            vaccinationCentre.address = (await createMockAddresses(save, 1, true))[0].id;
         }
         if (save) await vaccinationCentre.save();
         vaccinationCentres.push(vaccinationCentre);
