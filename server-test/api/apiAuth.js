@@ -5,11 +5,11 @@ const chaiHttp = require("chai-http");
 const app = require("../../server");
 const USER_TYPE = require("../../server/_constants/usertypes");
 const RegisteredGeneralPublic = require("../../server/models/RegisteredGeneralPublic");
-const {createMockHealthProfessionalUsers} = require("../../server/utils/CreateMockData");
-const {createMockBusinessUsers} = require("../../server/utils/CreateMockData");
+const {createMockHealthProfessionalUsers} = require("../../server/utils/mockData");
+const {createMockBusinessUsers} = require("../../server/utils/mockData");
 const assert = require('chai').assert
 const bcrypt = require('bcryptjs');
-const {createMockRegisteredGeneralPublicUsers} = require('../../server/utils/CreateMockData')
+const {createMockRegisteredGeneralPublicUsers} = require('../../server/utils/mockData')
 // Configure chai
 chai.use(chaiHttp);
 

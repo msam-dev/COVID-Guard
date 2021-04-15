@@ -1,2 +1,2 @@
-const {createDevData} = require("./CreateMockData");
+const {createDevData} = require("./mockData");
 createDevData();
