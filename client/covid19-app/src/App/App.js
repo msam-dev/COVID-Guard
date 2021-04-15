@@ -7,6 +7,7 @@ import Navbar from '../Components/Navbar/Navbar';
 import Footer from '../Components/Footer/Footer';
 import Register from '../Screens/Register/Register';
 import Login from '../Screens/Login/Login';
+import CurrentHotspots from '../Screens/CurrentHotspots/CurrentHotspots';
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
                     <Switch>
                         <Route path={PATH.login}> <Login/> </Route>
                         <Route path={PATH.regiester}> <Register/> </Route>
+                        <Route path={PATH.currentHotspots}> <CurrentHotspots/> </Route>
                     </Switch>
                 </Router> 
             </div>
