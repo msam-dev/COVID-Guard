@@ -84,6 +84,7 @@ describe("Covid App Server API Health Professional Auth", () => {
                     "firstName": "Johnny",
                     "lastName": "Smithy",
                     "phone": "0498709723",
+                    "healthID": "5656565656565656",
                 })
                 .end((err, res) => {
                     if (res.status === 500) throw new Error(res.body.message);
