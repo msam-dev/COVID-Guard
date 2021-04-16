@@ -53,7 +53,6 @@ router.post('/login', asyncHandler(async (req, res) => {
 
 router.post('/register', asyncHandler(async (req, res) => {
     const {firstName, lastName, email, password, phone, ABN, businessName, addressLine1, addressLine2, suburb, city, state, postcode} = req.body;
-
     // Simple validation
     if (!firstName || !lastName || !email || !password || !ABN || !businessName || !addressLine1 || !suburb || !city || !state || !postcode) {
         throw new BadRequest('Please enter all fields');
@@ -78,7 +77,8 @@ router.post('/register', asyncHandler(async (req, res) => {
 
     const newBusiness = new Business({
         ABN,
-        name: businessName
+        name: businessName,
+        address: newAddress
     });
     const savedBusiness = await newBusiness.save();
     if (!savedBusiness) throw new ServerError('Something went wrong saving the user');
@@ -88,7 +88,8 @@ router.post('/register', asyncHandler(async (req, res) => {
         lastName,
         email,
         password: hash,
-        phone: phone
+        phone: phone,
+        business: newBusiness
     });
 
     const savedUser = await newUser.save();

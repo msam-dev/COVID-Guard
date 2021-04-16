@@ -15,6 +15,7 @@ describe("Covid App Server General Public Endpoints", () => {
             chai.request(app)
                 .post('/api/generalpublic/checkvaccinationisvalid')
                 .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
@@ -28,6 +29,7 @@ describe("Covid App Server General Public Endpoints", () => {
                 .post('/api/generalpublic/checkvaccinationisvalid')
                 .send({"vaccinationCode": "thisisinvalid"})
                 .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
@@ -40,11 +42,11 @@ describe("Covid App Server General Public Endpoints", () => {
             createMockVaccinationRecord(true).then((vaccinationRecords)=>
                 {
                     let vaccinationRecord = vaccinationRecords[0];
-                    vaccinationRecord.populate("patient", "firstName lastName").execPopulate().then(function () {
                         chai.request(app)
                         .post('/api/generalpublic/checkvaccinationisvalid')
                         .send({"vaccinationCode": vaccinationRecord.vaccinationCode})
                         .end((err, res) => {
+                            if (res.status === 500) throw new Error(res.body.message);
                             if (err) throw new Error(err);
                             assert.equal(res.status, 200);
                             assert.propertyVal(res.body, 'success', true);
@@ -54,7 +56,6 @@ describe("Covid App Server General Public Endpoints", () => {
                             assert.propertyVal(res.body, 'patientFirstName', vaccinationRecord.patient.firstName);
                             assert.propertyVal(res.body, 'patientLastName', vaccinationRecord.patient.lastName);
                             done();
-                        });
                     });
                 });
         });

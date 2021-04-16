@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const {autoPopulateField} = require("../utils/db");
 
 // Create Schema
 const VaccinationCentreSchema = new mongoose.Schema({
@@ -9,6 +10,7 @@ const VaccinationCentreSchema = new mongoose.Schema({
     address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address', required: true }
 });
 
+autoPopulateField(VaccinationCentreSchema, 'address');
 
 const VaccinationCentre = mongoose.model('VaccinationCentre', VaccinationCentreSchema);
 

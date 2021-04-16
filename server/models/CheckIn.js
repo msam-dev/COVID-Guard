@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const {autoPopulateField} = require("../utils/db");
 
 // Create Schema
 const CheckInSchema = new mongoose.Schema({
@@ -20,7 +21,7 @@ const CheckInSchema = new mongoose.Schema({
         enum: ['RegisteredGeneralPublic', 'GeneralPublic']
     }
 });
-
+autoPopulateField(CheckInSchema, 'user');
 
 const CheckIn = mongoose.model('CheckIn', CheckInSchema);
 
