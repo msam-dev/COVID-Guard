@@ -259,6 +259,75 @@ describe("Covid App Server API Auth", () => {
             });
         })
     });
+    describe("POST /api/businessowner/auth/register", () => {
+        it("returns error message 'Please enter all fields'", (done) => {
+            chai.request(app)
+                .post('/api/businessowner/auth/register')
+                .end((err, res) => {
+                    if (err) throw new Error(err);
+                    assert.equal(res.status, 400);
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
+                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
+                    done();
+                });
+        });
+        it("Register new business (no phone)", (done) => {
+            chai.request(app)
+                .post('/api/registeredgeneralpublic/auth/register')
+                .send({
+                    "email": "test@email.com",
+                    "password": "testPassword",
+                    "firstName": "John",
+                    "lastName": "Smith"
+                })
+                .end((err, res) => {
+                    if (err) throw new Error(err);
+                    BusinessUser.findOne({email: "test@email.com"}).then((user) =>{
+                        assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
+                        assert.propertyVal(res.body, 'userId', user.id);
+                        assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
+                        assert.property(res.body, 'token');
+                        assert.propertyVal(user, 'firstName', "John");
+                        assert.propertyVal(user, 'lastName', "Smith");
+                        assert.propertyVal(user, 'phone', undefined);
+                        bcrypt.compare("testPassword", user.password).then((v) => {
+                            assert.isTrue(v);
+                            done();
+                        });
+                    });
+                });
+        });
+        it("Register new business (with phone)", (done) => {
+            chai.request(app)
+                .post('/api/businessowner/auth/register')
+                .send({
+                    "email": "test2@email.com",
+                    "password": "testPassword2",
+                    "firstName": "Johnny",
+                    "lastName": "Smithy",
+                    "phone": "0498709723",
+                })
+                .end((err, res) => {
+                    if (err) throw new Error(err);
+                    BusinessUser.findOne({email: "test2@email.com"}).then((user) =>{
+                        assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
+                        assert.propertyVal(res.body, 'userId', user.id);
+                        assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
+                        assert.property(res.body, 'token');
+                        assert.propertyVal(user, 'firstName', "Johnny");
+                        assert.propertyVal(user, 'lastName', "Smithy");
+                        assert.propertyVal(user, 'phone', "0498709723");
+                        bcrypt.compare("testPassword2", user.password).then((v) => {
+                            assert.isTrue(v);
+                            done();
+                        });
+                    });
+                });
+        });
+    });
     describe("POST /api/businessowner/auth/changepassword", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)

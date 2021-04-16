@@ -19,7 +19,8 @@ const AddressSchema = new mongoose.Schema({
     },
     state: {
         type: String,
-        required: true
+        required: true,
+        enum: ["QLD", "NSW", "VIC", "TAS", "SA", "WA", "ACT", "NT"]
     },
     postcode: {
         type: Number,
