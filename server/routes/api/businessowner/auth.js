@@ -8,6 +8,8 @@ const userType = require("../../../_constants/usertypes");
 const {BadRequest} = require('../../../utils/errors');
 const asyncHandler = require('express-async-handler');
 const encryptPassword = require("../../../utils/encryptPassword");
+const Business = require("../../../models/Business");
+const Address = require("../../../models/Address");
 const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
 
@@ -50,10 +52,9 @@ router.post('/login', asyncHandler(async (req, res) => {
  */
 
 router.post('/register', asyncHandler(async (req, res) => {
-    const {firstName, lastName, email, password, phone} = req.body;
-
+    const {firstName, lastName, email, password, phone, ABN, businessName, addressLine1, addressLine2, suburb, city, state, postcode} = req.body;
     // Simple validation
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !lastName || !email || !password || !ABN || !businessName || !addressLine1 || !suburb || !city || !state || !postcode) {
         throw new BadRequest('Please enter all fields');
     }
 
@@ -62,18 +63,39 @@ router.post('/register', asyncHandler(async (req, res) => {
 
     const hash = await encryptPassword(password);
 
+    const newAddress = new Address({
+        addressLine1,
+        addressLine2,
+        suburb,
+        city,
+        state,
+        postcode
+    });
+
+    const savedAddress = await newAddress.save();
+    if (!savedAddress) throw new ServerError('Something went wrong saving the user');
+
+    const newBusiness = new Business({
+        ABN,
+        name: businessName,
+        address: newAddress
+    });
+    const savedBusiness = await newBusiness.save();
+    if (!savedBusiness) throw new ServerError('Something went wrong saving the user');
+
     const newUser = new BusinessUser({
         firstName,
         lastName,
         email,
         password: hash,
-        phone: phone
+        phone: phone,
+        business: newBusiness
     });
 
     const savedUser = await newUser.save();
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
-    const token = jwt.sign({id: savedUser._id, type: userType.GENERAL}, JWT_SECRET, {
+    const token = jwt.sign({id: savedUser._id, type: userType.BUSINESS}, JWT_SECRET, {
         expiresIn: 3600
     });
 
@@ -84,6 +106,7 @@ router.post('/register', asyncHandler(async (req, res) => {
         type: userType.BUSINESS
     });
 }));
+
 
 /*
 * @route   POST api/businessowner/auth/changepassword

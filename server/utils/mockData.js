@@ -9,6 +9,7 @@ const PositiveCase = require("../models/PositiveCase");
 const CheckIn = require('../models/CheckIn');
 const encryptPassword = require("./encryptPassword");
 const { parse } = require('json2csv');
+const statesMap = {"Tasmania": "TAS", "Australian Capital Territory": "ACT", "South Australia": "SA", "Western Australia": "WA", "Northern Territory": "NT", "New South Wales": "NSW", "Queensland": "QLD", "Victoria": "VIC"}
 
 // generate fake data for seeding database
 const faker = require('faker/locale/en_AU');
@@ -44,7 +45,7 @@ async function createMockAddresses(save=false, numAddresses=1, addCoordinates=fa
         // need to update this
         address.suburb = faker.address.city();
         address.city = faker.address.city();
-        address.state = faker.address.state();
+        address.state = statesMap[faker.address.state()];
         address.postcode = faker.address.zipCode();
         if(addCoordinates){
             if(coordinates){
@@ -141,8 +142,9 @@ async function createMockCheckIns(save=false, numCheckIns=1, user=null, business
             checkin.user = user.id;
             checkin.userModel = user.constructor.modelName;
         } else {
-            checkin.user = (await createMockGeneralPublicUsers(save))[0].id;
-            checkin.userModel = checkin.user.constructor.modelName;
+            let user = (await createMockGeneralPublicUsers(save))[0];
+            checkin.user = user.id;
+            checkin.userModel = user.constructor.modelName;
         }
         if(business){
             checkin.business = business.id;
@@ -165,8 +167,9 @@ async function createMockPositiveCases(save=false, numCases=1, user=null){
             pCase.user = user.id;
             pCase.userModel = user.constructor.modelName;
         } else {
-            pCase.user = (await createMockGeneralPublicUsers(save))[0].id;
-            pCase.userModel = pCase.user.constructor.modelName;
+            let user = (await createMockGeneralPublicUsers(save))[0];
+            pCase.user = user.id;
+            pCase.userModel = user.constructor.modelName;
         }
         if (save) await pCase.save();
         pCases.push(pCase);

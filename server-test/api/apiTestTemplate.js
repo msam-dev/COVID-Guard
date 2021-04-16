@@ -17,6 +17,7 @@ describe("Covid App Server API Auth", () => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/login')
                 .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.property(res.body, 'message');
@@ -29,6 +30,7 @@ describe("Covid App Server API Auth", () => {
                 .post('/api/registeredgeneralpublic/auth/login')
                 .send({"email": "test@test.com", "password": "pass"})
                 .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.property(res.body, 'message');
@@ -44,6 +46,7 @@ describe("Covid App Server API Auth", () => {
                         .post('/api/registeredgeneralpublic/auth/login')
                         .send({"email": user.email, "password": user.rawPassword})
                         .end((err, res) => {
+                            if (res.status === 500) throw new Error(res.body.message);
                             if (err) throw new Error(err);
                             assert.equal(res.status, 200);
                             assert.property(res.body, 'userId');
@@ -63,6 +66,7 @@ describe("Covid App Server API Auth", () => {
             chai.request(app)
                 .post('/api/businessowner/auth/login')
                 .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.property(res.body, 'message');
@@ -75,6 +79,7 @@ describe("Covid App Server API Auth", () => {
                 .post('/api/businessowner/auth/login')
                 .send({"email": "test@test.com", "password": "pass"})
                 .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.property(res.body, 'message');
@@ -90,6 +95,7 @@ describe("Covid App Server API Auth", () => {
                     .post('/api/businessowner/auth/login')
                     .send({"email": user.email, "password": user.rawPassword})
                     .end((err, res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
                         if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.property(res.body, 'userId');
@@ -109,6 +115,7 @@ describe("Covid App Server API Auth", () => {
             chai.request(app)
                 .post('/api/healthprofessional/auth/login')
                 .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.property(res.body, 'message');
@@ -121,6 +128,7 @@ describe("Covid App Server API Auth", () => {
                 .post('/api/healthprofessional/auth/login')
                 .send({"email": "test@test.com", "password": "pass"})
                 .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
                     if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.property(res.body, 'message');
@@ -136,6 +144,7 @@ describe("Covid App Server API Auth", () => {
                     .post('/api/healthprofessional/auth/login')
                     .send({"email": user.email, "password": user.rawPassword})
                     .end((err, res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
                         if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.property(res.body, 'userId');

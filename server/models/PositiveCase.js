@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const {autoPopulateField} = require("../utils/db");
 
 // Create Schema
 const PositiveCaseSchema = new mongoose.Schema({
@@ -21,6 +22,7 @@ const PositiveCaseSchema = new mongoose.Schema({
     }
 });
 
+autoPopulateField(PositiveCaseSchema, 'user');
 
 const PositiveCase = mongoose.model('PositiveCase', PositiveCaseSchema);
 

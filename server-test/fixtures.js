@@ -1,3 +1,4 @@
+process.env.NODE_ENV = 'testing';
 const mongoose = require("mongoose")
 const db = require("../server/db");
 
