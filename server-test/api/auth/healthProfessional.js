@@ -61,6 +61,50 @@ describe("Covid App Server API Health Professional Auth", () => {
             });
         })
     });
+    describe("POST /api/healthprofessional/auth/register", () => {
+        it("returns error message 'Please enter all fields'", (done) => {
+            chai.request(app)
+                .post('/api/healthprofessional/auth/register')
+                .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
+                    if (err) throw new Error(err);
+                    assert.equal(res.status, 400);
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
+                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
+                    done();
+                });
+        });
+        it("Registers new health professional user", (done) => {
+            chai.request(app)
+                .post('/api/healthprofessional/auth/register')
+                .send({
+                    "email": "test2@email.com",
+                    "password": "testPassword2",
+                    "firstName": "Johnny",
+                    "lastName": "Smithy",
+                    "phone": "0498709723",
+                })
+                .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
+                    if (err) throw new Error(err);
+                    assert.equal(res.status, 200);
+                    assert.propertyVal(res.body, 'success', true);
+                    assert.propertyVal(res.body, 'type', USER_TYPE.HEALTH);
+                    HealthProfessionalUser.findOne({email: "test2@email.com"}).then((user) => {
+                        assert.propertyVal(res.body, 'userId', user.id);
+                        assert.property(res.body, 'token');
+                        assert.propertyVal(user, 'firstName', "Johnny");
+                        assert.propertyVal(user, 'lastName', "Smithy");
+                        assert.propertyVal(user, 'phone', "0498709723");
+                        bcrypt.compare("testPassword2", user.password).then((v) => {
+                            assert.isTrue(v);
+                            done();
+                        });
+                    });
+                });
+        });
+    });
     describe("POST /api/healthprofessional/auth/changepassword", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
@@ -130,9 +174,9 @@ describe("Covid App Server API Health Professional Auth", () => {
                     .end((err, res) => {
                         if (res.status === 500) throw new Error(res.body.message);
                         if (err) throw new Error(err);
+                        assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
                         HealthProfessionalUser.findOne({_id: user.id}).then((changedUser) => {
-                            assert.equal(res.status, 200);
-                            assert.propertyVal(res.body, 'success', true);
                             assert.propertyVal(res.body, 'userId', user.id);
                             bcrypt.compare("newPassword", changedUser.password).then((v) => {
                                 assert.isTrue(v);
