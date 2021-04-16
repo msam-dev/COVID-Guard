@@ -85,6 +85,43 @@ router.post('/register', asyncHandler(async (req, res) => {
     });
 }));
 
+/*
+* @route   POST api/registeredgeneralpublic/auth/changepassword
+* @desc    Change password
+* @access  Private
+*/
+
+router.post('/changepassword', authMiddleware(userType.GENERAL), asyncHandler(async (req, res) => {
+    const { userId, currentPassword, newPassword, confirmPassword } = req.body;
+
+    // Simple validation
+    if (!userId || !currentPassword || !newPassword || !confirmPassword) {
+        throw new BadRequest('Please enter all fields');
+    }
+
+    if (newPassword !== confirmPassword) {
+        throw new BadRequest('Password and confirm password do not match');
+    }
+
+    // Check for existing user
+    const user = await RegisteredGeneralPublicUser.findOne({ _id: userId });
+    if (!user) throw new BadRequest('User does not exist');
+
+    const isMatchCurrent = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatchCurrent) throw new BadRequest('Current password doesn\'t match');
+
+    const hash = await encryptPassword(newPassword);
+    user.password = hash;
+
+    const savedUser = await user.save();
+
+    if (!savedUser) throw new ServerError('Something went wrong saving the user');
+    res.status(200).json({
+        success: true,
+        userId: savedUser.id,
+    });
+}));
+
 /**
  * @route   GET api/registeredgeneralpublic/auth/user
  * @desc    Check user valid

@@ -157,7 +157,7 @@ describe("Covid App Server API Auth", () => {
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
+                    assert.propertyVal(res.body, 'message', 'Password and confirm password do not match');
                     done();
                 });
         });
@@ -197,7 +197,7 @@ describe("Covid App Server API Auth", () => {
                     })
                     .end((err, res) => {
                         if (err) throw new Error(err);
-                        RegisteredGeneralPublic.findOne({id: user.id}).then((changedUser) =>{
+                        RegisteredGeneralPublic.findOne({_id: user.id}).then((changedUser) =>{
                             assert.equal(res.status, 200);
                             assert.propertyVal(res.body, 'success', true);
                             assert.propertyVal(res.body, 'userId', user.id);

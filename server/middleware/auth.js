@@ -6,12 +6,12 @@ module.exports = (usertype) => {
            return (req, res, next) => {
                // skip this for the moment
                next();
+               return;
                 const token = req.header('x-auth-token');
 
                 // Check for token
                 if (!token)
                     return res.status(401).json({msg: 'No token, authorization denied'});
-
                 try {
                     // Verify token
                     // Add user from payload
