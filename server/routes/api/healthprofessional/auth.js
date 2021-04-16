@@ -50,10 +50,10 @@ router.post('/login', asyncHandler(async (req, res) => {
  */
 
 router.post('/register', asyncHandler(async (req, res) => {
-    const { firstName, lastName, email, password, phone } = req.body;
+    const { firstName, lastName, email, password, phone, healthID } = req.body;
 
     // Simple validation
-    if (!firstName || !lastName || !email || !password) {
+    if (!firstName || !lastName || !email || !password || !healthID) {
         throw new BadRequest('Please enter all fields');
     }
 
@@ -67,13 +67,14 @@ router.post('/register', asyncHandler(async (req, res) => {
         lastName,
         email,
         password: hash,
-        phone: phone
+        phone: phone,
+        healthID
     });
 
     const savedUser = await newUser.save();
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
-    const token = jwt.sign({ id: savedUser._id, type: userType.GENERAL }, JWT_SECRET, {
+    const token = jwt.sign({ id: savedUser._id, type: userType.HEALTH }, JWT_SECRET, {
         expiresIn: 3600
     });
 
@@ -81,7 +82,7 @@ router.post('/register', asyncHandler(async (req, res) => {
         success: true,
         token,
         userId: savedUser._id,
-        type: userType.GENERAL
+        type: userType.HEALTH
     });
 }));
 

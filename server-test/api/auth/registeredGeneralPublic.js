@@ -88,12 +88,12 @@ describe("Covid App Server API Registered General Public Auth", () => {
                 .end((err, res) => {
                     if (res.status === 500) throw new Error(res.body.message);
                     if (err) throw new Error(err);
+                    assert.equal(res.status, 200);
+                    assert.propertyVal(res.body, 'success', true);
+                    assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
+                    assert.property(res.body, 'token');
                     RegisteredGeneralPublic.findOne({email: "test2@email.com"}).then((user) => {
-                        assert.equal(res.status, 200);
-                        assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'userId', user.id);
-                        assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
-                        assert.property(res.body, 'token');
                         assert.propertyVal(user, 'firstName', "Johnny");
                         assert.propertyVal(user, 'lastName', "Smithy");
                         assert.propertyVal(user, 'phone', "0498709723");
@@ -174,9 +174,9 @@ describe("Covid App Server API Registered General Public Auth", () => {
                     .end((err, res) => {
                         if (res.status === 500) throw new Error(res.body.message);
                         if (err) throw new Error(err);
+                        assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
                         RegisteredGeneralPublic.findOne({_id: user.id}).then((changedUser) => {
-                            assert.equal(res.status, 200);
-                            assert.propertyVal(res.body, 'success', true);
                             assert.propertyVal(res.body, 'userId', user.id);
                             bcrypt.compare("newPassword", changedUser.password).then((v) => {
                                 assert.isTrue(v);
