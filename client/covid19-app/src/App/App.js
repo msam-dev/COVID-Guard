@@ -8,6 +8,7 @@ import Footer from '../Components/Footer/Footer';
 import Register from '../Screens/Register/Register';
 import Login from '../Screens/Login/Login';
 import CurrentHotspots from '../Screens/CurrentHotspots/CurrentHotspots';
+import VaccineCenters from '../Screens/VaccineCenters/VaccineCenters';
 
 
 function App() {
@@ -21,9 +22,10 @@ function App() {
             <div id="body-wrapper">
                 <Router history={history}>
                     <Switch>
-                        <Route path={PATH.login}> <Login/> </Route>
-                        <Route path={PATH.regiester}> <Register/> </Route>
-                        <Route path={PATH.currentHotspots}> <CurrentHotspots/> </Route>
+                        <Route path={PATH.login}><Login /></Route>
+                        <Route path={PATH.regiester}><Register /></Route>
+                        <Route path={PATH.currentHotspots}><CurrentHotspots /></Route>
+                        <Route path={PATH.vaccineCenters}><VaccineCenters /></Route>
                     </Switch>
                 </Router> 
             </div>

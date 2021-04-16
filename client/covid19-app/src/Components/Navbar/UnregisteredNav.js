@@ -18,10 +18,10 @@ const UnregisteredNav = () => {
                     <div className='navbar-menuitem-text'>Location Sign In</div>
                 </Item>
                 <Item>
-                    <div className='navbar-menuitem-text'>Vaccine Center</div>
+                    <div onClick={() => {history.push(PATH.vaccineCenters)}} className='navbar-menuitem-text'>Vaccine Center</div>
                 </Item>
                 <Item>
-                    <div className='navbar-menuitem-text'>Current Hotspots</div>
+                    <div onClick={() => {history.push(PATH.currentHotspots)}} className='navbar-menuitem-text'>Current Hotspots</div>
                 </Item>
                 <Item>
                     <div className='navbar-menuitem-text'>Check Status</div>
