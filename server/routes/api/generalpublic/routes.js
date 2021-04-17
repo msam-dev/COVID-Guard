@@ -5,6 +5,8 @@ const PositiveCase = require("../../../models/PositiveCase");
 const CheckIn = require("../../../models/CheckIn");
 const {BadRequest} = require('../../../utils/errors');
 const moment = require("moment");
+const Business = require("../../../models/Business");
+const GeneralPublic = require("../../../models/GeneralPublic");
 
 // check vaccination code is valid and return
 // endpoint /checkvaccinationisvalid
@@ -12,8 +14,8 @@ const moment = require("moment");
 
 
 /**
- * @route   POST /api/generalpublic/virusbreakouts
- * @desc    gets current virus breakouts
+ * @route   POST /api/generalpublic/currenthotspots
+ * @desc    gets current virus hotspots
  * @access  Public
  */
 
@@ -51,6 +53,36 @@ router.get('/currenthotspots', asyncHandler(async (req, res) => {
     res.status(200).json({
         success: true,
         hotspots
+    });
+}));
+
+/**
+ * @route   POST /api/generalpublic/checkin
+ * @desc    performs a checkin for a general public user
+ * @access  Public
+ */
+
+router.post('/checkin', asyncHandler(async (req, res) => {
+    const { firstName, lastName, email, phone, venueCode } = req.body;
+
+    // Simple validation
+    if (!firstName || !lastName || !email || !venueCode) {
+        throw new BadRequest('Please enter all fields');
+    }
+
+    // Check for existing user
+    const business = await Business.findOne({ code: venueCode });
+    if (!business) throw new BadRequest('Business venue does not exist');
+
+    let generalPublic = new GeneralPublic({firstName, lastName,email, phone});
+    let savedGeneralPublic = await generalPublic.save();
+
+    let checkIn = new CheckIn({user: savedGeneralPublic, userModel: "GeneralPublic", business: business});
+    let savedCheckIn = await checkIn.save();
+
+    res.status(200).json({
+        success: true,
+        venueCode: savedCheckIn.business.code
     });
 }));
 
