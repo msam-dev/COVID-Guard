@@ -12,9 +12,9 @@ const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
 
 /**
- * @route   POST api/login
+ * @route   POST api/healthprofessional/auth/login
  * @desc    logging in user
- * @access  Private
+ * @access  Public
  */
 
 router.post('/login', asyncHandler(async (req, res) => {
