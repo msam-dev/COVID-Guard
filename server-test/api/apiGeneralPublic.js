@@ -9,6 +9,7 @@ const {createMockCheckIns} = require("../../server/utils/mockData");
 const {createMockVaccinationRecord} = require("../../server/utils/mockData");
 const assert = require('chai').assert
 const moment = require('moment');
+const {createMockVaccinationCentres} = require("../../server/utils/mockData");
 const {createMockBusinesses} = require("../../server/utils/mockData");
 const {createMockBusinessUsers} = require("../../server/utils/mockData");
 // Configure chai
@@ -152,6 +153,29 @@ describe("Covid App Server General Public Endpoints", () => {
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'venueCode', business.code);
+                        done();
+                    });
+            });
+        });
+    });
+    describe("GET /api/generalpublic/vaccinationcentres", () => {
+        it("returns an array of vaccine centres", (done) => {
+            createMockVaccinationCentres(true, 50).then((vaccinationCentres)=>
+            {
+                chai.request(app)
+                    .get('/api/generalpublic/vaccinationcentres')
+                    .send()
+                    .end((err, res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        if (err) throw new Error(err);
+                        assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
+                        assert.lengthOf(res.body.vaccinationCentres, vaccinationCentres.length);
+                        for(let vaccineCentre of res.body.vaccinationCentres){
+                            assert.property(vaccineCentre, 'clinicName');
+                            // check other properties exist
+
+                        }
                         done();
                     });
             });

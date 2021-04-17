@@ -7,7 +7,11 @@ const VaccinationCentreSchema = new mongoose.Schema({
         type : String,
         required: true
     },
-    address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address', required: true }
+    address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address', required: true },
+    phone: {
+        type : String,
+        required: true
+    }
 });
 
 autoPopulateField(VaccinationCentreSchema, 'address');

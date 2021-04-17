@@ -11,11 +11,6 @@ const moment = require("moment");
 const Business = require("../../../models/Business");
 const GeneralPublic = require("../../../models/GeneralPublic");
 
-// check vaccination code is valid and return
-// endpoint /checkvaccinationisvalid
-// return {success:true, vaccinationType, vaccinationStatus, dateAdministered, patientFirstName, patientLastName}
-
-
 /**
  * @route   POST /api/generalpublic/currenthotspots
  * @desc    gets current virus hotspots
@@ -89,6 +84,12 @@ router.post('/checkin', asyncHandler(async (req, res) => {
     });
 }));
 
+/**
+ * @route   POST /api/generalpublic/checkvaccinationisvalid
+ * @desc    takes a vaccinationcode and returns if valid and other info
+ * @access  Public
+ */
+
 router.post('/checkvaccinationisvalid', asyncHandler(async (req, res) => {
     const { vaccinationCode } = req.body;
 
@@ -116,6 +117,21 @@ router.post('/checkvaccinationisvalid', asyncHandler(async (req, res) => {
         dateAdministered,
         patientFirstName,
         patientLastName
+    });
+}));
+
+/**
+ * @route   POST /api/generalpublic/vaccinationcentres
+ * @desc    returns an array of vaccine centres
+ * @access  Public
+ */
+
+router.get('/vaccinationcentres', asyncHandler(async (req, res) => {
+    const vaccinationCentres = [];
+    // add rest of logic
+    res.status(200).json({
+        success: true,
+        vaccinationCentres
     });
 }));
 

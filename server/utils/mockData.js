@@ -215,6 +215,7 @@ async function createMockVaccinationCentres(save=false, numCentres=1, address = 
     for(let i=0; i < numCentres; i++) {
         let vaccinationCentre = new VaccinationCentre();
         vaccinationCentre.clinicName =  faker.company.companyName();
+        vaccinationCentre.phone = faker.phone.phoneNumber("0#########");
         if(address){
             vaccinationCentre.address = address;
         } else {
