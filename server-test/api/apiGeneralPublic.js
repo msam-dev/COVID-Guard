@@ -9,6 +9,8 @@ const {createMockCheckIns} = require("../../server/utils/mockData");
 const {createMockVaccinationRecord} = require("../../server/utils/mockData");
 const assert = require('chai').assert
 const moment = require('moment');
+const {createMockBusinesses} = require("../../server/utils/mockData");
+const {createMockBusinessUsers} = require("../../server/utils/mockData");
 // Configure chai
 chai.use(chaiHttp);
 
@@ -95,6 +97,64 @@ describe("Covid App Server General Public Endpoints", () => {
                         if (hotspot.dateMarked < moment(testDate).subtract(14, 'days').toDate()) assert.fail("Test date must be after dateMarked");
                     }
                 });
+        });
+    });
+    describe("POST /api/generalpublic/checkin", () => {
+        it("returns error message 'Please enter all fields'", (done) => {
+            chai.request(app)
+                .post('/api/generalpublic/checkin')
+                .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
+                    if (err) throw new Error(err);
+                    assert.equal(res.status, 400);
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
+                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
+                    done();
+                });
+        });
+        it("it returns error message 'Business venue does not exist'", (done) => {
+            chai.request(app)
+                .post('/api/generalpublic/checkin')
+                .send({
+                    venueCode: "thisisinvalid",
+                    firstName: "Test",
+                    lastName: "Subject",
+                    email: "testemail@emailer.com",
+                    phone: "0426787724"
+                })
+                .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
+                    if (err) throw new Error(err);
+                    assert.equal(res.status, 400);
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
+                    assert.propertyVal(res.body, 'message', 'Business venue does not exist');
+                    done();
+                });
+        });
+        it("returns valid checkin", (done) => {
+            createMockBusinesses(true).then((businesses)=>
+            {
+                let business = businesses[0];
+                chai.request(app)
+                    .post('/api/generalpublic/checkin')
+                    .send({
+                        venueCode: business.code,
+                        firstName: "Test",
+                        lastName: "Subject",
+                        email:"testemail@emailer.com",
+                        phone: "0426787724"
+                    })
+                    .end((err, res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        if (err) throw new Error(err);
+                        assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
+                        assert.propertyVal(res.body, 'venueCode', business.code);
+                        done();
+                    });
+            });
         });
     });
 });

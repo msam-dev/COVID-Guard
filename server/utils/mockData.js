@@ -18,6 +18,7 @@ const mongoose = require("mongoose");
 const fs = require("fs");
 const VaccinationCentre = require("../models/VaccinationCentre");
 const Coordinates = require("../models/Coordinates");
+const USER_TYPE = require("../_constants/usertypes");
 faker.seed(0);
 
 async function createMockRegisteredGeneralPublicUsers(save=false, numUsers=1){
@@ -133,7 +134,7 @@ async function createMockGeneralPublicUsers(save=false, numUsers=1){
     return users;
 }
 
-async function createMockCheckIns(save=false, numCheckIns=1, user=null, business=null){
+async function createMockCheckIns(save=false, numCheckIns=1, user=null, business=null, userType=USER_TYPE.UNREGISTERED){
     let checkins = [];
     for(let i=0; i < numCheckIns; i++) {
         let checkin = new CheckIn();
@@ -142,7 +143,12 @@ async function createMockCheckIns(save=false, numCheckIns=1, user=null, business
             checkin.user = user;
             checkin.userModel = user.constructor.modelName;
         } else {
-            let user = (await createMockGeneralPublicUsers(save))[0];
+            let user;
+            if(userType == USER_TYPE.GENERAL){
+                user = (await createMockRegisteredGeneralPublicUsers(save))[0];
+            } else {
+                user = (await createMockGeneralPublicUsers(save))[0];
+            }
             checkin.user = user;
             checkin.userModel = user.constructor.modelName;
         }
@@ -158,7 +164,7 @@ async function createMockCheckIns(save=false, numCheckIns=1, user=null, business
     return checkins;
 }
 
-async function createMockPositiveCases(save=false, numCases=1, user=null){
+async function createMockPositiveCases(save=false, numCases=1, user=null, userType=USER_TYPE.UNREGISTERED){
     let pCases = [];
     for(let i=0; i < numCases; i++) {
         let pCase = new PositiveCase();
@@ -167,7 +173,12 @@ async function createMockPositiveCases(save=false, numCases=1, user=null){
             pCase.user = user;
             pCase.userModel = user.constructor.modelName;
         } else {
-            let user = (await createMockGeneralPublicUsers(save))[0];
+            let user;
+            if(userType === USER_TYPE.GENERAL){
+                user = (await createMockRegisteredGeneralPublicUsers(save))[0];
+            } else {
+                user = (await createMockGeneralPublicUsers(save))[0];
+            }
             pCase.user = user;
             pCase.userModel = user.constructor.modelName;
         }
