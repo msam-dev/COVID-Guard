@@ -5,6 +5,7 @@ const registeredGeneralPublicAuthRoutes = require('./routes/api/registeredgenera
 const registeredBusinessOwnerAuthRoutes = require('./routes/api/businessowner/auth');
 const registeredHealthProfessionalAuthRoutes = require('./routes/api/healthprofessional/auth');
 const generalPublicRoutes = require('./routes/api/generalpublic/routes');
+const registeredGeneralPublicRoutes = require('./routes/api/registeredgeneralpublic/routes');
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -21,6 +22,7 @@ app.use(express.static(path.resolve(__dirname, '..', 'client', 'covid19-app', 'b
 
 // Answer API requests.
 app.use('/api/registeredgeneralpublic/auth', registeredGeneralPublicAuthRoutes);
+app.use('/api/registeredgeneralpublic', registeredGeneralPublicRoutes);
 app.use('/api/businessowner/auth', registeredBusinessOwnerAuthRoutes);
 app.use('/api/healthprofessional/auth', registeredHealthProfessionalAuthRoutes);
 app.use('/api/generalpublic', generalPublicRoutes);
