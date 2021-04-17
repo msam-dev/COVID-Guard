@@ -101,12 +101,12 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                 .end((err, res) => {
                     if (res.status === 500) throw new Error(res.body.message);
                     if (err) throw new Error(err);
+                    assert.equal(res.status, 200);
+                    assert.propertyVal(res.body, 'success', true);
+                    assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
+                    assert.property(res.body, 'token');
                     BusinessUser.findOne({email: userData.email}).then((user) => {
-                        assert.equal(res.status, 200);
-                        assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'userId', user.id);
-                        assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
-                        assert.property(res.body, 'token');
                         assert.propertyVal(user, 'firstName', userData.firstName);
                         assert.propertyVal(user, 'lastName', userData.lastName);
                         assert.propertyVal(user, 'phone', userData.phone);
@@ -196,9 +196,9 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                     .end((err, res) => {
                         if (res.status === 500) throw new Error(res.body.message);
                         if (err) throw new Error(err);
+                        assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
                         BusinessUser.findOne({_id: user.id}).then((changedUser) => {
-                            assert.equal(res.status, 200);
-                            assert.propertyVal(res.body, 'success', true);
                             assert.propertyVal(res.body, 'userId', user.id);
                             bcrypt.compare("newPassword", changedUser.password).then((v) => {
                                 assert.isTrue(v);
