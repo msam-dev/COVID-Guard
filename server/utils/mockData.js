@@ -185,7 +185,7 @@ async function createMockVaccinationRecord(save=false, numRecords=1, user=null){
     let vRecords = [];
     for(let i=0; i < numRecords; i++) {
         let vRecord = new VaccinationRecord();
-        vRecord.dateAdministered = faker.date.recent();
+        vRecord.dateAdministered = faker.date.recent(60);
         vRecord.vaccinationType = randomChoice(["Novavax", "AstraZeneca", "Pfizer"]);
         vRecord.vaccinationStatus = randomChoice(["Partial", "Complete"]);
         if(user){
