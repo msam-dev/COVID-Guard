@@ -57,7 +57,7 @@ describe("Covid App Server General Public Endpoints", () => {
                             assert.propertyVal(res.body, 'success', true);
                             assert.propertyVal(res.body, 'vaccinationType', vaccinationRecord.vaccinationType);
                             assert.propertyVal(res.body, 'vaccinationStatus', vaccinationRecord.vaccinationStatus);
-                            assert.propertyVal(res.body, 'dateAdministered', vaccinationRecord.dateAdministered);
+                            if ((new Date(res.body.dateAdministered)).getTime() !== vaccinationRecord.dateAdministered.getTime()) assert.fail("dateAdministered should match");
                             assert.propertyVal(res.body, 'patientFirstName', vaccinationRecord.patient.firstName);
                             assert.propertyVal(res.body, 'patientLastName', vaccinationRecord.patient.lastName);
                             done();
