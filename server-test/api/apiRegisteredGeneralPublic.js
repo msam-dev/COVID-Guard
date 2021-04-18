@@ -106,6 +106,10 @@ describe("Covid App Server Registered General Public Endpoints", () => {
                 })
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
+            assert.propertyVal(res.body, "userId", user.id);
+            assert.propertyVal(res.body, "firstName", user.firstName);
+            assert.propertyVal(res.body, "lastName", user.lastName);
+            assert.propertyVal(res.body, "phone", user.phone);
         });
     });
     describe("POST /api/registeredgeneralpublic/profile", () => {
