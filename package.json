@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
+    "cheerio": "^1.0.0-rc.6",
     "config": "^3.3.6",
     "express": "^4.16.4",
     "express-async-handler": "^1.1.4",
@@ -32,7 +33,9 @@
     "moment": "^2.29.1",
     "mongoose": "^5.11.15",
     "mongoose-extend-schema": "^1.0.0",
+    "puppeteer": "^8.0.0",
     "request": "^2.88.2",
+    "request-promise": "^4.2.6",
     "uuid": "^8.3.2"
   }
 }
