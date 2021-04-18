@@ -123,7 +123,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/changepassword')
                 .send({
-                    "userId": "23242fdsfjsdjsfdsf",
+                    "userId": "41224d776a326fb40f000001",
                     "currentPassword": "oldPassword",
                     "newPassword": "newPassword",
                     "confirmPassword": "newPasswordDifferent",

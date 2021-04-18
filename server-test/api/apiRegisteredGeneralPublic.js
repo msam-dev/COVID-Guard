@@ -35,7 +35,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
                 .post('/api/registeredgeneralpublic/checkin')
                 .send({
                     venueCode: "thisisinvalid",
-                    userId: "userId"
+                    userId: "41224d776a326fb40f000001"
                 })
                 .end((err, res) => {
                     if (res.status === 500) throw new Error(res.body.message);
@@ -69,4 +69,47 @@ describe("Covid App Server Registered General Public Endpoints", () => {
                 });
             });
         });
+    describe("GET /api/registeredgeneralpublic/profile", () => {
+        it("returns error message 'Please enter all fields'", (done) => {
+            chai.request(app)
+                .get('/api/registeredgeneralpublic/profile')
+                .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
+                    if (err) throw new Error(err);
+                    assert.equal(res.status, 400);
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
+                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
+                    done();
+                });
+        });
+        it("it returns error message 'User does not exist'", (done) => {
+            chai.request(app)
+                .get('/api/registeredgeneralpublic/profile')
+                .send({
+                    userId: "41224d776a326fb40f000001"
+                })
+                .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
+                    if (err) throw new Error(err);
+                    assert.equal(res.status, 400);
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
+                    assert.propertyVal(res.body, 'message', 'User does not exist');
+                    done();
+                });
+        });
+        it("returns user data", async () => {
+            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let user = users[0];
+
+            const res = await chai.request(app)
+                .get('/api/registeredgeneralpublic/profile')
+                .send({
+                    userId: user.id
+                })
+            assert.equal(res.status, 200);
+            assert.propertyVal(res.body, 'success', true);
+        });
+    });
     });

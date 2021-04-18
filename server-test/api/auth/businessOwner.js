@@ -145,7 +145,7 @@ describe("Covid App Server API BusinessOwner Auth", () => {
             chai.request(app)
                 .post('/api/businessowner/auth/changepassword')
                 .send({
-                    "userId": "23242fdsfjsdjsfdsf",
+                    "userId": "41224d776a326fb40f000001",
                     "currentPassword": "oldPassword",
                     "newPassword": "newPassword",
                     "confirmPassword": "newPasswordDifferent",

@@ -8,6 +8,7 @@ const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
 const encryptPassword = require("../../../utils/encryptPassword");
 const bcrypt = require('bcryptjs');
+const mongoose = require("mongoose");
 const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
 
@@ -103,8 +104,11 @@ router.post('/changepassword', authMiddleware(userType.GENERAL), asyncHandler(as
         throw new BadRequest('Password and confirm password do not match');
     }
 
+    // check id is valid
+    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
+
     // Check for existing user
-    const user = await RegisteredGeneralPublicUser.findOne({ _id: userId });
+    const user = await RegisteredGeneralPublicUser.findById({ userId });
     if (!user) throw new BadRequest('User does not exist');
 
     const isMatchCurrent = await bcrypt.compare(currentPassword, user.password);
@@ -129,6 +133,9 @@ router.post('/changepassword', authMiddleware(userType.GENERAL), asyncHandler(as
  */
 
 router.get('/user', authMiddleware(userType.GENERAL), asyncHandler(async (req, res) => {
+    // check id is valid
+    if(!mongoose.Types.ObjectId.isValid(req.userId)) throw new BadRequest('UserId is invalid');
+
     const user = await RegisteredGeneralPublicUser.findById(req.userId).select('-password');
     if (!user) throw new Unauthorized('User does not exist');
     res.json({id: user.id, type: userType.GENERAL});
