@@ -12,6 +12,7 @@ const Business = require("../../../models/Business");
 const GeneralPublic = require("../../../models/GeneralPublic");
 const rp = require('request-promise');
 const $ = require('cheerio');
+const {convertToNumber} = require("../../../utils/numbers");
 
 /**
  * @route   POST /api/generalpublic/currenthotspots
@@ -19,8 +20,7 @@ const $ = require('cheerio');
  * @access  Public
  */
 
-router.get('/currenthotspots', asyncHandler(async (req, res) => {
-    // do it the easiest way first then try aggregate
+async function getPositiveBusinesses(){
     let positiveCases = await PositiveCase.find();
     let positiveCheckInsAll = [];
     for(let positiveCase of positiveCases){
@@ -35,6 +35,18 @@ router.get('/currenthotspots', asyncHandler(async (req, res) => {
             positiveBusinesses[positiveCheckIn.business.id] = positiveCheckIn;
         }
     }
+    return positiveBusinesses;
+}
+
+router.get('/currenthotspots', asyncHandler(async (req, res) => {
+    // do it the easiest way first then try aggregate
+    let positiveCases = await PositiveCase.find();
+    let positiveCheckInsAll = [];
+    for(let positiveCase of positiveCases){
+        let positiveCheckIns = await CheckIn.find({user: positiveCase.user, date: {$gt: moment().subtract(14, 'days').toDate()}});
+        positiveCheckInsAll = positiveCheckInsAll.concat(positiveCheckIns);
+    }
+    let positiveBusinesses = await getPositiveBusinesses();
     let hotspots = [];
     Object.keys(positiveBusinesses).map(function(key, index) {
         let business = positiveBusinesses[key].business;
@@ -142,9 +154,6 @@ router.get('/vaccinationcentres', asyncHandler(async (req, res) => {
  * @desc    returns an object of stats
  * @access  Public
  */
-function convertToNumber(str) {
-    return Number(str.replace(/,/g, ''))
-}
 
 function dailySummary(html, category){
     let cat = matchText($(html).find('table.DAILY-SUMMARY td.CATEGORY a'), category).parent().parent();
@@ -159,6 +168,7 @@ function matchText(selector, text){
         return $(this).text().trim() === text;
     });
 }
+
 router.get('/homepagestats', asyncHandler(async (req, res) => {
     const covidSummaryUrl = 'https://covidlive.com.au/australia';
 
@@ -172,8 +182,8 @@ router.get('/homepagestats', asyncHandler(async (req, res) => {
     covidSummary["totalOverseasCasesLast24Hours"] = dailySummary(covidSummaryHtml, "Overseas").net();
     covidSummary["totalLocalCasesLast24Hours"] = dailySummary(covidSummaryHtml, "New Cases").total() - dailySummary(covidSummaryHtml, "Overseas").net();
     covidSummary["totalCases"] = dailySummary(covidSummaryHtml, "Cases").total();
-    covidSummary["totalCheckins"] = 0;
-    covidSummary["totalHotspots"] = 0;
+    covidSummary["totalCheckins"] = await CheckIn.countDocuments();
+    covidSummary["totalHotspots"] = Object.keys(await getPositiveBusinesses()).length;
 
     const vaccinationSummaryUrl = 'https://covidlive.com.au/report/vaccinations';
     const vaccinationSummaryHtml = await rp(vaccinationSummaryUrl)
@@ -199,6 +209,7 @@ router.get('/homepagestats', asyncHandler(async (req, res) => {
         "covidSummary": covidSummary,
         "vaccinationSummary": vaccinationSummary
     };
+
     // add rest of logic
     res.status(200).json({
         success: true,
