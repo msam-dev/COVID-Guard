@@ -181,4 +181,21 @@ describe("Covid App Server General Public Endpoints", () => {
             });
         });
     });
+    describe("GET /api/generalpublic/homepagestats", () => {
+        it("returns homepage stats object", (done) => {
+            createMockCheckIns(true, 50).then((checkins)=>
+            {
+                chai.request(app)
+                    .get('/api/generalpublic/homepagestats')
+                    .send()
+                    .end((err, res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        if (err) throw new Error(err);
+                        assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
+                        done();
+                    });
+            });
+        });
+    });
 });
