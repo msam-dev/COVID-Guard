@@ -92,7 +92,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
                     assert.property(res.body, 'token');
-                    RegisteredGeneralPublic.findOne({email: "test2@email.com"}).then((user) => {
+                    RegisteredGeneralPublic.findOne({email: "test2@email.com"}).select("+password").then((user) => {
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(user, 'firstName', "Johnny");
                         assert.propertyVal(user, 'lastName', "Smithy");
@@ -123,7 +123,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/changepassword')
                 .send({
-                    "userId": "23242fdsfjsdjsfdsf",
+                    "userId": "41224d776a326fb40f000001",
                     "currentPassword": "oldPassword",
                     "newPassword": "newPassword",
                     "confirmPassword": "newPasswordDifferent",
@@ -176,7 +176,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
-                        RegisteredGeneralPublic.findOne({_id: user.id}).then((changedUser) => {
+                        RegisteredGeneralPublic.findById(user.id).select("+password").then((changedUser) => {
                             assert.propertyVal(res.body, 'userId', user.id);
                             bcrypt.compare("newPassword", changedUser.password).then((v) => {
                                 assert.isTrue(v);

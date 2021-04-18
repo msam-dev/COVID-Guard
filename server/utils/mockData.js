@@ -7,7 +7,7 @@ const GeneralPublicUser = require('../models/GeneralPublic');
 const VaccinationRecord = require('../models/VaccinationRecord');
 const PositiveCase = require("../models/PositiveCase");
 const CheckIn = require('../models/CheckIn');
-const encryptPassword = require("./encryptPassword");
+const {encryptPassword} = require("./general");
 const { parse } = require('json2csv');
 const statesMap = {"Tasmania": "TAS", "Australian Capital Territory": "ACT", "South Australia": "SA", "Western Australia": "WA", "Northern Territory": "NT", "New South Wales": "NSW", "Queensland": "QLD", "Victoria": "VIC"}
 

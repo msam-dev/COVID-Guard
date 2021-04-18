@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const {autoPopulateField} = require("../utils/db");
-const {generateBusinessCode} = require("../utils/generateBusinessCode");
+const {generateBusinessCode} = require("../utils/general");
 
 // Create Schema
 const BusinessSchema = new mongoose.Schema({

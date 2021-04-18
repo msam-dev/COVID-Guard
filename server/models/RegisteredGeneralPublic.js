@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const extendSchema = require('mongoose-extend-schema');
+const {extendSchema} = require('../utils/db');
 const registeredUserSchema = require('./RegisteredUser');
 const userTypes = require('../_constants/usertypes');
 
@@ -10,6 +10,7 @@ const RegisteredGeneralPublicSchema = extendSchema(registeredUserSchema, {
 RegisteredGeneralPublicSchema.virtual('type').get(function () {
     return userTypes.GENERAL;
 });
+
 
 const RegisteredGeneralPublic = mongoose.model('RegisteredGeneralPublic', RegisteredGeneralPublicSchema);
 
