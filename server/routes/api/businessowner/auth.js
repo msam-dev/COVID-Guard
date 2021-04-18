@@ -32,7 +32,7 @@ router.post('/login', asyncHandler(async (req, res) => {
     const user = await BusinessUser.findOne({email}).select("+password");
     if (!user) throw new BadRequest('User does not exist');
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) throw new BadRequest('Invalid credentials');
 
     const token = jwt.sign({id: user._id, type: userType.BUSINESS}, JWT_SECRET, {expiresIn: 3600});
