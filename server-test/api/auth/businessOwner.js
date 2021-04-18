@@ -4,14 +4,10 @@ const chai = require("chai");
 const chaiHttp = require("chai-http");
 const app = require("../../../server");
 const USER_TYPE = require("../../../server/_constants/usertypes");
-const RegisteredGeneralPublic = require("../../../server/models/RegisteredGeneralPublic");
-const {createMockHealthProfessionalUsers} = require("../../../server/utils/mockData");
 const {createMockBusinessUsers} = require("../../../server/utils/mockData");
 const assert = require('chai').assert
 const bcrypt = require('bcryptjs');
 const BusinessUser = require("../../../server/models/BusinessUser");
-const HealthProfessionalUser = require("../../../server/models/HealthProfessional");
-const {createMockRegisteredGeneralPublicUsers} = require('../../../server/utils/mockData')
 // Configure chai
 chai.use(chaiHttp);
 
@@ -105,7 +101,7 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
                     assert.property(res.body, 'token');
-                    BusinessUser.findOne({email: userData.email}).then((user) => {
+                    BusinessUser.findOne({email: userData.email}).select("+password").then((user) => {
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(user, 'firstName', userData.firstName);
                         assert.propertyVal(user, 'lastName', userData.lastName);
@@ -125,7 +121,6 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                     });
                 });
         });
-        ;
     });
     describe("POST /api/businessowner/auth/changepassword", () => {
         it("returns error message 'Please enter all fields'", (done) => {
@@ -198,7 +193,7 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
-                        BusinessUser.findOne({_id: user.id}).then((changedUser) => {
+                        BusinessUser.findById(user.id).select("+password").then((changedUser) => {
                             assert.propertyVal(res.body, 'userId', user.id);
                             bcrypt.compare("newPassword", changedUser.password).then((v) => {
                                 assert.isTrue(v);

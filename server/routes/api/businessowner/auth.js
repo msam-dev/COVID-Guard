@@ -29,7 +29,7 @@ router.post('/login', asyncHandler(async (req, res) => {
     }
 
     // Check for existing user
-    const user = await BusinessUser.findOne({email});
+    const user = await BusinessUser.findOne({email}).select("+password");
     if (!user) throw new BadRequest('User does not exist');
 
     const isMatch = await bcrypt.compare(password, user.password);
@@ -131,14 +131,13 @@ router.post('/changepassword', authMiddleware(userType.BUSINESS), asyncHandler(a
     if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
 
     // Check for existing user
-    const user = await BusinessUser.findById(userId);
+    const user = await BusinessUser.findById(userId).select("+password");
     if (!user) throw new BadRequest('User does not exist');
 
     const isMatchCurrent = await bcrypt.compare(currentPassword, user.password);
     if (!isMatchCurrent) throw new BadRequest('Current password doesn\'t match');
 
-    const hash = await encryptPassword(newPassword);
-    user.password = hash;
+    user.password = await encryptPassword(newPassword);
 
     const savedUser = await user.save();
 
@@ -159,7 +158,7 @@ router.get('/user', authMiddleware(userType.BUSINESS), asyncHandler(async (req, 
     // check id is valid
     if(!mongoose.Types.ObjectId.isValid(req.userId)) throw new BadRequest('UserId is invalid');
 
-    const user = await BusinessUser.findById(req.userId).select('-password');
+    const user = await BusinessUser.findById(req.userId);
     if (!user) throw new Unauthorized('User does not exist');
     res.json({id: user.id, type: userType.BUSINESS});
 }));

@@ -11,6 +11,7 @@ RegisteredGeneralPublicSchema.virtual('type').get(function () {
     return userTypes.GENERAL;
 });
 
+
 const RegisteredGeneralPublic = mongoose.model('RegisteredGeneralPublic', RegisteredGeneralPublicSchema);
 
 module.exports = RegisteredGeneralPublic;

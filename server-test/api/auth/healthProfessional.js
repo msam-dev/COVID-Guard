@@ -92,7 +92,7 @@ describe("Covid App Server API Health Professional Auth", () => {
                     assert.equal(res.status, 200);
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'type', USER_TYPE.HEALTH);
-                    HealthProfessionalUser.findOne({email: "test2@email.com"}).then((user) => {
+                    HealthProfessionalUser.findOne({email: "test2@email.com"}).select("+password").then((user) => {
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.property(res.body, 'token');
                         assert.propertyVal(user, 'firstName', "Johnny");
@@ -177,7 +177,7 @@ describe("Covid App Server API Health Professional Auth", () => {
                         if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
-                        HealthProfessionalUser.findOne({_id: user.id}).then((changedUser) => {
+                        HealthProfessionalUser.findById(user.id).select("+password").then((changedUser) => {
                             assert.propertyVal(res.body, 'userId', user.id);
                             bcrypt.compare("newPassword", changedUser.password).then((v) => {
                                 assert.isTrue(v);

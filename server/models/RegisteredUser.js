@@ -5,7 +5,8 @@ const userSchema = require('./User');
 const RegisteredUserSchema = extendSchema(userSchema, {
     password: {
         type: String,
-        required: true
+        required: true,
+        select: false
     }
 })
 // this is not persisted and is just used for testing

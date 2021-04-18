@@ -13,7 +13,7 @@ describe('RegisteredGeneralPublic', () => {
             });
             user.save(function (err) {
                 if (err) return console.error(err);
-                RegisteredGeneralPublic.findById(user._id, {}, {}, (err, rUser)=>{
+                RegisteredGeneralPublic.findById(user._id, "+password", {}, (err, rUser)=>{
                     assert.isObject(rUser);
                     assert.equal(rUser.firstName,"Bill");
                     assert.equal(rUser.lastName,"Jones");
@@ -34,7 +34,7 @@ describe('RegisteredGeneralPublic', () => {
                 user.password = "password";
                 user.save(function (err) {
                     if (err) return console.error(err);
-                    RegisteredGeneralPublic.findById(user._id, {}, {}, (err, rUser)=>{
+                    RegisteredGeneralPublic.findById(user._id, "+password", {}, (err, rUser)=>{
                         assert.isObject(rUser);
                         assert.equal(rUser.firstName,"John");
                         assert.equal(rUser.lastName,"Smith");
