@@ -1,0 +1,27 @@
+const bcrypt = require('bcryptjs');
+
+function convertToNumber(str) {
+    return Number(str.replace(/,/g, ''))
+}
+
+function generateBusinessCode(){
+    return getRandomInt(1679616, 60466176).toString(36).toUpperCase()
+}
+
+function getRandomInt(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
+}
+
+async function encryptPassword(password)
+{
+    const salt = await bcrypt.genSalt(10);
+    if (!salt) throw Error('Something went wrong with bcrypt');
+
+    const hash = await bcrypt.hash(password, salt);
+    if (!hash) throw Error('Something went wrong hashing the password');
+    return hash;
+}
+
+module.exports = {convertToNumber, generateBusinessCode, encryptPassword};

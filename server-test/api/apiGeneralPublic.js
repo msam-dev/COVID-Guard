@@ -3,16 +3,14 @@ process.env.NODE_ENV = 'testing';
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const app = require("../../server");
-const USER_TYPE = require("../../server/_constants/usertypes");
 const {createMockPositiveCases} = require("../../server/utils/mockData");
 const {createMockCheckIns} = require("../../server/utils/mockData");
 const {createMockVaccinationRecord} = require("../../server/utils/mockData");
 const assert = require('chai').assert
 const moment = require('moment');
-const PositiveCase = require("../../server/models/PositiveCase");
 const {createMockVaccinationCentres} = require("../../server/utils/mockData");
 const {createMockBusinesses} = require("../../server/utils/mockData");
-const {createMockBusinessUsers} = require("../../server/utils/mockData");
+
 // Configure chai
 chai.use(chaiHttp);
 

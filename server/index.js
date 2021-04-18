@@ -6,6 +6,8 @@ const registeredBusinessOwnerAuthRoutes = require('./routes/api/businessowner/au
 const registeredHealthProfessionalAuthRoutes = require('./routes/api/healthprofessional/auth');
 const generalPublicRoutes = require('./routes/api/generalpublic/routes');
 const registeredGeneralPublicRoutes = require('./routes/api/registeredgeneralpublic/routes');
+const healthProfessionalRoutes = require('./routes/api/healthprofessional/routes');
+const businessOwnerRoutes = require('./routes/api/businessowner/routes');
 
 const PORT = process.env.PORT || 5000;
 const app = express();
@@ -26,6 +28,8 @@ app.use('/api/registeredgeneralpublic', registeredGeneralPublicRoutes);
 app.use('/api/businessowner/auth', registeredBusinessOwnerAuthRoutes);
 app.use('/api/healthprofessional/auth', registeredHealthProfessionalAuthRoutes);
 app.use('/api/generalpublic', generalPublicRoutes);
+app.use('/api/businessowner', businessOwnerRoutes);
+app.use('/api/healthprofessional', healthProfessionalRoutes);
 
 // All remaining requests return the React app, so it can handle routing.
 app.get('*', (request, response) => {

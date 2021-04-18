@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router();
 const VaccinationRecord = require('../../../models/VaccinationRecord')
-const userType = require("../../../_constants/usertypes")
 
 const asyncHandler = require('express-async-handler');
 const PositiveCase = require("../../../models/PositiveCase");
@@ -12,7 +11,7 @@ const Business = require("../../../models/Business");
 const GeneralPublic = require("../../../models/GeneralPublic");
 const rp = require('request-promise');
 const $ = require('cheerio');
-const {convertToNumber} = require("../../../utils/numbers");
+const {convertToNumber} = require("../../../utils/general");
 
 /**
  * @route   POST /api/generalpublic/currenthotspots

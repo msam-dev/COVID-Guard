@@ -1,17 +1,13 @@
 const express = require('express')
 const router = express.Router();
 const RegisteredGeneralPublicUser = require('../../../models/RegisteredGeneralPublic')
-const jwt = require('jsonwebtoken');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
 const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
-const encryptPassword = require("../../../utils/encryptPassword");
-const bcrypt = require('bcryptjs');
 const Business = require("../../../models/Business");
 const CheckIn = require("../../../models/CheckIn");
 const mongoose = require("mongoose");
-const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
 
 /*
