@@ -131,7 +131,7 @@ router.post('/changepassword', authMiddleware(userType.BUSINESS), asyncHandler(a
     if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
 
     // Check for existing user
-    const user = await BusinessUser.findById({ userId });
+    const user = await BusinessUser.findById(userId);
     if (!user) throw new BadRequest('User does not exist');
 
     const isMatchCurrent = await bcrypt.compare(currentPassword, user.password);

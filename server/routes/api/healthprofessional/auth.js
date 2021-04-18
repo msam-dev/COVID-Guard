@@ -109,7 +109,7 @@ router.post('/changepassword', authMiddleware(userType.HEALTH), asyncHandler(asy
     if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
 
     // Check for existing user
-    const user = await HealthProfessionalUser.findById({ userId });
+    const user = await HealthProfessionalUser.findById(userId);
     if (!user) throw new BadRequest('User does not exist');
 
     const isMatchCurrent = await bcrypt.compare(currentPassword, user.password);

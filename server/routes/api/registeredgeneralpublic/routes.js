@@ -36,7 +36,7 @@ router.post('/checkin', authMiddleware(userType.GENERAL), asyncHandler(async (re
     if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
 
     // Check for existing user
-    const user = await RegisteredGeneralPublicUser.findById({ userId });
+    const user = await RegisteredGeneralPublicUser.findById(userId);
     if (!user) throw new BadRequest('User does not exist');
 
     const checkin = new CheckIn({business: business, user: user, userModel: user.constructor.modelName})
@@ -73,7 +73,11 @@ router.get('/profile', authMiddleware(userType.GENERAL), asyncHandler(async (req
 
     res.status(200).json({
         success: true,
-        user
+        userId: user.id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone
     });
 }));
 
@@ -84,32 +88,30 @@ router.get('/profile', authMiddleware(userType.GENERAL), asyncHandler(async (req
 */
 
 router.post('/profile', authMiddleware(userType.GENERAL), asyncHandler(async (req, res) => {
-    const { userId, venueCode } = req.body;
+    const { userId,  firstName, lastName, phone } = req.body;
 
     // Simple validation
-    if (!userId || !venueCode) {
+    if (!userId || !firstName || !lastName) {
         throw new BadRequest('Please enter all fields');
     }
-
-    // Check for existing user
-    const business = await Business.findOne({ code: venueCode });
-    if (!business) throw new BadRequest('Business venue does not exist');
 
     // check id is valid
     if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
 
     // Check for existing user
-    const user = await RegisteredGeneralPublicUser.findById({ userId });
+    const user = await RegisteredGeneralPublicUser.findById(userId);
     if (!user) throw new BadRequest('User does not exist');
 
-    const checkin = new CheckIn({business: business, user: user, userModel: user.constructor.modelName})
-    let savedCheckin = await checkin.save();
-    if(!savedCheckin) throw new ServerError("Error saving checkin");
+    user.firstName = firstName;
+    user.lastName = lastName;
+    user.phone = phone;
+
+    const newUser = await user.save();
+    if (!newUser) throw new ServerError('Error updating user');
 
     res.status(200).json({
         success: true,
-        userId: user.id,
-        venueCode
+        userId: user.id
     });
 }));
 
