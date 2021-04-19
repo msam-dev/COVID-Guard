@@ -10,6 +10,14 @@ const RegisteredUserSchema = extendSchema(userSchema, {
         required: true,
         select: false,
         set: (p) => { return encryptPassword(p)}
+    },
+    passwordReset: {
+        code: {
+            type: String
+        },
+        expiry: {
+            type: Date
+        }
     }
 })
 // this is not persisted and is just used for testing

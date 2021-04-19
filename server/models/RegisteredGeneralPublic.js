@@ -6,7 +6,8 @@ const userTypes = require('../_constants/usertypes');
 // Create Schema
 const RegisteredGeneralPublicSchema = extendSchema(registeredUserSchema, {
 
-})
+});
+
 RegisteredGeneralPublicSchema.virtual('type').get(function () {
     return userTypes.GENERAL;
 });

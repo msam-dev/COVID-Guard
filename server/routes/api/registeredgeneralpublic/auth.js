@@ -1,3 +1,4 @@
+const moment = require("moment");
 const express = require('express')
 const router = express.Router();
 const RegisteredGeneralPublicUser = require('../../../models/RegisteredGeneralPublic')
@@ -11,6 +12,8 @@ const bcrypt = require('bcryptjs');
 const mongoose = require("mongoose");
 const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
+const sgMail = require('@sendgrid/mail')
+const {generate5CharacterCode} = require("../../../utils/general");
 
 /*
 * @route   POST api/registeredgeneralpublic/auth/login
@@ -117,6 +120,56 @@ router.post('/changepassword', authMiddleware(userType.GENERAL), asyncHandler(as
     const savedUser = await user.save();
 
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
+    res.status(200).json({
+        success: true,
+        userId: savedUser.id,
+    });
+}));
+
+/*
+* @route   POST api/registeredgeneralpublic/auth/forgotpassword
+* @desc    Forgot password
+* @access  Public
+*/
+
+router.post('/forgotpassword', asyncHandler(async (req, res) => {
+    const { userId } = req.body;
+
+    // Simple validation
+    if (!userId) {
+        throw new BadRequest('Please enter all fields');
+    }
+
+    // check id is valid
+    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
+
+    // Check for existing user
+    const user = await RegisteredGeneralPublicUser.findById(userId);
+    if (!user) throw new BadRequest('User does not exist');
+
+    const code = generate5CharacterCode();
+    user.passwordReset.code = code;
+    user.passwordReset.expiry = moment().add(1, "hours");
+
+    const savedUser = await user.save();
+
+    if (!savedUser) throw new ServerError('Something went wrong saving the user');
+
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
+    const msg = {
+        to: 'mr664@uowmail.edu.au', // Change to your recipient
+        from: 'mr664@uowmail.edu.au', // Change to your verified sender
+        subject: 'Reset Password',
+        html: `<strong>Please enter following code to reset your password: ${code}</strong>`,
+    }
+
+    const msgSent = await sgMail.send(msg)
+
+    if(!msgSent || msgSent[0].statusCode !== 202){
+        throw new ServerError("Error sending email");
+    }
+
     res.status(200).json({
         success: true,
         userId: savedUser.id,

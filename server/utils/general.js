@@ -4,7 +4,7 @@ function convertToNumber(str) {
     return Number(str.replace(/,/g, ''))
 }
 
-function generateBusinessCode(){
+function generate5CharacterCode(){
     return getRandomInt(1679616, 60466176).toString(36).toUpperCase()
 }
 
@@ -24,4 +24,4 @@ function encryptPassword(password)
     return hash;
 }
 
-module.exports = {convertToNumber, generateBusinessCode, encryptPassword};
+module.exports = {convertToNumber, generate5CharacterCode, encryptPassword};
