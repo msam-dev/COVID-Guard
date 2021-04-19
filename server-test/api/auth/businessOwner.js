@@ -102,6 +102,8 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                     assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
                     assert.property(res.body, 'token');
                     BusinessUser.findOne({email: userData.email}).select("+password").then((user) => {
+                        console.log(res.body.userId);
+                        console.log(user.id);
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(user, 'firstName', userData.firstName);
                         assert.propertyVal(user, 'lastName', userData.lastName);
@@ -114,10 +116,8 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         assert.propertyVal(user.business.address, 'city', userData.city);
                         assert.propertyVal(user.business.address, 'state', userData.state);
                         assert.propertyVal(user.business.address, 'postcode', userData.postcode);
-                        bcrypt.compare(userData.password, user.password).then((v) => {
-                            assert.isTrue(v);
-                            done();
-                        });
+                        assert.isTrue(user.comparePassword(userData.password));
+                        done();
                     });
                 });
         });

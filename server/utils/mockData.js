@@ -7,7 +7,6 @@ const GeneralPublicUser = require('../models/GeneralPublic');
 const VaccinationRecord = require('../models/VaccinationRecord');
 const PositiveCase = require("../models/PositiveCase");
 const CheckIn = require('../models/CheckIn');
-const {encryptPassword} = require("./general");
 const { parse } = require('json2csv');
 const statesMap = {"Tasmania": "TAS", "Australian Capital Territory": "ACT", "South Australia": "SA", "Western Australia": "WA", "Northern Territory": "NT", "New South Wales": "NSW", "Queensland": "QLD", "Victoria": "VIC"}
 
@@ -29,7 +28,7 @@ async function createMockRegisteredGeneralPublicUsers(save=false, numUsers=1){
         user.lastName = faker.name.lastName();
         user.email = faker.internet.email(user.firstName, user.lastName)
         let password = faker.internet.password();
-        user.password = await encryptPassword(password);
+        user.password = password;
         user.rawPassword = password;
         user.phone = faker.phone.phoneNumber("0#########");
         if (save) await user.save();
@@ -88,7 +87,7 @@ async function createMockBusinessUsers(save=false, numUsers=1, business=null){
         user.lastName = faker.name.lastName();
         user.email = faker.internet.email(user.firstName, user.lastName)
         let password = faker.internet.password();
-        user.password = await encryptPassword(password);
+        user.password = password;
         user.rawPassword = password;
         user.phone = faker.phone.phoneNumber("0#########");
         if (business) {
@@ -110,7 +109,7 @@ async function createMockHealthProfessionalUsers(save=false, numUsers=1){
         user.lastName = faker.name.lastName();
         user.email = faker.internet.email(user.firstName, user.lastName)
         let password = faker.internet.password();
-        user.password = await encryptPassword(password);
+        user.password = password;
         user.rawPassword = password;
         user.phone = faker.phone.phoneNumber("0#########");
         user.healthID = faker.datatype.uuid();

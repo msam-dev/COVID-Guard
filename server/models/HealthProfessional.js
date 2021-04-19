@@ -6,7 +6,7 @@ const userTypes = require('../_constants/usertypes');
 // Create Schema
 const HealthProfessionalSchema = extendSchema(registeredUserSchema, {
     healthID: {type: String, required: true}
-})
+});
 
 HealthProfessionalSchema.virtual('type').get(function () {
     return userTypes.HEALTH;

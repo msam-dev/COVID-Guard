@@ -5,7 +5,7 @@ const userTypes = require('../_constants/usertypes');
 const {autoPopulateField} = require("../utils/db");
 
 const BusinessUserSchema = extendSchema(registeredUserSchema, {
-    business: { type: mongoose.Schema.Types.ObjectId, ref: 'Business', required: true },
+    business: { type: mongoose.Schema.Types.ObjectId, ref: 'Business', required: true }
 });
 
 autoPopulateField(BusinessUserSchema, 'business');

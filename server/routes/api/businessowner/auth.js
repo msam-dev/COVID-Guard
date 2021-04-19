@@ -62,8 +62,6 @@ router.post('/register', asyncHandler(async (req, res) => {
     const user = await BusinessUser.findOne({email});
     if (user) throw new BadRequest('User already exists');
 
-    const hash = await encryptPassword(password);
-
     const newAddress = new Address({
         addressLine1,
         addressLine2,
@@ -88,7 +86,7 @@ router.post('/register', asyncHandler(async (req, res) => {
         firstName,
         lastName,
         email,
-        password: hash,
+        password,
         phone: phone,
         business: newBusiness
     });
@@ -134,10 +132,10 @@ router.post('/changepassword', authMiddleware(userType.BUSINESS), asyncHandler(a
     const user = await BusinessUser.findById(userId).select("+password");
     if (!user) throw new BadRequest('User does not exist');
 
-    const isMatchCurrent = await bcrypt.compare(currentPassword, user.password);
+    const isMatchCurrent = user.comparePassword(currentPassword);
     if (!isMatchCurrent) throw new BadRequest('Current password doesn\'t match');
 
-    user.password = await encryptPassword(newPassword);
+    user.password = newPassword;
 
     const savedUser = await user.save();
 

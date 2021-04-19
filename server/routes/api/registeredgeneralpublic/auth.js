@@ -30,7 +30,7 @@ router.post('/login', asyncHandler(async (req, res) => {
     const user = await RegisteredGeneralPublicUser.findOne({ email }).select("+password");
     if (!user) throw new BadRequest('User does not exist');
 
-    const isMatch = await user.comparePassword(password);
+    const isMatch = user.comparePassword(password);
     if (!isMatch) throw new BadRequest('Invalid credentials');
 
     const token = jwt.sign({ id: user._id, type: userType.GENERAL }, JWT_SECRET, { expiresIn: 3600 });
@@ -61,13 +61,11 @@ router.post('/register', asyncHandler(async (req, res) => {
     const user = await RegisteredGeneralPublicUser.findOne({ email });
     if (user) throw new BadRequest('User already exists');
 
-    const hash = await encryptPassword(password);
-
     const newUser = new RegisteredGeneralPublicUser({
         firstName,
         lastName,
         email,
-        password: hash,
+        password,
         phone: phone
     });
 
@@ -111,10 +109,10 @@ router.post('/changepassword', authMiddleware(userType.GENERAL), asyncHandler(as
     const user = await RegisteredGeneralPublicUser.findById(userId).select("+password");
     if (!user) throw new BadRequest('User does not exist');
 
-    const isMatchCurrent = await bcrypt.compare(currentPassword, user.password);
+    const isMatchCurrent = user.comparePassword(currentPassword);
     if (!isMatchCurrent) throw new BadRequest('Current password doesn\'t match');
 
-    user.password = await encryptPassword(newPassword);
+    user.password = newPassword;
 
     const savedUser = await user.save();
 

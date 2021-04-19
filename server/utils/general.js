@@ -14,12 +14,12 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min) + min); //The maximum is exclusive and the minimum is inclusive
 }
 
-async function encryptPassword(password)
+function encryptPassword(password)
 {
-    const salt = await bcrypt.genSalt(10);
+    const salt = bcrypt.genSaltSync(10);
     if (!salt) throw Error('Something went wrong with bcrypt');
 
-    const hash = await bcrypt.hash(password, salt);
+    const hash = bcrypt.hashSync(password, salt);
     if (!hash) throw Error('Something went wrong hashing the password');
     return hash;
 }

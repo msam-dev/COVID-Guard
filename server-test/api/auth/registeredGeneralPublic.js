@@ -97,10 +97,8 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         assert.propertyVal(user, 'firstName', "Johnny");
                         assert.propertyVal(user, 'lastName', "Smithy");
                         assert.propertyVal(user, 'phone', "0498709723");
-                        bcrypt.compare("testPassword2", user.password).then((v) => {
-                            assert.isTrue(v);
-                            done();
-                        });
+                        user.comparePassword("testPassword2");
+                        done();
                     });
                 });
         });

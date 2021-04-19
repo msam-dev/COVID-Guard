@@ -17,7 +17,7 @@ describe('RegisteredGeneralPublic', () => {
                     assert.isObject(rUser);
                     assert.equal(rUser.firstName,"Bill");
                     assert.equal(rUser.lastName,"Jones");
-                    assert.equal(rUser.password,"fdfdfddf");
+                    assert.isTrue(rUser.comparePassword("fdfdfddf"));
                     assert.equal(rUser.email,"bill@billy.com");
                     if (err) return console.error(err);
                     done();
@@ -38,7 +38,7 @@ describe('RegisteredGeneralPublic', () => {
                         assert.isObject(rUser);
                         assert.equal(rUser.firstName,"John");
                         assert.equal(rUser.lastName,"Smith");
-                        assert.equal(rUser.password,"password");
+                        assert.isTrue(rUser.comparePassword("password"));
                         assert.equal(rUser.email,"different@email.com");
                         if (err) return console.error(err);
                         done();

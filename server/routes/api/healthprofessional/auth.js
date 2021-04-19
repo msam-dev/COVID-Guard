@@ -61,14 +61,12 @@ router.post('/register', asyncHandler(async (req, res) => {
     const user = await HealthProfessionalUser.findOne({ email });
     if (user) throw new BadRequest('User already exists');
 
-    const hash = await encryptPassword(password);
-
     const newUser = new HealthProfessionalUser({
         firstName,
         lastName,
         email,
-        password: hash,
-        phone: phone,
+        password,
+        phone,
         healthID
     });
 
@@ -112,10 +110,10 @@ router.post('/changepassword', authMiddleware(userType.HEALTH), asyncHandler(asy
     const user = await HealthProfessionalUser.findById(userId).select("+password");
     if (!user) throw new BadRequest('User does not exist');
 
-    const isMatchCurrent = await bcrypt.compare(currentPassword, user.password);
+    const isMatchCurrent = user.comparePassword(currentPassword);
     if (!isMatchCurrent) throw new BadRequest('Current password doesn\'t match');
 
-    user.password = await encryptPassword(newPassword);
+    user.password = newPassword;
 
     const savedUser = await user.save();
 
