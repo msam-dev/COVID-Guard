@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 // Routes
 const registeredGeneralPublicAuthRoutes = require('./routes/api/registeredgeneralpublic/auth');
 const registeredBusinessOwnerAuthRoutes = require('./routes/api/businessowner/auth');
@@ -15,6 +16,9 @@ const db = require("./db");
 const errorHandler = require('./middleware/errorHandler');
 
 db.connect();
+
+// CORS Middleware
+app.use(cors());
 
 // parse json body content
 app.use(express.json());
