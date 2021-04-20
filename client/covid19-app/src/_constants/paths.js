@@ -1,5 +1,8 @@
-const Path = {
-    login: "/login"
+const PATH = {
+    login: "/login",
+    regiester: "/register",
+    currentHotspots: "/currentHotspots",
+    vaccineCenters: "/vaccineCenters"
 }
 
-export default Path;
+export default PATH;
