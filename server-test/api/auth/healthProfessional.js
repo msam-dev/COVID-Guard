@@ -234,7 +234,7 @@ describe("Covid App Server API Health Professional Auth", () => {
                 global.sendMailStub.resetHistory();
                 chai.request(app)
                     .post('/api/healthprofessional/auth/forgotpassword')
-                    .send({userId: user.id})
+                    .send({email: user.email})
                     .end((err, res) => {
                         if (res.status === 500) throw new Error(res.body.message);
                         if (err) throw new Error(err);

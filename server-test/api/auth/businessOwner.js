@@ -250,7 +250,7 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                 global.sendMailStub.resetHistory();
                 chai.request(app)
                     .post('/api/businessowner/auth/forgotpassword')
-                    .send({userId: user.id})
+                    .send({email: user.email})
                     .end((err, res) => {
                         if (res.status === 500) throw new Error(res.body.message);
                         if (err) throw new Error(err);

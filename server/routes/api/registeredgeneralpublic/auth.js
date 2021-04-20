@@ -142,18 +142,16 @@ router.post('/changepassword', authMiddleware(userType.GENERAL), asyncHandler(as
 */
 
 router.post('/forgotpassword', asyncHandler(async (req, res) => {
-    const { userId } = req.body;
+    const { email } = req.body;
 
     // Simple validation
-    if (!userId) {
+    if (!email) {
         throw new BadRequest('Please enter all fields');
     }
 
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
 
     // Check for existing user
-    const user = await RegisteredGeneralPublicUser.findById(userId);
+    const user = await RegisteredGeneralPublicUser.findOne({email});
     if (!user) throw new BadRequest('User does not exist');
 
     user.setTemporaryPassword();

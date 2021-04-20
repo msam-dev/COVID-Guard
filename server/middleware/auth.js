@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('config');
+const {Unauthorized} = require("../utils/errors");
 JWT_SECRET = config.get('JWT_SECRET');
 
 module.exports = (usertype) => {
@@ -11,7 +12,7 @@ module.exports = (usertype) => {
 
                 // Check for token
                 if (!token)
-                    return res.status(401).json({msg: 'No token, authorization denied'});
+                    throw new Unauthorized('No token, authorization denied');
                 try {
                     // Verify token
                     // Add user from payload
@@ -20,7 +21,7 @@ module.exports = (usertype) => {
                     Object.assign(req, decoded);
                     next();
                 } catch (e) {
-                    res.status(400).json({msg: 'Token is not valid'});
+                    throw new Unauthorized('No token, authorization denied');
                 }
            };
 }
