@@ -1,7 +1,8 @@
 const express = require('express')
 const router = express.Router();
 const BusinessUser = require('../../../models/BusinessUser')
-const bcrypt = require('bcryptjs');
+const faker = require('faker');
+const moment = require('moment');
 const jwt = require('jsonwebtoken');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes");
@@ -13,6 +14,7 @@ const Address = require("../../../models/Address");
 const mongoose = require("mongoose");
 const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
+const sgMail = require('@sendgrid/mail');
 
 /**
  * @route   POST api/businessowner/auth/login
@@ -32,7 +34,16 @@ router.post('/login', asyncHandler(async (req, res) => {
     const user = await BusinessUser.findOne({email}).select("+password");
     if (!user) throw new BadRequest('User does not exist');
 
-    const isMatch = await user.comparePassword(password);
+    let isMatch;
+    let isTemporary = false;
+
+    if(user.isTemporaryExpiryValid()){
+        isMatch = user.compareTemporaryPassword(password);
+        isTemporary = true;
+    } else {
+        isMatch = user.comparePassword(password);
+    }
+
     if (!isMatch) throw new BadRequest('Invalid credentials');
 
     const token = jwt.sign({id: user._id, type: userType.BUSINESS}, JWT_SECRET, {expiresIn: 3600});
@@ -42,7 +53,8 @@ router.post('/login', asyncHandler(async (req, res) => {
         success: true,
         token,
         userId: user._id,
-        type: userType.BUSINESS
+        type: userType.BUSINESS,
+        isTemporary
     });
 }));
 
@@ -140,6 +152,54 @@ router.post('/changepassword', authMiddleware(userType.BUSINESS), asyncHandler(a
     const savedUser = await user.save();
 
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
+    res.status(200).json({
+        success: true,
+        userId: savedUser.id,
+    });
+}));
+
+/*
+* @route   POST api/businessowner/auth/forgotpassword
+* @desc    Forgot password
+* @access  Public
+*/
+
+router.post('/forgotpassword', asyncHandler(async (req, res) => {
+    const { userId } = req.body;
+
+    // Simple validation
+    if (!userId) {
+        throw new BadRequest('Please enter all fields');
+    }
+
+    // check id is valid
+    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
+
+    // Check for existing user
+    const user = await BusinessUser.findById(userId);
+    if (!user) throw new BadRequest('User does not exist');
+
+    user.setTemporaryPassword();
+
+    const savedUser = await user.save();
+
+    if (!savedUser) throw new ServerError('Something went wrong saving the user');
+
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
+    const msg = {
+        to: 'mr664@uowmail.edu.au', // Change to your recipient
+        from: 'mr664@uowmail.edu.au', // Change to your verified sender
+        subject: 'Reset Password',
+        html: `<strong>The following is your temporay password to login. It expires in 24 hours.<br>You will be directed to chnage your password after you login: ${tempPass}</strong>`,
+    }
+
+    const msgSent = await sgMail.send(msg)
+
+    if(!msgSent || msgSent[0].statusCode !== 202){
+        throw new ServerError("Error sending email");
+    }
+
     res.status(200).json({
         success: true,
         userId: savedUser.id,

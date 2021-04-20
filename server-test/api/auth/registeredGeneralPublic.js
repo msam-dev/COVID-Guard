@@ -53,6 +53,30 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
+                        assert.propertyVal(res.body, 'isTemporary', false);
+                        assert.property(res.body, 'token');
+                        // implement this later
+                        // assert.propertyVal(res.body, 'token', '');
+                        done();
+                    });
+            });
+        });
+        it("it allows successful temporary login", (done) => {
+            createMockRegisteredGeneralPublicUsers(true).then(async (users) => {
+                let user = users[0];
+                user.setTemporaryPassword();
+                const savedUser = await user.save();
+                chai.request(app)
+                    .post('/api/registeredgeneralpublic/auth/login')
+                    .send({"email": savedUser.email, "password": savedUser.passwordReset.temporaryPassword})
+                    .end((err, res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        if (err) throw new Error(err);
+                        assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
+                        assert.propertyVal(res.body, 'userId', savedUser.id);
+                        assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
+                        assert.propertyVal(res.body, 'isTemporary', true);
                         assert.property(res.body, 'token');
                         // implement this later
                         // assert.propertyVal(res.body, 'token', '');
@@ -180,6 +204,41 @@ describe("Covid App Server API Registered General Public Auth", () => {
                                 assert.isTrue(v);
                                 done();
                             });
+                        });
+                    });
+            });
+        });
+    });
+    describe("POST /api/registeredgeneralpublic/auth/forgotpassword", () => {
+        it("returns error message 'Please enter all fields'", (done) => {
+            chai.request(app)
+                .post('/api/registeredgeneralpublic/auth/forgotpassword')
+                .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
+                    if (err) throw new Error(err);
+                    assert.equal(res.status, 400);
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
+                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
+                    done();
+                });
+        });
+        it("It creates a password reset request", (done) => {
+            createMockRegisteredGeneralPublicUsers(true).then((users) => {
+                let user = users[0];
+                chai.request(app)
+                    .post('/api/registeredgeneralpublic/auth/forgotpassword')
+                    .send({userId: user.id})
+                    .end((err, res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        if (err) throw new Error(err);
+                        assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
+                        RegisteredGeneralPublic.findById(user.id).then((changedUser) => {
+                            assert.propertyVal(res.body, 'userId', changedUser.id);
+                            assert.property(user.passwordReset, 'temporaryPassword');
+                            assert.property(user.passwordReset, 'expiry');
+                            done();
                         });
                     });
             });

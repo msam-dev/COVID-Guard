@@ -59,7 +59,30 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         done();
                     });
             });
-        })
+        });
+        it("it allows successful temporary login", (done) => {
+            createMockBusinessUsers(true).then(async (users) => {
+                let user = users[0];
+                user.setTemporaryPassword();
+                const savedUser = await user.save();
+                chai.request(app)
+                    .post('/api/businessowner/auth/login')
+                    .send({"email": savedUser.email, "password": savedUser.passwordReset.temporaryPassword})
+                    .end((err, res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        if (err) throw new Error(err);
+                        assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
+                        assert.propertyVal(res.body, 'userId', savedUser.id);
+                        assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
+                        assert.propertyVal(res.body, 'isTemporary', true);
+                        assert.property(res.body, 'token');
+                        // implement this later
+                        // assert.propertyVal(res.body, 'token', '');
+                        done();
+                    });
+            });
+        });
     });
     describe("POST /api/businessowner/auth/register", () => {
         it("returns error message 'Please enter all fields'", (done) => {
@@ -102,8 +125,6 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                     assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
                     assert.property(res.body, 'token');
                     BusinessUser.findOne({email: userData.email}).select("+password").then((user) => {
-                        console.log(res.body.userId);
-                        console.log(user.id);
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(user, 'firstName', userData.firstName);
                         assert.propertyVal(user, 'lastName', userData.lastName);
@@ -204,4 +225,39 @@ describe("Covid App Server API BusinessOwner Auth", () => {
             });
         });
     });
+    describe("POST /api/businessowner/auth/forgotpassword", () => {
+        it("returns error message 'Please enter all fields'", (done) => {
+            chai.request(app)
+                .post('/api/businessowner/auth/forgotpassword')
+                .end((err, res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
+                    if (err) throw new Error(err);
+                    assert.equal(res.status, 400);
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
+                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
+                    done();
+                });
+        });
+        it("It creates a password reset request", (done) => {
+            createMockBusinessUsers(true).then((users) => {
+                let user = users[0];
+                chai.request(app)
+                    .post('/api/businessowner/auth/forgotpassword')
+                    .send({userId: user.id})
+                    .end((err, res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        if (err) throw new Error(err);
+                        assert.equal(res.status, 200);
+                        assert.propertyVal(res.body, 'success', true);
+                        BusinessUser.findById(user.id).then((changedUser) => {
+                            assert.propertyVal(res.body, 'userId', changedUser.id);
+                            assert.property(user.passwordReset, 'temporaryPassword');
+                            assert.property(user.passwordReset, 'expiry');
+                            done();
+                        });
+                    });
+            });
+        });
+    })
 });
