@@ -1,0 +1,42 @@
+{
+  "name": "covid19-app-server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "node server",
+    "dev-server": "nodemon server",
+    "client-install": "cd client/covid19-app && npm install",
+    "server-install": "npm install",
+    "all-install": "npm run client-install && npm run server-install",
+    "dev-client": "cd client/covid19-app && npm start",
+    "dev-create-mock-data": "node server/utils/createDevData.js",
+    "dev": "concurrently \"npm run dev-server\" \"npm run dev-client\"",
+    "build": "cd client/covid19-app && npm install && npm run build",
+    "server-test": "mocha server-test --require ./server-test/fixtures.js --timeout 30000 --recursive"
+  },
+  "devDependencies": {
+    "chai": "^4.3.4",
+    "chai-http": "^4.3.0",
+    "concurrently": "^6.0.0",
+    "json2csv": "^5.0.6",
+    "mocha": "^8.3.2",
+    "nodemon": "^1.14.6"
+  },
+  "dependencies": {
+    "@sendgrid/mail": "^7.4.2",
+    "bcryptjs": "^2.4.3",
+    "cheerio": "^1.0.0-rc.6",
+    "config": "^3.3.6",
+    "express": "^4.16.4",
+    "express-async-handler": "^1.1.4",
+    "faker": "^5.5.2",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.1",
+    "mongoose": "^5.11.15",
+    "mongoose-extend-schema": "^1.0.0",
+    "puppeteer": "^8.0.0",
+    "request": "^2.88.2",
+    "request-promise": "^4.2.6",
+    "uuid": "^8.3.2"
+  }
+}
