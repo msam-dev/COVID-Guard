@@ -252,8 +252,8 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         assert.propertyVal(res.body, 'success', true);
                         BusinessUser.findById(user.id).then((changedUser) => {
                             assert.propertyVal(res.body, 'userId', changedUser.id);
-                            assert.property(user.passwordReset, 'temporaryPassword');
-                            assert.property(user.passwordReset, 'expiry');
+                            assert.property(changedUser.passwordReset, 'temporaryPassword');
+                            assert.property(changedUser.passwordReset, 'expiry');
                             done();
                         });
                     });
