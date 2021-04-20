@@ -212,7 +212,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         assert.propertyVal(res.body, 'success', true);
                         RegisteredGeneralPublic.findById(user.id).then((changedUser) => {
                             assert.propertyVal(res.body, 'userId', changedUser.id);
-                            assert.property(user.passwordReset, 'code');
+                            assert.property(user.passwordReset, 'temporaryPassword');
                             assert.property(user.passwordReset, 'expiry');
                             done();
                         });

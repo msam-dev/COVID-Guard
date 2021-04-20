@@ -12,7 +12,7 @@ const RegisteredUserSchema = extendSchema(userSchema, {
         set: (p) => { return encryptPassword(p)}
     },
     passwordReset: {
-        code: {
+        temporaryPassword: {
             type: String
         },
         expiry: {
@@ -29,6 +29,14 @@ RegisteredUserSchema.virtual('rawPassword').get(function() {
 
 RegisteredUserSchema.methods.comparePassword = function(password) {
     return bcrypt.compareSync(password, this.password);
+};
+
+RegisteredUserSchema.methods.compareTemporaryPassword = function(password) {
+    return bcrypt.compareSync(password, this.passwordReset.temporaryPassword);
+};
+
+RegisteredUserSchema.methods.compareTemporaryExpiry = function() {
+    return Date.now() < this.temporaryPassword.expiry;
 };
 
 module.exports = RegisteredUserSchema;

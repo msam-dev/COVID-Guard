@@ -8,11 +8,11 @@ const userType = require("../../../_constants/usertypes")
 const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
 const {encryptPassword} = require("../../../utils/general");
-const bcrypt = require('bcryptjs');
+const faker = require('faker');
 const mongoose = require("mongoose");
 const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
-const sgMail = require('@sendgrid/mail')
+const sgMail = require('@sendgrid/mail');
 const {generate5CharacterCode} = require("../../../utils/general");
 
 /*
@@ -147,9 +147,9 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
     const user = await RegisteredGeneralPublicUser.findById(userId);
     if (!user) throw new BadRequest('User does not exist');
 
-    const code = generate5CharacterCode();
-    user.passwordReset.code = code;
-    user.passwordReset.expiry = moment().add(1, "hours");
+    const tempPass = faker.internet.password();
+    user.passwordReset.temporaryPassword = tempPass;
+    user.passwordReset.expiry = moment().add(1, "days");
 
     const savedUser = await user.save();
 
@@ -161,7 +161,7 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
         to: 'mr664@uowmail.edu.au', // Change to your recipient
         from: 'mr664@uowmail.edu.au', // Change to your verified sender
         subject: 'Reset Password',
-        html: `<strong>Please enter following code to reset your password: ${code}</strong>`,
+        html: `<strong>The following is your temporay password to login. It expires in 24 hours.<br>You will be directed to chnage your password after you login: ${tempPass}</strong>`,
     }
 
     const msgSent = await sgMail.send(msg)
