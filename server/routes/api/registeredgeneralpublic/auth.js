@@ -32,8 +32,16 @@ router.post('/login', asyncHandler(async (req, res) => {
     // Check for existing user
     const user = await RegisteredGeneralPublicUser.findOne({ email }).select("+password");
     if (!user) throw new BadRequest('User does not exist');
+    let isMatch;
+    let isTemporary = false;
 
-    const isMatch = user.comparePassword(password);
+    if(user.isTemporaryExpiryValid()){
+        isMatch = user.compareTemporaryPassword(password);
+        isTemporary = true;
+    } else {
+        isMatch = user.comparePassword(password);
+    }
+
     if (!isMatch) throw new BadRequest('Invalid credentials');
 
     const token = jwt.sign({ id: user._id, type: userType.GENERAL }, JWT_SECRET, { expiresIn: 3600 });
@@ -43,7 +51,8 @@ router.post('/login', asyncHandler(async (req, res) => {
         success: true,
         token,
         userId: user.id,
-        type: userType.GENERAL
+        type: userType.GENERAL,
+        isTemporary
     });
 }));
 

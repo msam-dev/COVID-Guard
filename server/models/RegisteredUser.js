@@ -35,7 +35,7 @@ RegisteredUserSchema.methods.compareTemporaryPassword = function(password) {
     return bcrypt.compareSync(password, this.passwordReset.temporaryPassword);
 };
 
-RegisteredUserSchema.methods.compareTemporaryExpiry = function() {
+RegisteredUserSchema.methods.isTemporaryExpiryValid = function() {
     return Date.now() < this.temporaryPassword.expiry;
 };
 

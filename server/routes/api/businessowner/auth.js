@@ -34,7 +34,16 @@ router.post('/login', asyncHandler(async (req, res) => {
     const user = await BusinessUser.findOne({email}).select("+password");
     if (!user) throw new BadRequest('User does not exist');
 
-    const isMatch = await user.comparePassword(password);
+    let isMatch;
+    let isTemporary = false;
+
+    if(user.isTemporaryExpiryValid()){
+        isMatch = user.compareTemporaryPassword(password);
+        isTemporary = true;
+    } else {
+        isMatch = user.comparePassword(password);
+    }
+
     if (!isMatch) throw new BadRequest('Invalid credentials');
 
     const token = jwt.sign({id: user._id, type: userType.BUSINESS}, JWT_SECRET, {expiresIn: 3600});
@@ -44,7 +53,8 @@ router.post('/login', asyncHandler(async (req, res) => {
         success: true,
         token,
         userId: user._id,
-        type: userType.BUSINESS
+        type: userType.BUSINESS,
+        isTemporary
     });
 }));
 
