@@ -2,11 +2,6 @@ import { Marker } from './Marker';
 
 import GoogleMapReact from 'google-map-react';
 
-
-
-
-
-
 const GoogleMap = props => {
     const lat = props.lat;
     const lng = props.lng;
@@ -16,9 +11,6 @@ const GoogleMap = props => {
         userLetter: props.userLetter,
         markerColour: props.markerColour
     }
-
-
-
 
     return(
         <div style={{ height: size, width: size}}>
