@@ -8,6 +8,9 @@ const {createMockBusinessUsers} = require("../../../server/utils/mockData");
 const assert = require('chai').assert
 const bcrypt = require('bcryptjs');
 const BusinessUser = require("../../../server/models/BusinessUser");
+const sinon = require("sinon");
+const sgMail = require('@sendgrid/mail');
+
 // Configure chai
 chai.use(chaiHttp);
 
@@ -242,6 +245,9 @@ describe("Covid App Server API BusinessOwner Auth", () => {
         it("It creates a password reset request", (done) => {
             createMockBusinessUsers(true).then((users) => {
                 let user = users[0];
+                // reset the history so that you get the correct call
+                global.setApiKeyStub.resetHistory();
+                global.sendMailStub.resetHistory();
                 chai.request(app)
                     .post('/api/businessowner/auth/forgotpassword')
                     .send({userId: user.id})
@@ -250,8 +256,11 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
+                        assert.isTrue(global.setApiKeyStub.called);
+                        assert.isTrue(global.sendMailStub.called);
                         BusinessUser.findById(user.id).then((changedUser) => {
                             assert.propertyVal(res.body, 'userId', changedUser.id);
+                            assert.notEqual(global.sendMailStub.getCall(0).args[0]["html"].indexOf(changedUser.passwordReset.temporaryPassword), -1);
                             assert.property(changedUser.passwordReset, 'temporaryPassword');
                             assert.property(changedUser.passwordReset, 'expiry');
                             done();
