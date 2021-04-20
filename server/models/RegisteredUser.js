@@ -2,6 +2,8 @@ const {extendSchema} = require('../utils/db');
 const userSchema = require('./User');
 const bcrypt = require('bcryptjs');
 const {encryptPassword} = require("../utils/general");
+const faker = require("faker");
+const moment = require('moment');
 
 // Create Schema
 const RegisteredUserSchema = extendSchema(userSchema, {
@@ -32,11 +34,18 @@ RegisteredUserSchema.methods.comparePassword = function(password) {
 };
 
 RegisteredUserSchema.methods.compareTemporaryPassword = function(password) {
-    return bcrypt.compareSync(password, this.passwordReset.temporaryPassword);
+    return password == this.passwordReset.temporaryPassword;
 };
 
 RegisteredUserSchema.methods.isTemporaryExpiryValid = function() {
-    return Date.now() < this.temporaryPassword.expiry;
+    if(!this.passwordReset || !this.passwordReset.expiry) return false;
+    return moment().isBefore(this.passwordReset.expiry);
+};
+
+RegisteredUserSchema.methods.setTemporaryPassword = function() {
+    const tempPass = faker.internet.password();
+    this.passwordReset.temporaryPassword = tempPass;
+    this.passwordReset.expiry = moment().add(1, "days");
 };
 
 module.exports = RegisteredUserSchema;

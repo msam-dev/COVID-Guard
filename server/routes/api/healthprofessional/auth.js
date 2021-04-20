@@ -157,9 +157,7 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
     const user = await HealthProfessionalUser.findById(userId);
     if (!user) throw new BadRequest('User does not exist');
 
-    const tempPass = faker.internet.password();
-    user.passwordReset.temporaryPassword = tempPass;
-    user.passwordReset.expiry = moment().add(1, "days");
+    user.setTemporaryPassword();
 
     const savedUser = await user.save();
 
@@ -171,7 +169,7 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
         to: 'mr664@uowmail.edu.au', // Change to your recipient
         from: 'mr664@uowmail.edu.au', // Change to your verified sender
         subject: 'Reset Password',
-        html: `<strong>The following is your temporay password to login. It expires in 24 hours.<br>You will be directed to chnage your password after you login: ${tempPass}</strong>`,
+        html: `<strong>The following is your temporay password to login. It expires in 24 hours.<br>You will be directed to chnage your password after you login: ${savedUser.resetPassword.temporaryPassword}</strong>`,
     }
 
     const msgSent = await sgMail.send(msg)

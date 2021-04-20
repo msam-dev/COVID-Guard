@@ -179,9 +179,7 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
     const user = await BusinessUser.findById(userId);
     if (!user) throw new BadRequest('User does not exist');
 
-    const tempPass = faker.internet.password();
-    user.passwordReset.temporaryPassword = tempPass;
-    user.passwordReset.expiry = moment().add(1, "days");
+    user.setTemporaryPassword();
 
     const savedUser = await user.save();
 
