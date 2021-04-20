@@ -44,7 +44,7 @@ router.post('/login', asyncHandler(async (req, res) => {
 
     if (!isMatch) throw new BadRequest('Invalid credentials');
 
-    const token = jwt.sign({ id: user._id, type: userType.GENERAL }, JWT_SECRET, { expiresIn: 3600 });
+    const token = jwt.sign({ userId: user._id, userType: userType.GENERAL }, JWT_SECRET, { expiresIn: 3600 });
     if (!token) throw new BadRequest('Couldn\'t sign the token');
 
     res.status(200).json({
@@ -84,7 +84,7 @@ router.post('/register', asyncHandler(async (req, res) => {
     const savedUser = await newUser.save();
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
-    const token = jwt.sign({ id: savedUser._id, type: userType.GENERAL }, JWT_SECRET, {
+    const token = jwt.sign({ userId: savedUser._id, userType: userType.GENERAL }, JWT_SECRET, {
         expiresIn: 3600
     });
 
