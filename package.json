@@ -27,6 +27,7 @@
     "bcryptjs": "^2.4.3",
     "cheerio": "^1.0.0-rc.6",
     "config": "^3.3.6",
+    "cors": "^2.8.5",
     "express": "^4.16.4",
     "express-async-handler": "^1.1.4",
     "faker": "^5.5.2",
