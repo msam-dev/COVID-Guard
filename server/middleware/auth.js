@@ -17,7 +17,7 @@ module.exports = (usertype) => {
                     // Add user from payload
                     let decoded = jwt.verify(token, JWT_SECRET);
                     if (decoded.userType !== usertype) return res.status(401).json({msg: 'Invalid usertype for token'});
-                    req.user = jwt.verify(token, JWT_SECRET);
+                    Object.assign(req, decoded);
                     next();
                 } catch (e) {
                     res.status(400).json({msg: 'Token is not valid'});
