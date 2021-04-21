@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const {autoPopulateField} = require("../utils/db");
-const {generateBusinessCode} = require("../utils/generateBusinessCode");
+const {generate5CharacterCode} = require("../utils/general");
 
 // Create Schema
 const BusinessSchema = new mongoose.Schema({
@@ -18,7 +18,7 @@ const BusinessSchema = new mongoose.Schema({
     // may caused a Exception if it is the same as others, that needs to be handled
     code: {
         type: String,
-        default: generateBusinessCode,
+        default: generate5CharacterCode,
         unique: true
     },
     address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address', required: true},

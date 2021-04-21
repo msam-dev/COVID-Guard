@@ -1,3 +1,4 @@
+const moment = require("moment");
 const express = require('express')
 const router = express.Router();
 const RegisteredGeneralPublicUser = require('../../../models/RegisteredGeneralPublic')
@@ -6,10 +7,13 @@ const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
 const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
-const encryptPassword = require("../../../utils/encryptPassword");
-const bcrypt = require('bcryptjs');
+const {encryptPassword} = require("../../../utils/general");
+const faker = require('faker');
+const mongoose = require("mongoose");
 const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
+const sgMail = require('@sendgrid/mail');
+const {generate5CharacterCode} = require("../../../utils/general");
 
 /*
 * @route   POST api/registeredgeneralpublic/auth/login
@@ -19,27 +23,36 @@ const {ServerError} = require("../../../utils/errors");
 
 router.post('/login', asyncHandler(async (req, res) => {
     const { email, password } = req.body;
-
     // Simple validation
     if (!email || !password) {
         throw new BadRequest('Please enter all fields');
     }
 
     // Check for existing user
-    const user = await RegisteredGeneralPublicUser.findOne({ email });
+    const user = await RegisteredGeneralPublicUser.findOne({ email }).select("+password");
     if (!user) throw new BadRequest('User does not exist');
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    let isMatch;
+    let isTemporary = false;
+
+    if(user.isTemporaryExpiryValid()){
+        isMatch = user.compareTemporaryPassword(password);
+        isTemporary = true;
+    } else {
+        isMatch = user.comparePassword(password);
+    }
+
     if (!isMatch) throw new BadRequest('Invalid credentials');
 
-    const token = jwt.sign({ id: user._id, type: userType.GENERAL }, JWT_SECRET, { expiresIn: 3600 });
+    const token = jwt.sign({ userId: user._id, userType: userType.GENERAL }, JWT_SECRET, { expiresIn: 3600 });
     if (!token) throw new BadRequest('Couldn\'t sign the token');
 
     res.status(200).json({
         success: true,
         token,
         userId: user.id,
-        type: userType.GENERAL
+        type: userType.GENERAL,
+        isTemporary
     });
 }));
 
@@ -60,20 +73,18 @@ router.post('/register', asyncHandler(async (req, res) => {
     const user = await RegisteredGeneralPublicUser.findOne({ email });
     if (user) throw new BadRequest('User already exists');
 
-    const hash = await encryptPassword(password);
-
     const newUser = new RegisteredGeneralPublicUser({
         firstName,
         lastName,
         email,
-        password: hash,
+        password,
         phone: phone
     });
 
     const savedUser = await newUser.save();
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
-    const token = jwt.sign({ id: savedUser._id, type: userType.GENERAL }, JWT_SECRET, {
+    const token = jwt.sign({ userId: savedUser._id, userType: userType.GENERAL }, JWT_SECRET, {
         expiresIn: 3600
     });
 
@@ -103,19 +114,67 @@ router.post('/changepassword', authMiddleware(userType.GENERAL), asyncHandler(as
         throw new BadRequest('Password and confirm password do not match');
     }
 
+    // check id is valid
+    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
+
     // Check for existing user
-    const user = await RegisteredGeneralPublicUser.findOne({ _id: userId });
+    const user = await RegisteredGeneralPublicUser.findById(userId).select("+password");
     if (!user) throw new BadRequest('User does not exist');
 
-    const isMatchCurrent = await bcrypt.compare(currentPassword, user.password);
+    const isMatchCurrent = user.comparePassword(currentPassword);
     if (!isMatchCurrent) throw new BadRequest('Current password doesn\'t match');
 
-    const hash = await encryptPassword(newPassword);
-    user.password = hash;
+    user.password = newPassword;
 
     const savedUser = await user.save();
 
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
+    res.status(200).json({
+        success: true,
+        userId: savedUser.id,
+    });
+}));
+
+/*
+* @route   POST api/registeredgeneralpublic/auth/forgotpassword
+* @desc    Forgot password
+* @access  Public
+*/
+
+router.post('/forgotpassword', asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    // Simple validation
+    if (!email) {
+        throw new BadRequest('Please enter all fields');
+    }
+
+
+    // Check for existing user
+    const user = await RegisteredGeneralPublicUser.findOne({email});
+    if (!user) throw new BadRequest('User does not exist');
+
+    user.setTemporaryPassword();
+
+    const savedUser = await user.save();
+
+    if (!savedUser) throw new ServerError('Something went wrong saving the user');
+
+    sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+
+    const msg = {
+        to: 'mr664@uowmail.edu.au', // Change to your recipient
+        from: 'mr664@uowmail.edu.au', // Change to your verified sender
+        subject: 'Reset Password',
+        html: `<strong>The following is your temporay password to login. It expires in 24 hours.<br>You will be directed to chnage your password after you login: ${savedUser.passwordReset.temporaryPassword}</strong>`,
+    }
+
+    const msgSent = await sgMail.send(msg)
+
+    if(!msgSent || msgSent[0].statusCode !== 202){
+        throw new ServerError("Error sending email");
+    }
+
     res.status(200).json({
         success: true,
         userId: savedUser.id,
@@ -129,7 +188,10 @@ router.post('/changepassword', authMiddleware(userType.GENERAL), asyncHandler(as
  */
 
 router.get('/user', authMiddleware(userType.GENERAL), asyncHandler(async (req, res) => {
-    const user = await RegisteredGeneralPublicUser.findById(req.userId).select('-password');
+    // check id is valid
+    if(!mongoose.Types.ObjectId.isValid(req.userId)) throw new BadRequest('UserId is invalid');
+
+    const user = await RegisteredGeneralPublicUser.findById(req.userId);
     if (!user) throw new Unauthorized('User does not exist');
     res.json({id: user.id, type: userType.GENERAL});
 }));

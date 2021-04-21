@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router();
 const VaccinationRecord = require("../../../models/VaccinationRecord")
-const userType = require("../../../_constants/usertypes")
 const VaccinationCentre = require("../../../models/VaccinationCentre")
+
 const asyncHandler = require('express-async-handler');
 const PositiveCase = require("../../../models/PositiveCase");
 const CheckIn = require("../../../models/CheckIn");
@@ -10,6 +10,9 @@ const {BadRequest} = require('../../../utils/errors');
 const moment = require("moment");
 const Business = require("../../../models/Business");
 const GeneralPublic = require("../../../models/GeneralPublic");
+const rp = require('request-promise');
+const $ = require('cheerio');
+const {convertToNumber} = require("../../../utils/general");
 
 /**
  * @route   POST /api/generalpublic/currenthotspots
@@ -17,8 +20,7 @@ const GeneralPublic = require("../../../models/GeneralPublic");
  * @access  Public
  */
 
-router.get('/currenthotspots', asyncHandler(async (req, res) => {
-    // do it the easiest way first then try aggregate
+async function getPositiveBusinesses(){
     let positiveCases = await PositiveCase.find();
     let positiveCheckInsAll = [];
     for(let positiveCase of positiveCases){
@@ -33,6 +35,18 @@ router.get('/currenthotspots', asyncHandler(async (req, res) => {
             positiveBusinesses[positiveCheckIn.business.id] = positiveCheckIn;
         }
     }
+    return positiveBusinesses;
+}
+
+router.get('/currenthotspots', asyncHandler(async (req, res) => {
+    // do it the easiest way first then try aggregate
+    let positiveCases = await PositiveCase.find();
+    let positiveCheckInsAll = [];
+    for(let positiveCase of positiveCases){
+        let positiveCheckIns = await CheckIn.find({user: positiveCase.user, date: {$gt: moment().subtract(14, 'days').toDate()}});
+        positiveCheckInsAll = positiveCheckInsAll.concat(positiveCheckIns);
+    }
+    let positiveBusinesses = await getPositiveBusinesses();
     let hotspots = [];
     Object.keys(positiveBusinesses).map(function(key, index) {
         let business = positiveBusinesses[key].business;
@@ -153,4 +167,71 @@ router.get('/vaccinationcentres', asyncHandler(async (req, res) => {
     });
 }));
 
+/**
+ * @route   POST /api/generalpublic/homepagestats
+ * @desc    returns an object of stats
+ * @access  Public
+ */
+
+function dailySummary(html, category){
+    let cat = matchText($(html).find('table.DAILY-SUMMARY td.CATEGORY a'), category).parent().parent();
+    return {
+        total: () => {return convertToNumber(cat.find("td.TOTAL").text())},
+        net: () => {return convertToNumber(cat.find("td.NET").text())}
+    };
+}
+
+function matchText(selector, text){
+    return selector.filter(function() {
+        return $(this).text().trim() === text;
+    });
+}
+
+router.get('/homepagestats', asyncHandler(async (req, res) => {
+    const covidSummaryUrl = 'https://covidlive.com.au/australia';
+
+    const covidSummaryHtml = await rp(covidSummaryUrl);
+    const covidSummary = {};
+    covidSummary["totalHospitalised"] = dailySummary(covidSummaryHtml, "Hospitalised").total();
+    covidSummary["totalDeaths"] = dailySummary(covidSummaryHtml, "Deaths").total();
+    covidSummary["totalActiveCases"] = dailySummary(covidSummaryHtml, "Active").total();
+    covidSummary["totalTests"] = dailySummary(covidSummaryHtml, "Tests").total();
+    covidSummary["totalTestsLast24Hours"] = dailySummary(covidSummaryHtml, "Tests").net();
+    covidSummary["totalOverseasCasesLast24Hours"] = dailySummary(covidSummaryHtml, "Overseas").net();
+    covidSummary["totalLocalCasesLast24Hours"] = dailySummary(covidSummaryHtml, "New Cases").total() - dailySummary(covidSummaryHtml, "Overseas").net();
+    covidSummary["totalCases"] = dailySummary(covidSummaryHtml, "Cases").total();
+    covidSummary["totalCheckins"] = await CheckIn.countDocuments();
+    covidSummary["totalHotspots"] = Object.keys(await getPositiveBusinesses()).length;
+
+    const vaccinationSummaryUrl = 'https://covidlive.com.au/report/vaccinations';
+    const vaccinationSummaryHtml = await rp(vaccinationSummaryUrl)
+    const vaccinationMap = {
+        "QLD": "Queensland",
+        "NSW": "NSW",
+        "VIC": "Victoria",
+        "TAS":"Tasmania",
+        "SA": "SA",
+        "WA": "WA",
+        "ACT":"ACT",
+        "NT":"NT",
+        "Commonwealth":"Commonwealth",
+        "GPClinic": "GP Clinics",
+        "Australia":"Australia"
+    };
+    const vaccinationSummary = {};
+    for(const loc in vaccinationMap){
+        vaccinationSummary[`total${loc}Vaccinations`] = convertToNumber($(vaccinationSummaryHtml).find(`table.VACCINATIONS td.STATE:contains('${vaccinationMap[loc]}')`).parent().find("td.DOSES").text());
+    }
+
+    const stats = {
+        "covidSummary": covidSummary,
+        "vaccinationSummary": vaccinationSummary
+    };
+
+    // add rest of logic
+    res.status(200).json({
+        success: true,
+        stats
+    });
+}));
 module.exports = router;
