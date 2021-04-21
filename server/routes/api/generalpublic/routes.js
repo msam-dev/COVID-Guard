@@ -12,6 +12,7 @@ const Business = require("../../../models/Business");
 const GeneralPublic = require("../../../models/GeneralPublic");
 const rp = require('request-promise');
 const $ = require('cheerio');
+const {cache} = require("../../../middleware/cache");
 const {convertToNumber} = require("../../../utils/general");
 
 /**
@@ -29,7 +30,7 @@ async function getPositiveBusinesses(){
     }
     let positiveBusinesses = {};
     for(let positiveCheckIn of positiveCheckInsAll){
-        if(positiveBusinesses[positiveCheckIn.business.id] == undefined){
+        if(!positiveBusinesses[positiveCheckIn.business.id]){
             positiveBusinesses[positiveCheckIn.business.id] = positiveCheckIn;
         } else if(positiveBusinesses[positiveCheckIn.business.id].date < positiveCheckIn.date){
             positiveBusinesses[positiveCheckIn.business.id] = positiveCheckIn;
@@ -38,7 +39,7 @@ async function getPositiveBusinesses(){
     return positiveBusinesses;
 }
 
-router.get('/currenthotspots', asyncHandler(async (req, res) => {
+router.get('/currenthotspots', cache(10), asyncHandler(async (req, res) => {
     // do it the easiest way first then try aggregate
     let positiveCases = await PositiveCase.find();
     let positiveCheckInsAll = [];
@@ -48,7 +49,7 @@ router.get('/currenthotspots', asyncHandler(async (req, res) => {
     }
     let positiveBusinesses = await getPositiveBusinesses();
     let hotspots = [];
-    Object.keys(positiveBusinesses).map(function(key, index) {
+    Object.keys(positiveBusinesses).map(function(key) {
         let business = positiveBusinesses[key].business;
         hotspots.push({
             venueName: business.name,
@@ -139,7 +140,7 @@ router.post('/checkvaccinationisvalid', asyncHandler(async (req, res) => {
  * @access  Public
  */
 
-router.get('/vaccinationcentres', asyncHandler(async (req, res) => {
+router.get('/vaccinationcentres', cache(10), asyncHandler(async (req, res) => {
     const vaccinationCentre = await VaccinationCentre.find();
     const vaccinationCentres = [];
 
@@ -185,7 +186,7 @@ function matchText(selector, text){
     });
 }
 
-router.get('/homepagestats', asyncHandler(async (req, res) => {
+router.get('/homepagestats', cache(10), asyncHandler(async (req, res) => {
     const covidSummaryUrl = 'https://covidlive.com.au/australia';
 
     const covidSummaryHtml = await rp(covidSummaryUrl);

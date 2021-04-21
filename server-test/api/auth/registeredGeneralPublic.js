@@ -117,7 +117,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
                     "password": "testPassword2",
                     "firstName": "Johnny",
                     "lastName": "Smithy",
-                    "phone": "0498709723",
+                    "phone": "0478987653",
                 })
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
@@ -129,7 +129,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(user, 'firstName', "Johnny");
                         assert.propertyVal(user, 'lastName', "Smithy");
-                        assert.propertyVal(user, 'phone', "0498709723");
+                        assert.propertyVal(user, 'phone', "0478987653");
                         user.comparePassword("testPassword2");
                         done();
                     }).catch((err) => {
