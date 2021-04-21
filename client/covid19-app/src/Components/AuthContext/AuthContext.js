@@ -14,15 +14,15 @@ export function useAuthUpdate(){
 
 const initialAuth = () => {
     const user = JSON.parse(localStorage.getItem('USER'));
-    if(user === null) return USER_TYPE.UNREGISTERED;
-    return user.type;
+    if(user === null) return {type: USER_TYPE.UNREGISTERED};
+    return user;
 }
 
 const AuthProvider = ({children}) => {
     const [authType, setAuthType] = useState(initialAuth());
 
-    const updateAuth = TYPE => {
-        setAuthType(TYPE);
+    const updateAuth = USER => {
+        setAuthType(USER);
     }
 
     return(

@@ -2,19 +2,62 @@ import { Form, Input, Button } from 'antd';
 import { layout, tailLayout } from './layouts';
 import PATH from '../../_constants/paths';
 
+import { useState } from 'react';
+import { useForm } from 'antd/lib/form/Form';
+import { useAuthUpdate, useAuth } from '../../Components/AuthContext/AuthContext';
+import { _login } from '../../_helpers/endPoints';
+import { isWhiteSpace, validateEmail } from '../../_helpers/sharedFunctions';
+
 
 
 
 const Login = () => {
+    const [loading, setLoading] = useState(false);
+    const [form] = useForm();
+    const updateAuth = useAuthUpdate();
+    const auth = useAuth();
 
-    const onFinish = values => {
-        console.log('Success:', values);
+ 
+
+
+    const onFinish = () => {
+        console.log("SUCCESS");
     };
-    
+
     const onFinishFailed = errorInfo => {
         console.log('Failed:', errorInfo);
     };
+
+    const login = (_, password) => {
+        const email = form.getFieldValue('email');
+
+        if (!password || isWhiteSpace(password) || !validateEmail(email)) return Promise.resolve();
+
+        setLoading(true);
+
+        const user = {
+            email: email,
+            password: password,
+        }
+
+        return _login(user)
+        .then(res => {
+            console.log(res);
+            setLoading(false); 
+            localStorage.setItem('USER', JSON.stringify(res.data));
+            updateAuth(res.data);
+        })
+        .catch(err => {
+            console.log(err);
+            setLoading(false);
+            throw new Error("Email or password details were incorrect");
+        });
+    }
     
+
+
+
+
     return (
         <div>
             <div style={{backgroundColor: "#FDC500"}}>
@@ -26,21 +69,23 @@ const Login = () => {
             </div>
 
             <Form
-                
+                form={form}
                 {...layout}
                 name="basic"
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
             >
                 <Form.Item
-                    label="Username"
-                    name="username"
+                    label="Email"
+                    name="email"
                     style={{color: "#0E5F76"}}
                     rules={[
-                    {
+                    {   
+                        type: 'email',
                         required: true,
-                        message: 'Please input your username!',
-                        whitespace: true
+                        message: 'Please input valid email!',
+                        whitespace: true,
+                        validateTrigger: 'onSubmit'
                     },
                     ]}
                 >
@@ -52,19 +97,29 @@ const Login = () => {
                     name="password"
                     style={{color: "#0E5F76"}}
                     rules={[
-                    {
-                        required: true,
-                        message: 'Please input your password!',
-                        whitespace: true
-                    },
+                        {
+                            required: true,
+                            message: 'Please input your password!',
+                            whitespace: true
+                        },
+                     
+                        {
+                            validator: login,
+                            validateTrigger: "onSubmit"
+                        }
                     ]}
                 >
                     <Input.Password maxLength={30}/>
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
-                    <Button type="primary" htmlType="submit">Login</Button>
-                    <span style={{paddingLeft: "19%", color: "#0E5F76"}}>Not Registered? <a href={PATH.regiester}><u>Click here</u></a></span>
+                    <div style = {{width: "500px"}}>
+                        <div style = {{width: "100px", float: "left"}}>
+                            <Button loading={loading} type="primary" htmlType="submit">Login</Button>
+                        </div>
+
+                        <span style={{color: "#0E5F76", paddingLeft: "19%", position: "absolute"}}>Not Registered? <a href={PATH.regiester}><u>Click here</u></a></span>
+                    </div>
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>

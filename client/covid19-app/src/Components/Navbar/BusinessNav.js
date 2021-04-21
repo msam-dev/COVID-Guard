@@ -1,10 +1,14 @@
 import { Menu } from 'antd';
 import logo from '../../Assets/Images/logo.png';
 import './Navbar.css';
+import { logout } from './Functions';
+import { useAuthUpdate } from '../AuthContext/AuthContext';
 
 const { Item } = Menu;
 
 const BusinessNav = () => {
+    const updateAuth = useAuthUpdate();
+
     return (
         <div >
             <Menu style ={{backgroundColor: "#0E5F76"}} mode="horizontal" >
@@ -17,7 +21,7 @@ const BusinessNav = () => {
                 <Item>
                     <div className='navbar-menuitem-text'>My Venue Code</div>
                 </Item>
-                <Item style={{float: 'right', paddingTop: '3px'}}>
+                <Item onClick={() => {logout(updateAuth)}} style={{float: 'right', paddingTop: '3px'}}>
                     <div className='navbar-menuitem-text'>Logout</div>
                 </Item>
             </Menu>
