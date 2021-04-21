@@ -15,15 +15,16 @@ describe("Covid App Server Health Professional Endpoints", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .get('/api/healthprofessional/profile')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("it returns error message 'User does not exist'", (done) => {
             chai.request(app)
@@ -31,15 +32,16 @@ describe("Covid App Server Health Professional Endpoints", () => {
                 .send({
                     userId: "41224d776a326fb40f000001"
                 })
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'User does not exist');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("returns user data", async () => {
             let users = await createMockHealthProfessionalUsers(true);
@@ -62,15 +64,16 @@ describe("Covid App Server Health Professional Endpoints", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/healthprofessional/profile')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("it returns error message 'User does not exist'", (done) => {
             chai.request(app)
@@ -81,15 +84,16 @@ describe("Covid App Server Health Professional Endpoints", () => {
                     lastName: "Costas",
                     phone: "0405060607"
                 })
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'User does not exist');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("updates user data", async () => {
             let users = await createMockHealthProfessionalUsers(true);

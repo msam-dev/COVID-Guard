@@ -11,39 +11,43 @@ describe('RegisteredGeneralPublic', () => {
                 firstName: "Bill",
                 lastName: "Jones"
             });
-            user.save(function (err) {
-                if (err) return console.error(err);
-                RegisteredGeneralPublic.findById(user._id, "+password", {}, (err, rUser)=>{
+            user.save().then((savedUser)=> {
+                RegisteredGeneralPublic.findById(user._id, "+password", {}).then((rUser)=>{
                     assert.isObject(rUser);
                     assert.equal(rUser.firstName,"Bill");
                     assert.equal(rUser.lastName,"Jones");
                     assert.isTrue(rUser.comparePassword("fdfdfddf"));
                     assert.equal(rUser.email,"bill@billy.com");
-                    if (err) return console.error(err);
                     done();
+                }).catch((err) => {
+                    done(err);
                 });
             });
         });
     });
     describe('Edit user', () => {
         it('it should edit a Registered General Public User', (done) => {
-            RegisteredGeneralPublic.findOne({}, function (err, user) {
+            RegisteredGeneralPublic.findOne({}).then((user) => {
                 user.firstName = "John";
                 user.lastName = "Smith";
                 user.email = "different@email.com";
                 user.password = "password";
-                user.save(function (err) {
-                    if (err) return console.error(err);
-                    RegisteredGeneralPublic.findById(user._id, "+password", {}, (err, rUser)=>{
+                user.save().then(()=> {
+                    RegisteredGeneralPublic.findById(user._id, "+password", {}).then((rUser)=>{
                         assert.isObject(rUser);
                         assert.equal(rUser.firstName,"John");
                         assert.equal(rUser.lastName,"Smith");
                         assert.isTrue(rUser.comparePassword("password"));
                         assert.equal(rUser.email,"different@email.com");
-                        if (err) return console.error(err);
                         done();
+                    }).catch((err) => {
+                        done(err);
                     });
+                }).catch((err) => {
+                    done(err);
                 });
+            }).catch((err) => {
+                done(err);
             });
         });
     });

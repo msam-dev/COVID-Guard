@@ -19,29 +19,31 @@ describe("Covid App Server API Health Professional Auth", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/healthprofessional/auth/login')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("it returns message 'User does not exist'", (done) => {
             chai.request(app)
                 .post('/api/healthprofessional/auth/login')
                 .send({"email": "test@test.com", "password": "pass"})
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'User does not exist');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("it allows successful login", (done) => {
             createMockHealthProfessionalUsers(true).then((users) => {
@@ -49,9 +51,8 @@ describe("Covid App Server API Health Professional Auth", () => {
                 chai.request(app)
                     .post('/api/healthprofessional/auth/login')
                     .send({"email": user.email, "password": user.rawPassword})
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'userId', user.id);
@@ -60,7 +61,11 @@ describe("Covid App Server API Health Professional Auth", () => {
                         // implement this later
                         // assert.propertyVal(res.body, 'token', '');
                         done();
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
+                done(err);
             });
         });
         it("it allows successful temporary login", (done) => {
@@ -71,9 +76,8 @@ describe("Covid App Server API Health Professional Auth", () => {
                 chai.request(app)
                     .post('/api/healthprofessional/auth/login')
                     .send({"email": savedUser.email, "password": savedUser.passwordReset.temporaryPassword})
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'userId', savedUser.id);
@@ -83,7 +87,11 @@ describe("Covid App Server API Health Professional Auth", () => {
                         // implement this later
                         // assert.propertyVal(res.body, 'token', '');
                         done();
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
+                done(err);
             });
         });
     });
@@ -91,15 +99,16 @@ describe("Covid App Server API Health Professional Auth", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/healthprofessional/auth/register')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("Registers new health professional user", (done) => {
             chai.request(app)
@@ -112,9 +121,8 @@ describe("Covid App Server API Health Professional Auth", () => {
                     "phone": "0498709723",
                     "healthID": "5656565656565656"
                 })
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 200);
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'type', USER_TYPE.HEALTH);
@@ -126,23 +134,28 @@ describe("Covid App Server API Health Professional Auth", () => {
                         assert.propertyVal(user, 'phone', "0498709723");
                         //assert.isTrue(user.comparePassword("testPassword2"));
                         done();
+                    }).catch((err) => {
+                        done(err);
                     });
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
     });
     describe("POST /api/healthprofessional/auth/changepassword", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/healthprofessional/auth/changepassword')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("returns error message 'Password and confirm password do not match'", (done) => {
             chai.request(app)
@@ -153,15 +166,16 @@ describe("Covid App Server API Health Professional Auth", () => {
                     "newPassword": "newPassword",
                     "confirmPassword": "newPasswordDifferent",
                 })
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Password and confirm password do not match');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("returns error message 'Current password doesn\'t match'", (done) => {
             createMockHealthProfessionalUsers(true).then((users) => {
@@ -174,15 +188,18 @@ describe("Covid App Server API Health Professional Auth", () => {
                         "newPassword": "newPassword",
                         "confirmPassword": "newPassword"
                     })
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 400);
                         assert.propertyVal(res.body, 'errCode', 400);
                         assert.propertyVal(res.body, 'success', false);
                         assert.propertyVal(res.body, 'message', 'Current password doesn\'t match');
                         done();
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
+                done(err);
             });
         });
         it("It changes a HealthProfessionalUsers password", (done) => {
@@ -196,9 +213,8 @@ describe("Covid App Server API Health Professional Auth", () => {
                         "newPassword": "newPassword",
                         "confirmPassword": "newPassword"
                     })
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         HealthProfessionalUser.findById(user.id).select("+password").then((changedUser) => {
@@ -206,9 +222,17 @@ describe("Covid App Server API Health Professional Auth", () => {
                             bcrypt.compare("newPassword", changedUser.password).then((v) => {
                                 assert.isTrue(v);
                                 done();
+                            }).catch((err) => {
+                                done(err);
                             });
+                        }).catch((err) => {
+                            done(err);
                         });
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
+                done(err);
             });
         });
     });
@@ -216,15 +240,16 @@ describe("Covid App Server API Health Professional Auth", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/healthprofessional/auth/forgotpassword')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("It creates a password reset request", (done) => {
             createMockHealthProfessionalUsers(true).then((users) => {
@@ -235,9 +260,8 @@ describe("Covid App Server API Health Professional Auth", () => {
                 chai.request(app)
                     .post('/api/healthprofessional/auth/forgotpassword')
                     .send({email: user.email})
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         assert.isTrue(global.setApiKeyStub.called);
@@ -248,8 +272,14 @@ describe("Covid App Server API Health Professional Auth", () => {
                             assert.property(changedUser.passwordReset, 'temporaryPassword');
                             assert.property(changedUser.passwordReset, 'expiry');
                             done();
+                        }).catch((err) => {
+                            done(err);
                         });
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
+                done(err);
             });
         });
     })
