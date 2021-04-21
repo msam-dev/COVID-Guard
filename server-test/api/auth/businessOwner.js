@@ -19,29 +19,31 @@ describe("Covid App Server API BusinessOwner Auth", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/businessowner/auth/login')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("it returns msg 'User does not exist'", (done) => {
             chai.request(app)
                 .post('/api/businessowner/auth/login')
                 .send({"email": "test@test.com", "password": "pass"})
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'User does not exist');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("it allows successful login", (done) => {
             createMockBusinessUsers(true).then((users) => {
@@ -49,9 +51,8 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                 chai.request(app)
                     .post('/api/businessowner/auth/login')
                     .send({"email": user.email, "password": user.rawPassword})
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'userId', user.id);
@@ -60,7 +61,11 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         // implement this later
                         // assert.propertyVal(res.body, 'token', '');
                         done();
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
+                done(err);
             });
         });
         it("it allows successful temporary login", (done) => {
@@ -71,9 +76,8 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                 chai.request(app)
                     .post('/api/businessowner/auth/login')
                     .send({"email": savedUser.email, "password": savedUser.passwordReset.temporaryPassword})
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'userId', savedUser.id);
@@ -83,7 +87,11 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         // implement this later
                         // assert.propertyVal(res.body, 'token', '');
                         done();
+                    }).catch((err) => {
+                        done(err);
                     });
+            }).catch((err) => {
+                done(err);
             });
         });
     });
@@ -91,14 +99,15 @@ describe("Covid App Server API BusinessOwner Auth", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/businessowner/auth/register')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
+                }).catch((err) => {
+                    done(err);
                 });
         });
         it("Register new business", (done) => {
@@ -115,14 +124,13 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                 suburb: "Smithville",
                 city: "Sydney",
                 state: "NSW",
-                postcode: 2010
+                postcode: "2010"
             };
             chai.request(app)
                 .post('/api/businessowner/auth/register')
                 .send(userData)
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 200);
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
@@ -142,7 +150,11 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         assert.propertyVal(user.business.address, 'postcode', userData.postcode);
                         assert.isTrue(user.comparePassword(userData.password));
                         done();
+                    }).catch((err) => {
+                        done(err);
                     });
+                }).catch((err) => {
+                    done(err);
                 });
         });
     });
@@ -150,15 +162,16 @@ describe("Covid App Server API BusinessOwner Auth", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/businessowner/auth/changepassword')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("returns error message 'Password and confirm password do not match'", (done) => {
             chai.request(app)
@@ -169,15 +182,16 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                     "newPassword": "newPassword",
                     "confirmPassword": "newPasswordDifferent",
                 })
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Password and confirm password do not match');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("returns error message 'Current password doesn\'t match'", (done) => {
             createMockBusinessUsers(true).then((users) => {
@@ -190,15 +204,16 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         "newPassword": "newPassword",
                         "confirmPassword": "newPassword"
                     })
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 400);
                         assert.propertyVal(res.body, 'errCode', 400);
                         assert.propertyVal(res.body, 'success', false);
                         assert.propertyVal(res.body, 'message', 'Current password doesn\'t match');
                         done();
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
             });
         });
         it("It changes a BusinessUsers password", (done) => {
@@ -212,9 +227,8 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         "newPassword": "newPassword",
                         "confirmPassword": "newPassword"
                     })
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         BusinessUser.findById(user.id).select("+password").then((changedUser) => {
@@ -223,8 +237,12 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                                 assert.isTrue(v);
                                 done();
                             });
+                        }).catch((err) => {
+                            done(err);
                         });
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
             });
         });
     });
@@ -232,15 +250,16 @@ describe("Covid App Server API BusinessOwner Auth", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/businessowner/auth/forgotpassword')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("It creates a password reset request", (done) => {
             createMockBusinessUsers(true).then((users) => {
@@ -251,9 +270,8 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                 chai.request(app)
                     .post('/api/businessowner/auth/forgotpassword')
                     .send({email: user.email})
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         assert.isTrue(global.setApiKeyStub.called);
@@ -264,8 +282,14 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                             assert.property(changedUser.passwordReset, 'temporaryPassword');
                             assert.property(changedUser.passwordReset, 'expiry');
                             done();
+                        }).catch((err) => {
+                            done(err);
                         });
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
+                done(err);
             });
         });
     })
