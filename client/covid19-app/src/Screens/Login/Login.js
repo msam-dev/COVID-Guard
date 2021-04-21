@@ -64,7 +64,7 @@ const Login = () => {
 
                 <Form.Item {...tailLayout}>
                     <Button type="primary" htmlType="submit">Login</Button>
-                    <span style={{paddingLeft: "19%", color: "#0E5F76"}}>Not Registered? <a href={PATH.regiester}><u>Click here</u></a></span>
+                    <span style={{paddingLeft: "19%", color: "#0E5F76"}}>Not Registered? <a href={PATH.register}><u>Click here</u></a></span>
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>

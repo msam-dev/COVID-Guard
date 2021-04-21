@@ -1,7 +1,5 @@
 import { Form, Input, Button } from 'antd';
 import { layout, tailLayout } from './layouts';
-import Navbar from '../../Components/Navbar/Navbar';
-import Footer from '../../Components/Footer/Footer';
 
 const CheckVaccStatus = () => {
 
@@ -33,9 +31,6 @@ const CheckVaccStatus = () => {
     return (
         <div style={{color: "#0E5F76"}}>
 
-            <div id="navbar-wrapper">
-                <Navbar />
-            </div>
 
             <h1 style = {{color: "#0E5F76", textAlign: "left", backgroundColor: "#FDC500", paddingLeft: "1%"}}>Check Vaccination Status</h1>
             <h1 style = {{color: "#0E5F76", padding: "2%", textAlign: "center"}}>Check Civilian Vaccination Status</h1>
@@ -67,10 +62,6 @@ const CheckVaccStatus = () => {
             </Form>
 
             <div id="vaccResultString"></div>
-
-            <div id="footer-wrapper">
-                <Footer />
-            </div>
 
         </div>
 

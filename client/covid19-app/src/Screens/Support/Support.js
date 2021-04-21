@@ -1,14 +1,7 @@
-import Navbar from '../../Components/Navbar/Navbar';
-import Footer from '../../Components/Footer/Footer';
- 
+
  const Support = () => {
     return (
-        
-
         <div style = {{textAlign: "center", color: "#0E5F76"}}>
-            <div id="navbar-wrapper">
-                <Navbar />
-            </div>
 
             <h1 style = {{color: "#0E5F76", textAlign: "left", backgroundColor: "#FDC500", paddingLeft: "1%"}}>Support</h1>
             <h1 style = {{color: "#0E5F76", padding: "2%"}}>COVID Guard Support</h1>
@@ -21,13 +14,8 @@ import Footer from '../../Components/Footer/Footer';
             <b>Phone: </b>1800 xxx xxx <br/>
             <b>Email: </b>COVIDGuard@xxx.com
 
-
-            <div id="footer-wrapper">
-                <Footer />
-            </div>
         </div>
-    )
-};
-
+    );
+}
 
 export default Support;
