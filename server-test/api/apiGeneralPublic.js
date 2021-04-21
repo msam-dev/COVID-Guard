@@ -159,6 +159,8 @@ describe("Covid App Server General Public Endpoints", () => {
                     }).catch((err) => {
                     done(err);
                 });
+            }).catch((err) => {
+                done(err);
             });
         });
     });
@@ -178,7 +180,7 @@ describe("Covid App Server General Public Endpoints", () => {
                             assert.property(vaccineCentre, 'clinicName');
                             assert.property(vaccineCentre, 'phone');
                             assert.property(vaccineCentre, 'addressLine1');
-                            //assert.property(vaccineCentre, 'addressLine2'); - unsure how to deal with unexpected assertions
+                            //assert.property(vaccineCentre, 'addressLine2');
                             assert.property(vaccineCentre, 'suburb');
                             assert.property(vaccineCentre, 'city');
                             assert.property(vaccineCentre, 'state');
@@ -188,6 +190,8 @@ describe("Covid App Server General Public Endpoints", () => {
                     }).catch((err) => {
                     done(err);
                 });
+            }).catch((err) => {
+                done(err);
             });
         });
     });

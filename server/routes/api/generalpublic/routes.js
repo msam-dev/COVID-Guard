@@ -144,10 +144,8 @@ router.get('/vaccinationcentres', asyncHandler(async (req, res) => {
     const vaccinationCentres = [];
 
     // iterates through and pushes all vaccination centres to the return array
-    let clinic = {}
     vaccinationCentre.forEach(vaccinationCentre =>
         vaccinationCentres.push(
-            clinic =
             {
                 clinicName:vaccinationCentre.clinicName,
                 phone:vaccinationCentre.phone,
