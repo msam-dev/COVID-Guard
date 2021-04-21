@@ -8,9 +8,6 @@ const {createMockBusinessUsers} = require("../../../server/utils/mockData");
 const assert = require('chai').assert
 const bcrypt = require('bcryptjs');
 const BusinessUser = require("../../../server/models/BusinessUser");
-const sinon = require("sinon");
-const sgMail = require('@sendgrid/mail');
-
 // Configure chai
 chai.use(chaiHttp);
 
@@ -116,8 +113,8 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                 lastName: "Jones",
                 email: "billy.jones@gmail.com",
                 password: "thisismypassword",
-                phone: "056789993",
-                ABN: "12123456728",
+                phone: "0567899934",
+                ABN: "15678956743",
                 businessName: "My Business",
                 addressLine1: "Unit 1",
                 addressLine2: "155 Musselbrook ave",

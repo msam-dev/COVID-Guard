@@ -8,8 +8,6 @@ const {createMockHealthProfessionalUsers} = require("../../../server/utils/mockD
 const assert = require('chai').assert
 const bcrypt = require('bcryptjs');
 const HealthProfessionalUser = require("../../../server/models/HealthProfessional");
-const sinon = require("sinon");
-const sgMail = require('@sendgrid/mail');
 
 // Configure chai
 chai.use(chaiHttp);
@@ -118,7 +116,7 @@ describe("Covid App Server API Health Professional Auth", () => {
                     "password": "testPassword2",
                     "firstName": "Johnny",
                     "lastName": "Smithy",
-                    "phone": "0498709723",
+                    "phone": "0476898725",
                     "healthID": "5656565656565656"
                 })
                 .then((res) => {
@@ -131,7 +129,7 @@ describe("Covid App Server API Health Professional Auth", () => {
                         assert.property(res.body, 'token');
                         assert.propertyVal(user, 'firstName', "Johnny");
                         assert.propertyVal(user, 'lastName', "Smithy");
-                        assert.propertyVal(user, 'phone', "0498709723");
+                        assert.propertyVal(user, 'phone', "0476898725");
                         //assert.isTrue(user.comparePassword("testPassword2"));
                         done();
                     }).catch((err) => {

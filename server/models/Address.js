@@ -27,7 +27,7 @@ const AddressSchema = new mongoose.Schema({
         required: true,
         validate: {
             validator: function(v) {
-                return /^[0-9]{4,4}$/.test(v);
+                return /^[0-9]{4}$/.test(v);
             },
             message: props => `${props.value} is not a postcode!`
         }
