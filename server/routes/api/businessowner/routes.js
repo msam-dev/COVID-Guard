@@ -10,7 +10,7 @@ const {ServerError} = require("../../../utils/errors");
 
 /*
 * @route   GET api/businessowner/profile
-* @desc    Returns a registered general public users profile info
+* @desc    Returns a business owners users profile info
 * @access  Private
 */
 
@@ -43,7 +43,7 @@ router.get('/profile', authMiddleware(userType.BUSINESS), asyncHandler(async (re
 
 /*
 * @route   POST api/businessowner/profile
-* @desc    Updates a registered general public users profile info
+* @desc    Updates a business owners profile info
 * @access  Private
 */
 
