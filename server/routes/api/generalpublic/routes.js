@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router();
-const VaccinationRecord = require('../../../models/VaccinationRecord')
+const VaccinationRecord = require("../../../models/VaccinationRecord")
 const userType = require("../../../_constants/usertypes")
-
+const VaccinationCentre = require("../../../models/VaccinationCentre")
 const asyncHandler = require('express-async-handler');
 const PositiveCase = require("../../../models/PositiveCase");
 const CheckIn = require("../../../models/CheckIn");
@@ -108,7 +108,6 @@ router.post('/checkvaccinationisvalid', asyncHandler(async (req, res) => {
     const dateAdministered = vaccinationRecord.dateAdministered;
     const patientFirstName = vaccinationRecord.patient.firstName;
     const patientLastName = vaccinationRecord.patient.lastName;
-    //console.log(vaccinationType, vaccinationStatus, dateAdministered, patientFirstName, patientLastName);
 
     res.status(200).json({
         success: true,
@@ -127,8 +126,27 @@ router.post('/checkvaccinationisvalid', asyncHandler(async (req, res) => {
  */
 
 router.get('/vaccinationcentres', asyncHandler(async (req, res) => {
+    const vaccinationCentre = await VaccinationCentre.find();
     const vaccinationCentres = [];
-    // add rest of logic
+
+    // iterates through and pushes all vaccination centres to the return array
+    let clinic = {}
+    vaccinationCentre.forEach(vaccinationCentre =>
+        vaccinationCentres.push(
+            clinic =
+            {
+                clinicName:vaccinationCentre.clinicName,
+                phone:vaccinationCentre.phone,
+                addressLine1:vaccinationCentre.address.addressLine1,
+                addressLine2:vaccinationCentre.address.addressLine2,
+                suburb:vaccinationCentre.address.suburb,
+                city:vaccinationCentre.address.city,
+                state:vaccinationCentre.address.state,
+                postcode:vaccinationCentre.address.postcode
+            }
+        )
+    );
+
     res.status(200).json({
         success: true,
         vaccinationCentres

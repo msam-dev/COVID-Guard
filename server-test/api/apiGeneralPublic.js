@@ -173,8 +173,13 @@ describe("Covid App Server General Public Endpoints", () => {
                         assert.lengthOf(res.body.vaccinationCentres, vaccinationCentres.length);
                         for(let vaccineCentre of res.body.vaccinationCentres){
                             assert.property(vaccineCentre, 'clinicName');
-                            // check other properties exist
-
+                            assert.property(vaccineCentre, 'phone');
+                            assert.property(vaccineCentre, 'addressLine1');
+                            //assert.property(vaccineCentre, 'addressLine2'); - unsure how to deal with unexpected assertions
+                            assert.property(vaccineCentre, 'suburb');
+                            assert.property(vaccineCentre, 'city');
+                            assert.property(vaccineCentre, 'state');
+                            assert.property(vaccineCentre, 'postcode');
                         }
                         done();
                     });
