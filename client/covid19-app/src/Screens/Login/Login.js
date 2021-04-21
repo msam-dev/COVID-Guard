@@ -113,13 +113,8 @@ const Login = () => {
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
-                    <div style = {{width: "500px"}}>
-                        <div style = {{width: "100px", float: "left"}}>
-                            <Button loading={loading} type="primary" htmlType="submit">Login</Button>
-                        </div>
-
-                        <span style={{color: "#0E5F76", paddingLeft: "19%", position: "absolute"}}>Not Registered? <a href={PATH.regiester}><u>Click here</u></a></span>
-                    </div>
+                    <Button type="primary" htmlType="submit">Login</Button>
+                    <span style={{paddingLeft: "19%", color: "#0E5F76"}}>Not Registered? <a href={PATH.register}><u>Click here</u></a></span>
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>

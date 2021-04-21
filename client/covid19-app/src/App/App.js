@@ -9,7 +9,9 @@ import Register from '../Screens/Register/Register';
 import Login from '../Screens/Login/Login';
 import CurrentHotspots from '../Screens/CurrentHotspots/CurrentHotspots';
 import VaccineCenters from '../Screens/VaccineCenters/VaccineCenters';
-
+import Support from '../Screens/Support/Support';
+import CheckVaccStatus from '../Screens/CheckVaccStatus/CheckVaccStatus';
+import MoreInfo from '../Screens/MoreInfo/MoreInfo';
 
 function App() {
   return (
@@ -23,9 +25,12 @@ function App() {
                 <Router history={history}>
                     <Switch>
                         <Route path={PATH.login}><Login /></Route>
-                        <Route path={PATH.regiester}><Register /></Route>
+                        <Route path={PATH.register}><Register /></Route>
                         <Route path={PATH.currentHotspots}><CurrentHotspots /></Route>
                         <Route path={PATH.vaccineCenters}><VaccineCenters /></Route>
+                        <Route path={PATH.support}><Support /></Route> 
+                        <Route path={PATH.checkvaccstatus}><CheckVaccStatus /></Route>
+                        <Route path={PATH.moreinfo}> <MoreInfo/> </Route> 
                     </Switch>
                 </Router> 
             </div>
