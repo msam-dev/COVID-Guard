@@ -116,4 +116,51 @@ describe("Covid App Server Business Owner Endpoints", () => {
             assert.propertyVal(changedUser, "phone", "0405060607");
         });
     });
+    describe("POST /api/businessowner/venueinfo", () => {
+        it("returns error message 'Please enter all fields'", (done) => {
+            chai.request(app)
+                .post('/api/businessowner/venueinfo')
+                .then((res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
+                    assert.equal(res.status, 400);
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
+                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
+                    done();
+                }).catch((err) => {
+                done(err);
+            });
+        });
+        it("it returns error message 'User does not exist'", (done) => {
+            chai.request(app)
+                .post('/api/businessowner/venueinfo')
+                .send({
+                    userId: "41224d776a326fb40f000001"
+                })
+                .then((res) => {
+                    if (res.status === 500) throw new Error(res.body.message);
+                    assert.equal(res.status, 400);
+                    assert.propertyVal(res.body, 'errCode', 400);
+                    assert.propertyVal(res.body, 'success', false);
+                    assert.propertyVal(res.body, 'message', 'User does not exist');
+                    done();
+                }).catch((err) => {
+                done(err);
+            });
+        });
+        it("displays venue info", async () => {
+            let users = await createMockBusinessUsers(true);
+            let user = users[0];
+
+            const res = await chai.request(app)
+                .post('/api/businessowner/venueinfo')
+                .send({
+                    userId: user.id,
+                });
+            assert.equal(res.status, 200);
+            assert.propertyVal(res.body, 'success', true);
+            assert.propertyVal(res.body, 'businessName', user.business.name);
+            assert.propertyVal(res.body, 'businessCode', user.business.code);
+        });
+    });
 });

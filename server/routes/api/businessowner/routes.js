@@ -75,4 +75,32 @@ router.post('/profile', authMiddleware(userType.BUSINESS), asyncHandler(async (r
     });
 }));
 
+/*
+* @route   POST api/businessowner/venueinfo
+* @desc    Returns business name and code
+* @access  Private
+*/
+
+router.post('/venueinfo', authMiddleware(userType.BUSINESS), asyncHandler(async (req, res) => {
+    const { userId } = req.body;
+
+    // Simple validation
+    if (!userId) {
+        throw new BadRequest('Please enter all fields');
+    }
+
+    // check id is valid
+    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
+
+    // Check for existing user
+    const user = await BusinessOwner.findById(userId);
+    if (!user) throw new BadRequest('User does not exist');
+
+    res.status(200).json({
+        success: true,
+        businessName: user.business.name,
+        businessCode: user.business.code
+    });
+}));
+
 module.exports = router;
