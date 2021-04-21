@@ -17,29 +17,31 @@ describe("Covid App Server API Registered General Public Auth", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/login')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("it returns msg 'User does not exist'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/login')
                 .send({"email": "test@test.com", "password": "pass"})
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'User does not exist');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("it allows successful login", (done) => {
             createMockRegisteredGeneralPublicUsers(true).then((users) => {
@@ -47,9 +49,8 @@ describe("Covid App Server API Registered General Public Auth", () => {
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/login')
                     .send({"email": user.email, "password": user.rawPassword})
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'userId', user.id);
@@ -59,7 +60,11 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         // implement this later
                         // assert.propertyVal(res.body, 'token', '');
                         done();
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
+                done(err);
             });
         });
         it("it allows successful temporary login", (done) => {
@@ -70,9 +75,8 @@ describe("Covid App Server API Registered General Public Auth", () => {
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/login')
                     .send({"email": savedUser.email, "password": savedUser.passwordReset.temporaryPassword})
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'userId', savedUser.id);
@@ -82,7 +86,11 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         // implement this later
                         // assert.propertyVal(res.body, 'token', '');
                         done();
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
+                done(err);
             });
         });
     });
@@ -90,15 +98,16 @@ describe("Covid App Server API Registered General Public Auth", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/register')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("Register new general public user", (done) => {
             chai.request(app)
@@ -108,11 +117,10 @@ describe("Covid App Server API Registered General Public Auth", () => {
                     "password": "testPassword2",
                     "firstName": "Johnny",
                     "lastName": "Smithy",
-                    "phone": "0498709723",
+                    "phone": "0478987653",
                 })
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 200);
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
@@ -121,26 +129,31 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(user, 'firstName', "Johnny");
                         assert.propertyVal(user, 'lastName', "Smithy");
-                        assert.propertyVal(user, 'phone', "0498709723");
+                        assert.propertyVal(user, 'phone', "0478987653");
                         user.comparePassword("testPassword2");
                         done();
+                    }).catch((err) => {
+                        done(err);
                     });
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
     });
     describe("POST /api/registeredgeneralpublic/auth/changepassword", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/changepassword')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("returns error message 'Password and confirm password do not match'", (done) => {
             chai.request(app)
@@ -151,15 +164,16 @@ describe("Covid App Server API Registered General Public Auth", () => {
                     "newPassword": "newPassword",
                     "confirmPassword": "newPasswordDifferent",
                 })
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Password and confirm password do not match');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("returns error message 'Current password doesn\'t match'", (done) => {
             createMockRegisteredGeneralPublicUsers(true).then((users) => {
@@ -172,15 +186,16 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         "newPassword": "newPassword",
                         "confirmPassword": "newPassword"
                     })
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 400);
                         assert.propertyVal(res.body, 'errCode', 400);
                         assert.propertyVal(res.body, 'success', false);
                         assert.propertyVal(res.body, 'message', 'Current password doesn\'t match');
                         done();
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
             });
         });
         it("It changes a RegisteredGeneralPublicUsers password", (done) => {
@@ -194,9 +209,8 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         "newPassword": "newPassword",
                         "confirmPassword": "newPassword"
                     })
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         RegisteredGeneralPublic.findById(user.id).select("+password").then((changedUser) => {
@@ -204,9 +218,15 @@ describe("Covid App Server API Registered General Public Auth", () => {
                             bcrypt.compare("newPassword", changedUser.password).then((v) => {
                                 assert.isTrue(v);
                                 done();
+                            }).catch((err) => {
+                                done(err);
                             });
+                        }).catch((err) => {
+                            done(err);
                         });
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
             });
         });
     });
@@ -214,15 +234,16 @@ describe("Covid App Server API Registered General Public Auth", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/forgotpassword')
-                .end((err, res) => {
+                .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
-                    if (err) throw new Error(err);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
                     done();
-                });
+                }).catch((err) => {
+                done(err);
+            });
         });
         it("It creates a password reset request", (done) => {
             createMockRegisteredGeneralPublicUsers(true).then((users) => {
@@ -233,9 +254,8 @@ describe("Covid App Server API Registered General Public Auth", () => {
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/forgotpassword')
                     .send({email: user.email})
-                    .end((err, res) => {
+                    .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        if (err) throw new Error(err);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         assert.isTrue(global.setApiKeyStub.called);
@@ -246,8 +266,12 @@ describe("Covid App Server API Registered General Public Auth", () => {
                             assert.property(changedUser.passwordReset, 'temporaryPassword');
                             assert.property(changedUser.passwordReset, 'expiry');
                             done();
+                        }).catch((err) => {
+                            done(err);
                         });
-                    });
+                    }).catch((err) => {
+                    done(err);
+                });
             });
         });
     });

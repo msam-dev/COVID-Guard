@@ -10,7 +10,13 @@ const VaccinationCentreSchema = new mongoose.Schema({
     address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address', required: true },
     phone: {
         type : String,
-        required: true
+        required: true,
+        validate: {
+            validator: function(v) {
+                return /^\d{10}$/.test(v);
+            },
+            message: props => `${props.value} is not a postcode!`
+        }
     }
 });
 

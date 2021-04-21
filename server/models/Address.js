@@ -23,8 +23,14 @@ const AddressSchema = new mongoose.Schema({
         enum: ["QLD", "NSW", "VIC", "TAS", "SA", "WA", "ACT", "NT"]
     },
     postcode: {
-        type: Number,
-        required: true
+        type: String,
+        required: true,
+        validate: {
+            validator: function(v) {
+                return /^[0-9]{4}$/.test(v);
+            },
+            message: props => `${props.value} is not a postcode!`
+        }
     },
     coordinates: { type: mongoose.Schema.Types.ObjectId, ref: 'Coordinates' }
 });

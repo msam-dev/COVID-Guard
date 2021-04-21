@@ -7,9 +7,13 @@ const BusinessSchema = new mongoose.Schema({
     ABN: {
         type: String,
         required: true,
-        minlength: 11,
-        maxlength: 11,
-        unique: true
+        unique: true,
+        validate: {
+            validator: function(v) {
+                return /^[0-9]{11,11}$/.test(v);
+            },
+            message: props => `${props.value} is not a valid ABN!`
+        }
     },
     name: {
         type: String,
