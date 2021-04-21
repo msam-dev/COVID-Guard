@@ -16,16 +16,16 @@ const MoreInfo = () => {
                 
                 <div style = {{paddingLeft: '5%'}}>
                     <div><b>National COVID information</b></div>
-                    <div>Department of Health: <a href="https://www.health.gov.au" target="_blank" className = 'govtLinks'><u>health.gov.au</u></a></div> <br/>
+                    <div>Department of Health: <a href="https://www.health.gov.au" className = 'govtLinks'><u>health.gov.au</u></a></div> <br/>
 
                     <div> <b>State COVID Information:</b></div>
-                    <div> Queensland: <a href="https://www.covid19.qld.gov.au" target="_blank" className = 'govtLinks'><u>covid19.qld.gov.au</u></a> </div>
-                    <div> New South Wales: <a href="https://www.nsw.gov.au/covid-19/latest-news-and-updates" target="_blank" className = 'govtLinks'><u>nsw.gov.au/covid19</u></a></div>
-                    <div> Victoria: <a href="https://www.dhhs.vic.gov.au/coronavirus-covid-19-daily-update" target="_blank" className = 'govtLinks'><u>dhhs.vic.gov.au/coronavirus</u></a></div>
-                    <div> South Australia: <a href="https://www.covid-19.sa.gov.au" target="_blank" className = 'govtLinks'><u>covid-19.sa.gov.au</u></a></div>
-                    <div> Western Australia: <a href="https://www.healthywa.wa.gov.au/coronavirus" target="_blank" className = 'govtLinks'><u>healthywa.wa.gov.au/coronavirus</u></a></div>
-                    <div> Northern Territory: <a href="https://coronavirus.nt.gov.au" target="_blank" className = 'govtLinks'><u>coronavirus.nt.gov.au</u></a></div>
-                    <div> Tasmania: <a href="https://coronavirus.tas.gov.au" target="_blank" className = 'govtLinks'><u>coronavirus.tas.gov.au</u></a></div>
+                    <div> Queensland: <a href="https://www.covid19.qld.gov.au" className = 'govtLinks'><u>covid19.qld.gov.au</u></a> </div>
+                    <div> New South Wales: <a href="https://www.nsw.gov.au/covid-19/latest-news-and-updates" className = 'govtLinks'><u>nsw.gov.au/covid19</u></a></div>
+                    <div> Victoria: <a href="https://www.dhhs.vic.gov.au/coronavirus-covid-19-daily-update"className = 'govtLinks'><u>dhhs.vic.gov.au/coronavirus</u></a></div>
+                    <div> South Australia: <a href="https://www.covid-19.sa.gov.au" className = 'govtLinks'><u>covid-19.sa.gov.au</u></a></div>
+                    <div> Western Australia: <a href="https://www.healthywa.wa.gov.au/coronavirus" className = 'govtLinks'><u>healthywa.wa.gov.au/coronavirus</u></a></div>
+                    <div> Northern Territory: <a href="https://coronavirus.nt.gov.au" className = 'govtLinks'><u>coronavirus.nt.gov.au</u></a></div>
+                    <div> Tasmania: <a href="https://coronavirus.tas.gov.au" className = 'govtLinks'><u>coronavirus.tas.gov.au</u></a></div>
                 </div>
                 
             </div>

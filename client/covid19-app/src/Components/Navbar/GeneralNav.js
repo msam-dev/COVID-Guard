@@ -3,6 +3,8 @@ import logo from '../../Assets/Images/logo.png';
 import './Navbar.css';
 import { logout } from './Functions';
 import { useAuthUpdate } from '../AuthContext/AuthContext';
+import history from '../../_helpers/history';
+import PATH from '../../_constants/paths';
 
 const { Item } = Menu;
 
@@ -18,10 +20,10 @@ const GeneralNav = () => {
                 <Item  >
                     <div className='navbar-menuitem-text'>Location Sign In</div>
                 </Item>
-                <Item>
+                <Item onClick={() => {history.push(PATH.vaccineCenters)}}>
                     <div className='navbar-menuitem-text'>Vaccine Center</div>
                 </Item>
-                <Item>
+                <Item onClick={() => {history.push(PATH.currentHotspots)}}>
                     <div className='navbar-menuitem-text'>Current Hotspots</div>
                 </Item>
                 <Item>

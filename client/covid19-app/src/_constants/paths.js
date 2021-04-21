@@ -1,4 +1,5 @@
 const PATH = {
+    home: "/",
     login: "/login",
     register: "/register",
     currentHotspots: "/currentHotspots",

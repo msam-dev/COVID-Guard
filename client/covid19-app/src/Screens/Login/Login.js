@@ -1,12 +1,12 @@
 import { Form, Input, Button } from 'antd';
 import { layout, tailLayout } from './layouts';
 import PATH from '../../_constants/paths';
-
 import { useState } from 'react';
 import { useForm } from 'antd/lib/form/Form';
-import { useAuthUpdate, useAuth } from '../../Components/AuthContext/AuthContext';
+import { useAuthUpdate } from '../../Components/AuthContext/AuthContext';
 import { _login } from '../../_helpers/endPoints';
 import { isWhiteSpace, validateEmail } from '../../_helpers/sharedFunctions';
+import history from '../../_helpers/history';
 
 
 
@@ -15,7 +15,6 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [form] = useForm();
     const updateAuth = useAuthUpdate();
-    const auth = useAuth();
 
  
 
@@ -46,6 +45,7 @@ const Login = () => {
             setLoading(false); 
             localStorage.setItem('USER', JSON.stringify(res.data));
             updateAuth(res.data);
+            history.push(PATH.home);
         })
         .catch(err => {
             console.log(err);
@@ -113,7 +113,7 @@ const Login = () => {
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
-                    <Button type="primary" htmlType="submit">Login</Button>
+                    <Button loading={loading} type="primary" htmlType="submit">Login</Button>
                     <span style={{paddingLeft: "19%", color: "#0E5F76"}}>Not Registered? <a href={PATH.register}><u>Click here</u></a></span>
                 </Form.Item>
 
