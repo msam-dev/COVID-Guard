@@ -10,7 +10,7 @@ const {ServerError} = require("../../../utils/errors");
 
 /*
 * @route   GET api/businessowner/profile
-* @desc    Returns a registered general public users profile info
+* @desc    Returns a business owners users profile info
 * @access  Private
 */
 
@@ -43,7 +43,7 @@ router.get('/profile', authMiddleware(userType.BUSINESS), asyncHandler(async (re
 
 /*
 * @route   POST api/businessowner/profile
-* @desc    Updates a registered general public users profile info
+* @desc    Updates a business owners profile info
 * @access  Private
 */
 
@@ -72,6 +72,34 @@ router.post('/profile', authMiddleware(userType.BUSINESS), asyncHandler(async (r
     res.status(200).json({
         success: true,
         userId: user.id
+    });
+}));
+
+/*
+* @route   POST api/businessowner/venueinfo
+* @desc    Returns business name and code
+* @access  Private
+*/
+
+router.post('/venueinfo', authMiddleware(userType.BUSINESS), asyncHandler(async (req, res) => {
+    const { userId } = req.body;
+
+    // Simple validation
+    if (!userId) {
+        throw new BadRequest('Please enter all fields');
+    }
+
+    // check id is valid
+    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
+
+    // Check for existing user
+    const user = await BusinessOwner.findById(userId);
+    if (!user) throw new BadRequest('User does not exist');
+
+    res.status(200).json({
+        success: true,
+        businessName: user.business.name,
+        businessCode: user.business.code
     });
 }));
 
