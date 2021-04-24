@@ -1,20 +1,60 @@
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Radio } from 'antd';
 import { layout, tailLayout } from './layouts';
 import PATH from '../../_constants/paths';
+import USER_TYPE from '../../_constants/userTypes';
+import { useState } from 'react';
+import { useForm } from 'antd/lib/form/Form';
+import { useAuthUpdate } from '../../Components/AuthContext/AuthContext';
+import { loginGeneral, loginBusiness, loginHealth } from './Functions';
+import { isWhiteSpace, validateEmail } from '../../_helpers/sharedFunctions';
 
 
 
 
 const Login = () => {
+    const [loading, setLoading] = useState(false);
+    const [form] = useForm();
+    const updateAuth = useAuthUpdate();
 
-    const onFinish = values => {
-        console.log('Success:', values);
+ 
+
+
+    const onFinish = () => {
+        console.log("SUCCESS");
     };
-    
+
     const onFinishFailed = errorInfo => {
         console.log('Failed:', errorInfo);
     };
+
+    const login = (_, password) => {
+        const email = form.getFieldValue('email');
+        const type = form.getFieldValue('type');
+
+        if(!password || isWhiteSpace(password) || !validateEmail(email)) return Promise.resolve();
+
+        const user = {
+            email: email,
+            password: password,
+        }
+
+        setLoading(true);
+
+        switch(type){
+            case USER_TYPE.GENERAL: return loginGeneral(setLoading, updateAuth, user);
+            case USER_TYPE.HEALTH: return loginHealth(setLoading, updateAuth, user);
+            case USER_TYPE.BUSINESS: return loginBusiness(setLoading, updateAuth, user);
+            default : {
+                setLoading(false);
+                return Promise.reject(new Error('Something went wrong'));
+            }
+        }
+    }
     
+
+
+
+
     return (
         <div>
             <div style={{backgroundColor: "#FDC500"}}>
@@ -26,21 +66,24 @@ const Login = () => {
             </div>
 
             <Form
-                
+                form={form}
                 {...layout}
                 name="basic"
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
+                initialValues={{type: USER_TYPE.GENERAL}}
             >
                 <Form.Item
-                    label="Username"
-                    name="username"
+                    label="Email"
+                    name="email"
                     style={{color: "#0E5F76"}}
                     rules={[
-                    {
+                    {   
+                        type: 'email',
                         required: true,
-                        message: 'Please input your username!',
-                        whitespace: true
+                        message: 'Please input valid email!',
+                        whitespace: true,
+                        validateTrigger: 'onSubmit'
                     },
                     ]}
                 >
@@ -52,19 +95,36 @@ const Login = () => {
                     name="password"
                     style={{color: "#0E5F76"}}
                     rules={[
-                    {
-                        required: true,
-                        message: 'Please input your password!',
-                        whitespace: true
-                    },
+                        {
+                            required: true,
+                            message: 'Please input your password!',
+                            whitespace: true
+                        },
+                     
+                        {
+                            validator: login,
+                            validateTrigger: "onSubmit"
+                        }
                     ]}
                 >
                     <Input.Password maxLength={30}/>
                 </Form.Item>
 
+                <Form.Item 
+                    {...tailLayout} 
+                    name="type" 
+                    rules={[{ required: true }]}
+                >
+                    <Radio.Group>
+                        <Radio value={USER_TYPE.GENERAL}>General Public</Radio>
+                        <Radio value={USER_TYPE.HEALTH}>Health Professional</Radio>
+                        <Radio value={USER_TYPE.BUSINESS}>Venue Owner</Radio>
+                    </Radio.Group>
+                </Form.Item>
+
                 <Form.Item {...tailLayout}>
-                    <Button type="primary" htmlType="submit">Login</Button>
-                    <span style={{paddingLeft: "19%", color: "#0E5F76"}}>Not Registered? <a href={PATH.regiester}><u>Click here</u></a></span>
+                    <Button loading={loading} type="primary" htmlType="submit">Login</Button>
+                    <span style={{paddingLeft: "19%", color: "#0E5F76"}}>Not Registered? <a href={PATH.register}><u>Click here</u></a></span>
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
