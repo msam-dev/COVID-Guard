@@ -15,7 +15,7 @@ const VaccinationCentreSchema = new mongoose.Schema({
             validator: function(v) {
                 return /^\d{10}$/.test(v);
             },
-            message: props => `${props.value} is not a postcode!`
+            message: props => `${props.value} is not a phone!`
         }
     }
 });
