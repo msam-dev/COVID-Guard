@@ -1,12 +1,12 @@
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Radio } from 'antd';
 import { layout, tailLayout } from './layouts';
 import PATH from '../../_constants/paths';
+import USER_TYPE from '../../_constants/userTypes';
 import { useState } from 'react';
 import { useForm } from 'antd/lib/form/Form';
 import { useAuthUpdate } from '../../Components/AuthContext/AuthContext';
-import { _login } from '../../_helpers/endPoints';
+import { loginGeneral, loginBusiness, loginHealth } from './Functions';
 import { isWhiteSpace, validateEmail } from '../../_helpers/sharedFunctions';
-import history from '../../_helpers/history';
 
 
 
@@ -29,29 +29,26 @@ const Login = () => {
 
     const login = (_, password) => {
         const email = form.getFieldValue('email');
+        const type = form.getFieldValue('type');
 
-        if (!password || isWhiteSpace(password) || !validateEmail(email)) return Promise.resolve();
-
-        setLoading(true);
+        if(!password || isWhiteSpace(password) || !validateEmail(email)) return Promise.resolve();
 
         const user = {
             email: email,
             password: password,
         }
 
-        return _login(user)
-        .then(res => {
-            console.log(res);
-            setLoading(false); 
-            localStorage.setItem('USER', JSON.stringify(res.data));
-            updateAuth(res.data);
-            history.push(PATH.home);
-        })
-        .catch(err => {
-            console.log(err);
-            setLoading(false);
-            throw new Error("Email or password details were incorrect");
-        });
+        setLoading(true);
+
+        switch(type){
+            case USER_TYPE.GENERAL: return loginGeneral(setLoading, updateAuth, user);
+            case USER_TYPE.HEALTH: return loginHealth(setLoading, updateAuth, user);
+            case USER_TYPE.BUSINESS: return loginBusiness(setLoading, updateAuth, user);
+            default : {
+                setLoading(false);
+                return Promise.reject(new Error('Something went wrong'));
+            }
+        }
     }
     
 
@@ -74,6 +71,7 @@ const Login = () => {
                 name="basic"
                 onFinish={onFinish}
                 onFinishFailed={onFinishFailed}
+                initialValues={{type: USER_TYPE.GENERAL}}
             >
                 <Form.Item
                     label="Email"
@@ -110,6 +108,18 @@ const Login = () => {
                     ]}
                 >
                     <Input.Password maxLength={30}/>
+                </Form.Item>
+
+                <Form.Item 
+                    {...tailLayout} 
+                    name="type" 
+                    rules={[{ required: true }]}
+                >
+                    <Radio.Group>
+                        <Radio value={USER_TYPE.GENERAL}>General Public</Radio>
+                        <Radio value={USER_TYPE.HEALTH}>Health Professional</Radio>
+                        <Radio value={USER_TYPE.BUSINESS}>Venue Owner</Radio>
+                    </Radio.Group>
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
