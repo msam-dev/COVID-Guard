@@ -26,7 +26,7 @@ async function createMockRegisteredGeneralPublicUsers(save=false, numUsers=1){
         let user = new RegisteredGeneralPublic();
         user.firstName = faker.name.firstName();
         user.lastName = faker.name.lastName();
-        user.email = faker.internet.email(user.firstName, user.lastName)
+        user.email = faker.internet.email(user.firstName, user.lastName);
         let password = faker.internet.password();
         user.password = password;
         user.rawPassword = password;
@@ -252,10 +252,10 @@ async function createDevData(){
     await mongoose.connection.db.dropDatabase();
     let registeredGeneralPublicUsers = await createMockRegisteredGeneralPublicUsers(true, 100);
     let registeredGeneralPublicUsersRaw = getRawUserData(registeredGeneralPublicUsers);
-    let businessUsers = await createMockBusinessUsers(true, 100);
-    let businessUsersRaw = getRawUserData(businessUsers)
     let healthProfessionalUsers = await createMockHealthProfessionalUsers(true, 100);
-    let healthProfessionalUsersRaw = getRawUserData(healthProfessionalUsers)
+    let healthProfessionalUsersRaw = getRawUserData(healthProfessionalUsers);
+    let businessUsers = await createMockBusinessUsers(true, 100);
+    let businessUsersRaw = getRawUserData(businessUsers);
     await createMockCheckIns(true, 100);
     await createMockPositiveCases(true, 1);
     await createMockVaccinationRecord(true, 100);
