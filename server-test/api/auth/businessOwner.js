@@ -75,15 +75,21 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                     .send({"email": savedUser.email, "password": savedUser.passwordReset.temporaryPassword})
                     .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        assert.equal(res.status, 200);
-                        assert.propertyVal(res.body, 'success', true);
-                        assert.propertyVal(res.body, 'userId', savedUser.id);
-                        assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
-                        assert.propertyVal(res.body, 'isTemporary', true);
-                        assert.property(res.body, 'token');
-                        // implement this later
-                        // assert.propertyVal(res.body, 'token', '');
-                        done();
+                        BusinessUser.findById(savedUser.id).then((uUser) => {
+                            assert.equal(res.status, 200);
+                            assert.propertyVal(res.body, 'success', true);
+                            assert.propertyVal(res.body, 'userId', uUser.id);
+                            assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
+                            assert.propertyVal(res.body, 'isTemporary', true);
+                            assert.propertyVal(uUser.passwordReset, 'expiry', undefined);
+                            assert.propertyVal(uUser.passwordReset, 'temporaryPassword', undefined);
+                            assert.property(res.body, 'token');
+                            // implement this later
+                            // assert.propertyVal(res.body, 'token', '');
+                            done();
+                        }).catch((err) => {
+                            done(err);
+                        });
                     }).catch((err) => {
                         done(err);
                     });

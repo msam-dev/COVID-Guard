@@ -45,7 +45,7 @@ RegisteredUserSchema.methods.isTemporaryExpiryValid = function() {
 RegisteredUserSchema.methods.setTemporaryPassword = function() {
     const tempPass = faker.internet.password();
     this.passwordReset.temporaryPassword = tempPass;
-    this.passwordReset.expiry = moment().add(1, "days");
+    this.passwordReset.expiry = moment().add(1, "hour");
 };
 
 module.exports = RegisteredUserSchema;
