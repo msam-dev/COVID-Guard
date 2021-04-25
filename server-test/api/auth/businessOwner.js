@@ -8,6 +8,10 @@ const {createMockBusinessUsers} = require("../../../server/utils/mockData");
 const assert = require('chai').assert
 const bcrypt = require('bcryptjs');
 const BusinessUser = require("../../../server/models/BusinessUser");
+const jwt = require('jsonwebtoken');
+const config = require('config');
+const JWT_SECRET = config.get('JWT_SECRET');
+
 // Configure chai
 chai.use(chaiHttp);
 
@@ -55,8 +59,9 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
                         assert.property(res.body, 'token');
-                        // implement this later
-                        // assert.propertyVal(res.body, 'token', '');
+                        let decoded = jwt.verify(res.body.token, JWT_SECRET);
+                        assert.propertyVal(decoded, 'userId', user.id);
+                        assert.propertyVal(decoded, 'userType', USER_TYPE.BUSINESS);
                         done();
                     }).catch((err) => {
                     done(err);
@@ -84,8 +89,9 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                             assert.propertyVal(uUser.passwordReset, 'expiry', undefined);
                             assert.propertyVal(uUser.passwordReset, 'temporaryPassword', undefined);
                             assert.property(res.body, 'token');
-                            // implement this later
-                            // assert.propertyVal(res.body, 'token', '');
+                            let decoded = jwt.verify(res.body.token, JWT_SECRET);
+                            assert.propertyVal(decoded, 'userId', user.id);
+                            assert.propertyVal(decoded, 'userType', USER_TYPE.BUSINESS);
                             done();
                         }).catch((err) => {
                             done(err);
@@ -137,7 +143,6 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                     assert.equal(res.status, 200);
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
-                    assert.property(res.body, 'token');
                     BusinessUser.findOne({email: userData.email}).select("+password").then((user) => {
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(user, 'firstName', userData.firstName);
@@ -152,6 +157,10 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         assert.propertyVal(user.business.address, 'state', userData.state);
                         assert.propertyVal(user.business.address, 'postcode', userData.postcode);
                         assert.isTrue(user.comparePassword(userData.password));
+                        assert.property(res.body, 'token');
+                        let decoded = jwt.verify(res.body.token, JWT_SECRET);
+                        assert.propertyVal(decoded, 'userId', user.id);
+                        assert.propertyVal(decoded, 'userType', USER_TYPE.BUSINESS);
                         done();
                     }).catch((err) => {
                         done(err);

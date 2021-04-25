@@ -4,7 +4,8 @@ const HealthProfessionalUser = require('../../../models/HealthProfessional')
 const faker = require('faker');
 const moment = require('moment');
 const jwt = require('jsonwebtoken');
-const authMiddleware = require('../../../middleware/auth');
+const config = require('config');
+const JWT_SECRET = config.get('JWT_SECRET');const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
 const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')

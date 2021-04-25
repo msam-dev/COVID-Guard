@@ -8,6 +8,9 @@ const {createMockHealthProfessionalUsers} = require("../../../server/utils/mockD
 const assert = require('chai').assert
 const bcrypt = require('bcryptjs');
 const HealthProfessionalUser = require("../../../server/models/HealthProfessional");
+const jwt = require('jsonwebtoken');
+const config = require('config');
+const JWT_SECRET = config.get('JWT_SECRET');
 
 // Configure chai
 chai.use(chaiHttp);
@@ -56,8 +59,9 @@ describe("Covid App Server API Health Professional Auth", () => {
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(res.body, 'type', USER_TYPE.HEALTH);
                         assert.property(res.body, 'token');
-                        // implement this later
-                        // assert.propertyVal(res.body, 'token', '');
+                        let decoded = jwt.verify(res.body.token, JWT_SECRET);
+                        assert.propertyVal(decoded, 'userId', user.id);
+                        assert.propertyVal(decoded, 'userType', USER_TYPE.HEALTH);
                         done();
                     }).catch((err) => {
                     done(err);
@@ -85,8 +89,9 @@ describe("Covid App Server API Health Professional Auth", () => {
                             assert.propertyVal(uUser.passwordReset, 'expiry', undefined);
                             assert.propertyVal(uUser.passwordReset, 'temporaryPassword', undefined);
                             assert.property(res.body, 'token');
-                            // implement this later
-                            // assert.propertyVal(res.body, 'token', '');
+                            let decoded = jwt.verify(res.body.token, JWT_SECRET);
+                            assert.propertyVal(decoded, 'userId', user.id);
+                            assert.propertyVal(decoded, 'userType', USER_TYPE.HEALTH);
                             done();
                         }).catch((err) => {
                             done(err);
@@ -133,10 +138,14 @@ describe("Covid App Server API Health Professional Auth", () => {
                     HealthProfessionalUser.findOne({email: "test2@email.com"}).select("+password").then((user) => {
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.property(res.body, 'token');
+                        assert.property(res.body, 'token');
+                        let decoded = jwt.verify(res.body.token, JWT_SECRET);
+                        assert.propertyVal(decoded, 'userId', user.id);
+                        assert.propertyVal(decoded, 'userType', USER_TYPE.HEALTH);
                         assert.propertyVal(user, 'firstName', "Johnny");
                         assert.propertyVal(user, 'lastName', "Smithy");
                         assert.propertyVal(user, 'phone', "0476898725");
-                        //assert.isTrue(user.comparePassword("testPassword2"));
+                        assert.isTrue(user.comparePassword("testPassword2"));
                         done();
                     }).catch((err) => {
                         done(err);

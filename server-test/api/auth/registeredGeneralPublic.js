@@ -8,6 +8,9 @@ const RegisteredGeneralPublic = require("../../../server/models/RegisteredGenera
 const assert = require('chai').assert
 const bcrypt = require('bcryptjs');
 const {createMockRegisteredGeneralPublicUsers} = require('../../../server/utils/mockData');
+const jwt = require('jsonwebtoken');
+const config = require('config');
+const JWT_SECRET = config.get('JWT_SECRET');
 
 // Configure chai
 chai.use(chaiHttp);
@@ -57,8 +60,9 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
                         assert.propertyVal(res.body, 'isTemporary', false);
                         assert.property(res.body, 'token');
-                        // implement this later
-                        // assert.propertyVal(res.body, 'token', '');
+                        let decoded = jwt.verify(res.body.token, JWT_SECRET);
+                        assert.propertyVal(decoded, 'userId', user.id);
+                        assert.propertyVal(decoded, 'userType', USER_TYPE.GENERAL);
                         done();
                     }).catch((err) => {
                     done(err);
@@ -86,8 +90,9 @@ describe("Covid App Server API Registered General Public Auth", () => {
                             assert.propertyVal(uUser.passwordReset, 'expiry', undefined);
                             assert.propertyVal(uUser.passwordReset, 'temporaryPassword', undefined);
                             assert.property(res.body, 'token');
-                            // implement this later
-                            // assert.propertyVal(res.body, 'token', '');
+                            let decoded = jwt.verify(res.body.token, JWT_SECRET);
+                            assert.propertyVal(decoded, 'userId', user.id);
+                            assert.propertyVal(decoded, 'userType', USER_TYPE.GENERAL);
                             done();
                         }).catch((err) => {
                             done(err);
@@ -130,13 +135,16 @@ describe("Covid App Server API Registered General Public Auth", () => {
                     assert.equal(res.status, 200);
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
-                    assert.property(res.body, 'token');
                     RegisteredGeneralPublic.findOne({email: "test2@email.com"}).select("+password").then((user) => {
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(user, 'firstName', "Johnny");
                         assert.propertyVal(user, 'lastName', "Smithy");
                         assert.propertyVal(user, 'phone', "0478987653");
-                        user.comparePassword("testPassword2");
+                        assert.property(res.body, 'token');
+                        let decoded = jwt.verify(res.body.token, JWT_SECRET);
+                        assert.propertyVal(decoded, 'userId', user.id);
+                        assert.propertyVal(decoded, 'userType', USER_TYPE.GENERAL);
+                        assert.isTrue(user.comparePassword("testPassword2"));
                         done();
                     }).catch((err) => {
                         done(err);
