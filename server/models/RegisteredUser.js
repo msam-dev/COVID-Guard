@@ -15,7 +15,8 @@ const RegisteredUserSchema = extendSchema(userSchema, {
     },
     passwordReset: {
         temporaryPassword: {
-            type: String
+            type: String,
+            set: (p) => { return encryptPassword(p)}
         },
         expiry: {
             type: Date
@@ -34,7 +35,7 @@ RegisteredUserSchema.methods.comparePassword = function(password) {
 };
 
 RegisteredUserSchema.methods.compareTemporaryPassword = function(password) {
-    return password == this.passwordReset.temporaryPassword;
+    return bcrypt.compareSync(password, this.passwordReset.temporaryPassword)
 };
 
 RegisteredUserSchema.methods.isTemporaryExpiryValid = function() {
@@ -43,9 +44,10 @@ RegisteredUserSchema.methods.isTemporaryExpiryValid = function() {
 };
 
 RegisteredUserSchema.methods.setTemporaryPassword = function() {
-    const tempPass = faker.internet.password();
-    this.passwordReset.temporaryPassword = tempPass;
+    let rawTemporaryPassword = faker.internet.password();
+    this.passwordReset.temporaryPassword = rawTemporaryPassword;
     this.passwordReset.expiry = moment().add(1, "hour");
+    return rawTemporaryPassword;
 };
 
 module.exports = RegisteredUserSchema;

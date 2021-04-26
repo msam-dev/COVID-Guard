@@ -10,6 +10,7 @@ const bcrypt = require('bcryptjs');
 const BusinessUser = require("../../../server/models/BusinessUser");
 const jwt = require('jsonwebtoken');
 const config = require('config');
+const sinon = require("sinon");
 const {createAuthToken} = require("../../../server/utils/general");
 const JWT_SECRET = config.get('JWT_SECRET');
 
@@ -74,11 +75,11 @@ describe("Covid App Server API BusinessOwner Auth", () => {
         it("it allows successful temporary login", (done) => {
             createMockBusinessUsers(true).then(async (users) => {
                 let user = users[0];
-                user.setTemporaryPassword();
+                let tempPassword = user.setTemporaryPassword();
                 const savedUser = await user.save();
                 chai.request(app)
                     .post('/api/businessowner/auth/login')
-                    .send({"email": savedUser.email, "password": savedUser.passwordReset.temporaryPassword})
+                    .send({"email": savedUser.email, "password": tempPassword})
                     .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
                         BusinessUser.findById(savedUser.id).then((uUser) => {
@@ -281,6 +282,8 @@ describe("Covid App Server API BusinessOwner Auth", () => {
         it("It creates a password reset request", (done) => {
             createMockBusinessUsers(true).then((users) => {
                 let user = users[0];
+                let mySpy = sinon.spy(BusinessUser.prototype, "setTemporaryPassword");
+
                 // reset the history so that you get the correct call
                 global.setApiKeyStub.resetHistory();
                 global.sendMailStub.resetHistory();
@@ -288,6 +291,7 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                     .post('/api/businessowner/auth/forgotpassword')
                     .send({email: user.email})
                     .then((res) => {
+                        mySpy.restore();
                         if (res.status === 500) throw new Error(res.body.message);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
@@ -295,9 +299,10 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         assert.isTrue(global.sendMailStub.called);
                         BusinessUser.findById(user.id).then((changedUser) => {
                             assert.propertyVal(res.body, 'userId', changedUser.id);
-                            assert.notEqual(global.sendMailStub.getCall(0).args[0]["html"].indexOf(changedUser.passwordReset.temporaryPassword), -1);
+                            assert.notEqual(global.sendMailStub.getCall(0).args[0]["html"].indexOf(mySpy.getCall(0).returnValue), -1);
                             assert.property(changedUser.passwordReset, 'temporaryPassword');
                             assert.property(changedUser.passwordReset, 'expiry');
+                            assert.isTrue(changedUser.compareTemporaryPassword(mySpy.getCall(0).returnValue));
                             done();
                         }).catch((err) => {
                             done(err);
