@@ -1,9 +1,11 @@
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Modal } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { layout2, tailLayout } from '../Helpers/Layouts';
 import USER_TYPE from '../../../_constants/userTypes';
 import { onlyNumbers } from '../../../_helpers/sharedFunctions';
-
+import { _registerGeneral } from '../../../_helpers/endPoints'; 
+import { useState } from 'react';
+import { registerSuccessModal } from '../Helpers/Modals';
 
 
 
@@ -12,6 +14,32 @@ const GeneralForm = props => {
     const [form] = useForm();
     const setUserState = props.setUserState;
     const numberInputs = onlyNumbers;
+    const [loading, setLoading] = useState(false);
+
+
+
+
+    
+    const register = () => {
+        const user = form.getFieldValue();
+        setLoading(true);
+        
+        _registerGeneral(user)
+        .then(() => {
+            setLoading(false);
+            registerSuccessModal(user.firstName);
+        })
+        .catch(err => {
+            console.log(err);
+            setLoading(false);
+            form.setFields([
+                {
+                  name: 'email',
+                  errors: ['Email already taken'],
+                }
+            ]);
+        });
+    }
 
 
 
@@ -23,10 +51,10 @@ const GeneralForm = props => {
                 <h1 style={{color: "#0E5F76"}}>COVID Guard Register</h1>
             </div>
 
-            <Form {...layout2} form={form}>
+            <Form {...layout2} form={form} onFinish={register}>
                 <Form.Item
                     label="First Name"
-                    name="firstname"
+                    name="firstName"
                     style={{color: "#0E5F76"}}
                     rules={[
                         {
@@ -41,7 +69,7 @@ const GeneralForm = props => {
         
                 <Form.Item
                     label="Last Name"
-                    name="lastname"
+                    name="lastName"
                     style={{color: "#0E5F76"}}
                     rules={[
                         {
@@ -58,13 +86,14 @@ const GeneralForm = props => {
                     label="Email"
                     name="email"
                     style={{color: "#0E5F76"}}
+                    validateTrigger={['onBlur']}
                     rules={[
                         {
                             required: true,
                             type: 'email',
                             message: 'Please input a valid email!',
-                            whitespace: true
-                        }
+                            whitespace: true,
+                        }     
                     ]}
                 >
                     <Input maxLength={30}/>
@@ -111,7 +140,7 @@ const GeneralForm = props => {
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
-                    <Button  type="primary" htmlType="submit">Sign me up</Button>
+                    <Button loading={loading} type="primary" htmlType="submit">Sign me up</Button>
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
