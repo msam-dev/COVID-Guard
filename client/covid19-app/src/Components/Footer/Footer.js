@@ -9,7 +9,7 @@ const Footer = () => {
     return (
         <div>
             <Menu style ={{backgroundColor: "#0E5F76"}} mode="horizontal" >
-                <Item  >
+                <Item onClick={() => {history.push(PATH.home)}}>
                     <div className='navbar-menuitem-text'>Home</div>
                 </Item>
 
@@ -21,7 +21,7 @@ const Footer = () => {
                     <div className='navbar-menuitem-text'>More Info</div>
                 </Item>
 
-                <Item>
+                <Item onClick={() => {history.push(PATH.termsAndConditions)}}>
                     <div className='navbar-menuitem-text'>Terms and Conditions</div>
                 </Item>
                 

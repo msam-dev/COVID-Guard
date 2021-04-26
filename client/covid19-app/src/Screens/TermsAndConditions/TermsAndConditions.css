@@ -1,0 +1,34 @@
+.terms_text_one{
+    margin-top: 100px;
+    margin-left: 180px;
+position: absolute;
+width: 788px;
+height: 175px;
+left: 144px;
+top: 152px;
+align-content: flex-end;
+
+}
+
+.terms_text_two{
+    margin-top: 200px;
+    margin-left: 180px;
+position: absolute;
+width: 788px;
+height: 175px;
+left: 144px;
+top: 152px;
+
+
+}
+
+#terms_text_two_title::after{
+    content: "\a";
+    white-space: pre;
+    
+}
+
+#terms_text_two_content::after{
+    content: "\a";
+    white-space: pre;
+}
