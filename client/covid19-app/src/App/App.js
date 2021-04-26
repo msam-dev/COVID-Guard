@@ -12,6 +12,7 @@ import VaccineCenters from '../Screens/VaccineCenters/VaccineCenters';
 import Support from '../Screens/Support/Support';
 import CheckVaccStatus from '../Screens/CheckVaccStatus/CheckVaccStatus';
 import MoreInfo from '../Screens/MoreInfo/MoreInfo';
+import Homepage from '../Screens/Homepage/Homepage';
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
                         <Route path={PATH.support}><Support /></Route> 
                         <Route path={PATH.checkvaccstatus}><CheckVaccStatus /></Route>
                         <Route path={PATH.moreinfo}> <MoreInfo/> </Route> 
+                        <Route path={PATH.home}> <Homepage/> </Route> 
                     </Switch>
                 </Router> 
             </div>
