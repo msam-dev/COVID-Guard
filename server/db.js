@@ -1,6 +1,7 @@
 const config = require('config');
 const mongoose = require('mongoose');
 mongoose.set('useCreateIndex', true);
+//mongoose.set('debug', true);
 
 // access config variables using config.get('db.name');
 module.exports = {connect: async function () {

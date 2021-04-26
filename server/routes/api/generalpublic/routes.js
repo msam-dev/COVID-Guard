@@ -22,7 +22,7 @@ const {convertToNumber} = require("../../../utils/general");
  */
 
 async function getPositiveBusinesses(){
-    let positiveCases = await PositiveCase.find();
+    let positiveCases = await PositiveCase.find({testDate: {$gt: moment().subtract(14, 'days').toDate()}});
     let positiveCheckInsAll = [];
     for(let positiveCase of positiveCases){
         let positiveCheckIns = await CheckIn.find({user: positiveCase.user, date: {$gt: moment().subtract(14, 'days').toDate()}});

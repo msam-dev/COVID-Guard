@@ -8,6 +8,11 @@ const RegisteredGeneralPublic = require("../../../server/models/RegisteredGenera
 const assert = require('chai').assert
 const bcrypt = require('bcryptjs');
 const {createMockRegisteredGeneralPublicUsers} = require('../../../server/utils/mockData');
+const jwt = require('jsonwebtoken');
+const config = require('config');
+const sinon = require("sinon");
+const {createAuthToken} = require("../../../server/utils/general");
+const JWT_SECRET = config.get('JWT_SECRET');
 
 // Configure chai
 chai.use(chaiHttp);
@@ -57,8 +62,9 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
                         assert.propertyVal(res.body, 'isTemporary', false);
                         assert.property(res.body, 'token');
-                        // implement this later
-                        // assert.propertyVal(res.body, 'token', '');
+                        let decoded = jwt.verify(res.body.token, JWT_SECRET);
+                        assert.propertyVal(decoded, 'userId', user.id);
+                        assert.propertyVal(decoded, 'userType', USER_TYPE.GENERAL);
                         done();
                     }).catch((err) => {
                     done(err);
@@ -70,22 +76,29 @@ describe("Covid App Server API Registered General Public Auth", () => {
         it("it allows successful temporary login", (done) => {
             createMockRegisteredGeneralPublicUsers(true).then(async (users) => {
                 let user = users[0];
-                user.setTemporaryPassword();
+                let tempPassword = user.setTemporaryPassword();
                 const savedUser = await user.save();
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/login')
-                    .send({"email": savedUser.email, "password": savedUser.passwordReset.temporaryPassword})
+                    .send({"email": savedUser.email, "password": tempPassword})
                     .then((res) => {
                         if (res.status === 500) throw new Error(res.body.message);
-                        assert.equal(res.status, 200);
-                        assert.propertyVal(res.body, 'success', true);
-                        assert.propertyVal(res.body, 'userId', savedUser.id);
-                        assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
-                        assert.propertyVal(res.body, 'isTemporary', true);
-                        assert.property(res.body, 'token');
-                        // implement this later
-                        // assert.propertyVal(res.body, 'token', '');
-                        done();
+                        RegisteredGeneralPublic.findById(savedUser.id).then((uUser) => {
+                            assert.equal(res.status, 200);
+                            assert.propertyVal(res.body, 'success', true);
+                            assert.propertyVal(res.body, 'userId', uUser.id);
+                            assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
+                            assert.propertyVal(res.body, 'isTemporary', true);
+                            assert.propertyVal(uUser.passwordReset, 'expiry', undefined);
+                            assert.propertyVal(uUser.passwordReset, 'temporaryPassword', undefined);
+                            assert.property(res.body, 'token');
+                            let decoded = jwt.verify(res.body.token, JWT_SECRET);
+                            assert.propertyVal(decoded, 'userId', user.id);
+                            assert.propertyVal(decoded, 'userType', USER_TYPE.GENERAL);
+                            done();
+                        }).catch((err) => {
+                            done(err);
+                        });
                     }).catch((err) => {
                     done(err);
                 });
@@ -124,13 +137,16 @@ describe("Covid App Server API Registered General Public Auth", () => {
                     assert.equal(res.status, 200);
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
-                    assert.property(res.body, 'token');
                     RegisteredGeneralPublic.findOne({email: "test2@email.com"}).select("+password").then((user) => {
                         assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(user, 'firstName', "Johnny");
                         assert.propertyVal(user, 'lastName', "Smithy");
                         assert.propertyVal(user, 'phone', "0478987653");
-                        user.comparePassword("testPassword2");
+                        assert.property(res.body, 'token');
+                        let decoded = jwt.verify(res.body.token, JWT_SECRET);
+                        assert.propertyVal(decoded, 'userId', user.id);
+                        assert.propertyVal(decoded, 'userType', USER_TYPE.GENERAL);
+                        assert.isTrue(user.comparePassword("testPassword2"));
                         done();
                     }).catch((err) => {
                         done(err);
@@ -144,6 +160,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/changepassword')
+                .set('x-auth-token', createAuthToken(null, USER_TYPE.GENERAL))
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
                     assert.equal(res.status, 400);
@@ -158,6 +175,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
         it("returns error message 'Password and confirm password do not match'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/changepassword')
+                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.GENERAL))
                 .send({
                     "userId": "41224d776a326fb40f000001",
                     "currentPassword": "oldPassword",
@@ -180,6 +198,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/changepassword')
+                    .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
                     .send({
                         "userId": user.id,
                         "currentPassword": "oldPassword",
@@ -203,6 +222,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/changepassword')
+                    .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
                     .send({
                         "userId": user.id,
                         "currentPassword": user.rawPassword,
@@ -251,10 +271,12 @@ describe("Covid App Server API Registered General Public Auth", () => {
                 // reset the history so that you get the correct call
                 global.setApiKeyStub.resetHistory();
                 global.sendMailStub.resetHistory();
+                let mySpy = sinon.spy(RegisteredGeneralPublic.prototype, "setTemporaryPassword");
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/forgotpassword')
                     .send({email: user.email})
                     .then((res) => {
+                        mySpy.restore();
                         if (res.status === 500) throw new Error(res.body.message);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
@@ -262,9 +284,10 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         assert.isTrue(global.sendMailStub.called);
                         RegisteredGeneralPublic.findById(user.id).then((changedUser) => {
                             assert.propertyVal(res.body, 'userId', changedUser.id);
-                            assert.notEqual(global.sendMailStub.getCall(0).args[0]["html"].indexOf(changedUser.passwordReset.temporaryPassword), -1);
+                            assert.notEqual(global.sendMailStub.getCall(0).args[0]["html"].indexOf(mySpy.getCall(0).returnValue), -1);
                             assert.property(changedUser.passwordReset, 'temporaryPassword');
                             assert.property(changedUser.passwordReset, 'expiry');
+                            assert.isTrue(changedUser.compareTemporaryPassword(mySpy.getCall(0).returnValue));
                             done();
                         }).catch((err) => {
                             done(err);

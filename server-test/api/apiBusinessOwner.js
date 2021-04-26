@@ -5,6 +5,8 @@ const chaiHttp = require("chai-http");
 const app = require("../../server");
 const assert = require('chai').assert
 const BusinessOwner = require("../../server/models/BusinessUser");
+const USER_TYPE = require("../../server/_constants/usertypes");
+const {createAuthToken} = require("../../server/utils/general");
 const {createMockBusinessUsers} = require("../../server/utils/mockData");
 // Configure chai
 chai.use(chaiHttp);
@@ -14,6 +16,7 @@ describe("Covid App Server Business Owner Endpoints", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .get('/api/businessowner/profile')
+                .set('x-auth-token', createAuthToken(null, USER_TYPE.BUSINESS))
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
                     assert.equal(res.status, 400);
@@ -28,6 +31,7 @@ describe("Covid App Server Business Owner Endpoints", () => {
         it("it returns error message 'User does not exist'", (done) => {
             chai.request(app)
                 .get('/api/businessowner/profile')
+                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.BUSINESS))
                 .send({
                     userId: "41224d776a326fb40f000001"
                 })
@@ -48,6 +52,7 @@ describe("Covid App Server Business Owner Endpoints", () => {
 
             const res = await chai.request(app)
                 .get('/api/businessowner/profile')
+                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.BUSINESS))
                 .send({
                     userId: user.id
                 })
@@ -63,6 +68,7 @@ describe("Covid App Server Business Owner Endpoints", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/businessowner/profile')
+                .set('x-auth-token', createAuthToken(null, USER_TYPE.BUSINESS))
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
                     assert.equal(res.status, 400);
@@ -77,6 +83,7 @@ describe("Covid App Server Business Owner Endpoints", () => {
         it("it returns error message 'User does not exist'", (done) => {
             chai.request(app)
                 .post('/api/businessowner/profile')
+                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.BUSINESS))
                 .send({
                     userId: "41224d776a326fb40f000001",
                     firstName: "Bob",
@@ -100,6 +107,7 @@ describe("Covid App Server Business Owner Endpoints", () => {
 
             const res = await chai.request(app)
                 .post('/api/businessowner/profile')
+                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.BUSINESS))
                 .send({
                     userId: user.id,
                     firstName: "Bob",
@@ -120,6 +128,7 @@ describe("Covid App Server Business Owner Endpoints", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/businessowner/venueinfo')
+                .set('x-auth-token', createAuthToken(null, USER_TYPE.BUSINESS))
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
                     assert.equal(res.status, 400);
@@ -134,6 +143,7 @@ describe("Covid App Server Business Owner Endpoints", () => {
         it("it returns error message 'User does not exist'", (done) => {
             chai.request(app)
                 .post('/api/businessowner/venueinfo')
+                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.BUSINESS))
                 .send({
                     userId: "41224d776a326fb40f000001"
                 })
@@ -154,6 +164,7 @@ describe("Covid App Server Business Owner Endpoints", () => {
 
             const res = await chai.request(app)
                 .post('/api/businessowner/venueinfo')
+                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.BUSINESS))
                 .send({
                     userId: user.id,
                 });

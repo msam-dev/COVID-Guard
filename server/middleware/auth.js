@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
 const config = require('config');
+const mongoose = require("mongoose");
 const {Unauthorized} = require("../utils/errors");
-JWT_SECRET = config.get('JWT_SECRET');
+const JWT_SECRET = config.get('JWT_SECRET');
 
 module.exports = (usertype) => {
     return (req, res, next) => {
@@ -21,6 +22,7 @@ module.exports = (usertype) => {
             throw new Unauthorized('Invalid token, authorization denied');
         }
         if (decoded.userType !== usertype) throw new Unauthorized('Invalid usertype for token');
+        if(!mongoose.Types.ObjectId.isValid(decoded.userId)) throw new Unauthorized('UserId is invalid');
         Object.assign(req, decoded);
         next();
     };

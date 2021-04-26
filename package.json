@@ -36,6 +36,7 @@
     "lodash.clonedeep": "^4.5.0",
     "memory-cache": "^0.2.0",
     "moment": "^2.29.1",
+    "mongo-sanitize": "^1.1.0",
     "mongoose": "^5.11.15",
     "mongoose-extend-schema": "^1.0.0",
     "puppeteer": "^8.0.0",

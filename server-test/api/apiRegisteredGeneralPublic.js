@@ -5,6 +5,8 @@ const chaiHttp = require("chai-http");
 const app = require("../../server");
 const assert = require('chai').assert
 const RegisteredGeneralPublic = require("../../server/models/RegisteredGeneralPublic");
+const USER_TYPE = require("../../server/_constants/usertypes");
+const {createAuthToken} = require("../../server/utils/general");
 const {createMockRegisteredGeneralPublicUsers} = require("../../server/utils/mockData");
 const {createMockBusinesses} = require("../../server/utils/mockData");
 
@@ -16,6 +18,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/checkin')
+                .set('x-auth-token', createAuthToken(null, USER_TYPE.GENERAL))
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
                     assert.equal(res.status, 400);
@@ -30,6 +33,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
         it("it returns error message 'Business venue does not exist'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/checkin')
+                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.GENERAL))
                 .send({
                     venueCode: "thisisinvalid",
                     userId: "41224d776a326fb40f000001"
@@ -53,6 +57,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
 
             chai.request(app)
                 .post('/api/registeredgeneralpublic/checkin')
+                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
                 .send({
                     venueCode: business.code,
                     userId: user.id
@@ -72,6 +77,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .get('/api/registeredgeneralpublic/profile')
+                .set('x-auth-token', createAuthToken(null, USER_TYPE.GENERAL))
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
                     assert.equal(res.status, 400);
@@ -86,6 +92,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
         it("it returns error message 'User does not exist'", (done) => {
             chai.request(app)
                 .get('/api/registeredgeneralpublic/profile')
+                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.GENERAL))
                 .send({
                     userId: "41224d776a326fb40f000001"
                 })
@@ -106,6 +113,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
 
             const res = await chai.request(app)
                 .get('/api/registeredgeneralpublic/profile')
+                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
                 .send({
                     userId: user.id
                 })
@@ -121,6 +129,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/profile')
+                .set('x-auth-token', createAuthToken(null, USER_TYPE.GENERAL))
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
                     assert.equal(res.status, 400);
@@ -135,6 +144,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
         it("it returns error message 'User does not exist'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/profile')
+                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.GENERAL))
                 .send({
                     userId: "41224d776a326fb40f000001",
                     firstName: "Bob",
@@ -158,6 +168,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
 
             const res = await chai.request(app)
                 .post('/api/registeredgeneralpublic/profile')
+                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
                 .send({
                     userId: user.id,
                     firstName: "Bob",

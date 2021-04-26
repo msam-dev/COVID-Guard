@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+
 // Routes
 const registeredGeneralPublicAuthRoutes = require('./routes/api/registeredgeneralpublic/auth');
 const businessOwnerAuthRoutes = require('./routes/api/businessowner/auth');
@@ -15,6 +16,7 @@ const PORT = process.env.PORT || 5000;
 const app = express();
 const db = require("./db");
 const errorHandler = require('./middleware/errorHandler');
+const sanitizer = require("./middleware/sanitizer");
 
 db.connect();
 
@@ -23,7 +25,7 @@ app.use(cors());
 
 // parse json body content
 app.use(express.json());
-
+app.use(sanitizer);
 // Priority serve any static files.
 app.use(express.static(path.resolve(__dirname, '..', 'client', 'covid19-app', 'build')));
 
