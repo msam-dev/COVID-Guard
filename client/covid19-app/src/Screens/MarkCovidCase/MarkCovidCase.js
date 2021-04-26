@@ -4,7 +4,7 @@ const MarkCovidCase =() => {
     return(
         <div>
             <div style={{backgroundColor: "#FDC500"}}>
-                <h1 style={{color: "#0E5F76", paddingLeft: "1%"}}>Login</h1>
+                <h1 style={{color: "#0E5F76", paddingLeft: "1%"}}>Mark person COVID Positive</h1>
             </div>
             
 
@@ -37,7 +37,7 @@ const MarkCovidCase =() => {
 
                 <Form.Item
                     label="Date First tested positive :"
-                    name="email"
+                    name="date"
                     style={{color: "#0E5F76"}}
                     rules={[
                     {   
