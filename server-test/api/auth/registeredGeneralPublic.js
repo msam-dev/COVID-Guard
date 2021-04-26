@@ -10,6 +10,7 @@ const bcrypt = require('bcryptjs');
 const {createMockRegisteredGeneralPublicUsers} = require('../../../server/utils/mockData');
 const jwt = require('jsonwebtoken');
 const config = require('config');
+const {createAuthToken} = require("../../../server/utils/general");
 const JWT_SECRET = config.get('JWT_SECRET');
 
 // Configure chai
@@ -158,6 +159,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/changepassword')
+                .set('x-auth-token', createAuthToken(null, USER_TYPE.GENERAL))
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
                     assert.equal(res.status, 400);
@@ -172,6 +174,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
         it("returns error message 'Password and confirm password do not match'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/changepassword')
+                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.GENERAL))
                 .send({
                     "userId": "41224d776a326fb40f000001",
                     "currentPassword": "oldPassword",
@@ -194,6 +197,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/changepassword')
+                    .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
                     .send({
                         "userId": user.id,
                         "currentPassword": "oldPassword",
@@ -217,6 +221,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/changepassword')
+                    .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
                     .send({
                         "userId": user.id,
                         "currentPassword": user.rawPassword,
