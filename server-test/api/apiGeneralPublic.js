@@ -78,7 +78,7 @@ describe("Covid App Server General Public Endpoints", () => {
             let i = 0;
             let positiveCases = [];
             for (let checkIn of checkIns){
-                if (i % 10 == 0) {
+                if (i % 10 === 0) {
                     positiveCases.push((await createMockPositiveCases(true, 1, checkIn.user))[0]);
                 }
                 i++;
@@ -197,12 +197,11 @@ describe("Covid App Server General Public Endpoints", () => {
     });
     describe("GET /api/generalpublic/homepagestats", () => {
         it("returns homepage stats object", async () => {
-            const testDate = Date.now();
             let checkIns = await createMockCheckIns(true, 100);
             let i = 0;
             let positiveCases = [];
             for (let checkIn of checkIns){
-                if (i % 10 == 0) {
+                if (i % 10 === 0) {
                     positiveCases.push((await createMockPositiveCases(true, 1, checkIn.user))[0]);
                 }
                 i++;
