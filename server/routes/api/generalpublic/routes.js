@@ -12,6 +12,7 @@ const Business = require("../../../models/Business");
 const GeneralPublic = require("../../../models/GeneralPublic");
 const rp = require('request-promise');
 const $ = require('cheerio');
+const RegisteredGeneralPublic = require("../../../models/RegisteredGeneralPublic");
 const {cache} = require("../../../middleware/cache");
 const {convertToNumber} = require("../../../utils/general");
 
@@ -200,6 +201,10 @@ router.get('/homepagestats', cache(10), asyncHandler(async (req, res) => {
     covidSummary["totalLocalCasesLast24Hours"] = dailySummary(covidSummaryHtml, "New Cases").total() - dailySummary(covidSummaryHtml, "Overseas").net();
     covidSummary["totalCases"] = dailySummary(covidSummaryHtml, "Cases").total();
     covidSummary["totalCheckins"] = await CheckIn.countDocuments();
+    covidSummary["totalRegisteredGeneralPublicUsers"] = await RegisteredGeneralPublic.countDocuments();
+    covidSummary["totalBusinesses"] = await Business.countDocuments();
+    covidSummary["totalVaccinationRecords"] = await VaccinationRecord.countDocuments();
+    covidSummary["totalVaccinationCentres"] = await VaccinationCentre.countDocuments();
     covidSummary["totalHotspots"] = Object.keys(await getPositiveBusinesses()).length;
 
     const vaccinationSummaryUrl = 'https://covidlive.com.au/report/vaccinations';
