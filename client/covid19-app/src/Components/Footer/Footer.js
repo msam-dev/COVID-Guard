@@ -21,7 +21,7 @@ const Footer = () => {
                     <div className='navbar-menuitem-text'>More Info</div>
                 </Item>
 
-                <Item>
+                <Item onClick={() => {history.push(PATH.termsAndConditions)}}>
                     <div className='navbar-menuitem-text'>Terms and Conditions</div>
                 </Item>
                 
