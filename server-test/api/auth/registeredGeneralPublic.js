@@ -251,6 +251,13 @@ describe("Covid App Server API Registered General Public Auth", () => {
         });
     });
     describe("POST /api/registeredgeneralpublic/auth/forgotpassword", () => {
+        let mySpy;
+        beforeEach(function() {
+            mySpy = sinon.spy(RegisteredGeneralPublic.prototype, "setTemporaryPassword");
+        });
+        afterEach(function() {
+            mySpy.restore();
+        });
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/forgotpassword')
@@ -271,12 +278,10 @@ describe("Covid App Server API Registered General Public Auth", () => {
                 // reset the history so that you get the correct call
                 global.setApiKeyStub.resetHistory();
                 global.sendMailStub.resetHistory();
-                let mySpy = sinon.spy(RegisteredGeneralPublic.prototype, "setTemporaryPassword");
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/forgotpassword')
                     .send({email: user.email})
                     .then((res) => {
-                        mySpy.restore();
                         if (res.status === 500) throw new Error(res.body.message);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);

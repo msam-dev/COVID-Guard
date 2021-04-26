@@ -265,6 +265,13 @@ describe("Covid App Server API BusinessOwner Auth", () => {
         });
     });
     describe("POST /api/businessowner/auth/forgotpassword", () => {
+        let mySpy;
+        beforeEach(function() {
+            mySpy = sinon.spy(BusinessUser.prototype, "setTemporaryPassword");
+        });
+        afterEach(function() {
+            mySpy.restore();
+        });
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/businessowner/auth/forgotpassword')
@@ -282,8 +289,6 @@ describe("Covid App Server API BusinessOwner Auth", () => {
         it("It creates a password reset request", (done) => {
             createMockBusinessUsers(true).then((users) => {
                 let user = users[0];
-                let mySpy = sinon.spy(BusinessUser.prototype, "setTemporaryPassword");
-
                 // reset the history so that you get the correct call
                 global.setApiKeyStub.resetHistory();
                 global.sendMailStub.resetHistory();
@@ -291,7 +296,6 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                     .post('/api/businessowner/auth/forgotpassword')
                     .send({email: user.email})
                     .then((res) => {
-                        mySpy.restore();
                         if (res.status === 500) throw new Error(res.body.message);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
