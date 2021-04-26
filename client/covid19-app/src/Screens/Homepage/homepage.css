@@ -1,0 +1,154 @@
+.homepage_text_one{
+    color: #0E5F76;
+    font-size:25px;
+}
+
+.homepage_text_two{
+    padding-left: 350px;
+    padding-top: 20px;
+    font-weight: bolder;
+    font-size: 18px;
+}
+
+.box_one{
+    margin-left: 350px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left;
+}
+
+.box_two{
+    margin-left: 50px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left; 
+}
+
+.box_three{
+    margin-left: 50px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left;
+}
+
+.box_four{
+    margin-left: 50px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left;
+}
+
+.box_five{
+    margin-top: 20px;
+    margin-left: 350px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left;
+}
+
+.box_six{
+    margin-top: 20px;
+    margin-left: 50px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left;
+}
+
+.box_seven{
+    margin-top: 20px;
+    margin-left: 50px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left;
+}
+
+.box_eight{
+    margin-top: 20px;
+    margin-left: 50px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left;
+}
+
+.text_two{
+    padding-left: 350px;
+    padding-top: 230px;
+    font-weight: bolder;
+    font-size: 18px;
+}
+
+.box_nine{
+    margin-left: 350px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left; 
+}
+
+.box_ten{
+    margin-left: 50px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left; 
+}
+
+.box_eleven{
+    margin-left: 50px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left;
+}
+
+.box_twelve{
+    margin-left: 50px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left;
+}
+
+.box_thirteen{
+    margin-top: 20px;
+    margin-left: 350px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left;
+}
+
+.box_fourteen{
+    margin-top: 20px;
+    margin-left: 50px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left;  
+}
+
+.box_fifteen{
+    margin-top: 20px;
+    margin-left: 50px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left;
+}
+
+.box_sixteen{
+    margin-top: 20px;
+    margin-left: 50px;
+    width:130px;
+    height:80px;
+    border:2px black solid;
+    float:left;
+}
