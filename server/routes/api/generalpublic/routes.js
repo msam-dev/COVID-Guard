@@ -23,7 +23,21 @@ const {convertToNumber} = require("../../../utils/general");
  */
 
 async function getPositiveBusinesses(){
+    const filter = {testDate: {$gt: moment().subtract(14, 'days').toDate()}};
+    let docs = await PositiveCase.aggregate([
+        { $match: filter },
+        { $lookup: {
+                'from': CheckIn.collection.name,
+                'localField': 'user',
+                'foreignField': 'user',
+                'as': 'Checkin'
+            }
+        }
+    ]);
+    console.log(docs[0].user);
+    console.log(docs[0].Checkin);
     let positiveCases = await PositiveCase.find({testDate: {$gt: moment().subtract(14, 'days').toDate()}});
+    console.log(positiveCases.length);
     let positiveCheckInsAll = [];
     for(let positiveCase of positiveCases){
         let positiveCheckIns = await CheckIn.find({user: positiveCase.user, date: {$gt: moment().subtract(14, 'days').toDate()}});
@@ -42,12 +56,6 @@ async function getPositiveBusinesses(){
 
 router.get('/currenthotspots', cache(10), asyncHandler(async (req, res) => {
     // do it the easiest way first then try aggregate
-    let positiveCases = await PositiveCase.find();
-    let positiveCheckInsAll = [];
-    for(let positiveCase of positiveCases){
-        let positiveCheckIns = await CheckIn.find({user: positiveCase.user, date: {$gt: moment().subtract(14, 'days').toDate()}});
-        positiveCheckInsAll = positiveCheckInsAll.concat(positiveCheckIns);
-    }
     let positiveBusinesses = await getPositiveBusinesses();
     let hotspots = [];
     Object.keys(positiveBusinesses).map(function(key) {
