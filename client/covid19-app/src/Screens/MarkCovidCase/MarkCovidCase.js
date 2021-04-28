@@ -11,9 +11,9 @@ const MarkCovidCase =() => {
             
             <div>
                 <h1 style={{marginTop:"5%" ,textAlign:'Center',fontWeight:'normal',color: "#0E5F76"}}>
-                    <span id='Mark_Covid_line'>Mark a patient as positive with</span>
+                    <span >Mark a patient as positive with</span>
                     <br/>
-                    <span id='Mark_Covid_line'>COVID-19 for contact Tracing</span> 
+                    <span >COVID-19 for contact Tracing</span> 
                 </h1>
             </div>
 

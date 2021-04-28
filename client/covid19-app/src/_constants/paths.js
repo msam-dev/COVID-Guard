@@ -9,7 +9,8 @@ const PATH = {
     checkvaccstatus: "/checkvaccstatus",
     termsAndConditions: "/termsAndConditions",
     markCovidCase: "/markCovidCase",
-    changePassword: "/changePassword"
+    changePassword: "/changePassword",
+    venueCode: "/venueCode"
 }
 
 export default PATH;
