@@ -58,7 +58,6 @@ async function getPositiveBusinesses(){
             }
         }
     ]);
-    console.log(docs);
     return docs;
 }
 
