@@ -23,54 +23,70 @@ const {convertToNumber} = require("../../../utils/general");
  */
 
 async function getPositiveBusinesses(){
-    const filter = {testDate: {$gt: moment().subtract(14, 'days').toDate()}};
+    const filter = {testDate: {$gte: moment().subtract(30, 'days').toDate()}};
     let docs = await PositiveCase.aggregate([
         { $match: filter },
         { $lookup: {
                 'from': CheckIn.collection.name,
                 'localField': 'user',
                 'foreignField': 'user',
-                'as': 'Checkin'
+                'as': 'checkin'
+            }
+        },
+        { $unwind : "$checkin" },
+        { $match: {
+                $and: [
+                    {$expr:{$gte:["$checkin.date", "$infectiousStartDate"]}},
+                    {$expr:{$lte:["$checkin.date", "$testDate"]}},
+                ],
             }
         }
     ]);
-    console.log(docs[0].user);
-    console.log(docs[0].Checkin);
-    let positiveCases = await PositiveCase.find({testDate: {$gt: moment().subtract(14, 'days').toDate()}});
-    console.log(positiveCases.length);
-    let positiveCheckInsAll = [];
-    for(let positiveCase of positiveCases){
-        let positiveCheckIns = await CheckIn.find({user: positiveCase.user, date: {$gt: moment().subtract(14, 'days').toDate()}});
-        positiveCheckInsAll = positiveCheckInsAll.concat(positiveCheckIns);
-    }
-    let positiveBusinesses = {};
-    for(let positiveCheckIn of positiveCheckInsAll){
-        if(!positiveBusinesses[positiveCheckIn.business.id]){
-            positiveBusinesses[positiveCheckIn.business.id] = positiveCheckIn;
-        } else if(positiveBusinesses[positiveCheckIn.business.id].date < positiveCheckIn.date){
-            positiveBusinesses[positiveCheckIn.business.id] = positiveCheckIn;
-        }
-    }
-    return positiveBusinesses;
+    return docs;
+}
+
+async function getPositiveBusinessesCount(){
+    const filter = {testDate: {$gte: moment().subtract(30, 'days').toDate()}};
+    let docs = await PositiveCase.aggregate([
+        { $match: filter },
+        { $lookup: {
+                'from': CheckIn.collection.name,
+                'localField': 'user',
+                'foreignField': 'user',
+                'as': 'checkin'
+            }
+        },
+        { $unwind : "$checkin" },
+        { $match: {
+                $and: [
+                    {$expr:{$gte:["$checkin.date", "$infectiousStartDate"]}},
+                    {$expr:{$lte:["$checkin.date", "$testDate"]}},
+                ],
+            }
+        },
+        {$group: {_id: "$checkin.business"}},
+        {$group: {_id: null, count: {$sum: 1}}}
+    ]);
+    return docs[0].count;
 }
 
 router.get('/currenthotspots', cache(10), asyncHandler(async (req, res) => {
     // do it the easiest way first then try aggregate
     let positiveBusinesses = await getPositiveBusinesses();
     let hotspots = [];
-    Object.keys(positiveBusinesses).map(function(key) {
-        let business = positiveBusinesses[key].business;
+    for (let business of positiveBusinesses){
+        let positiveBusiness = await Business.findById(business.checkin.business);
         hotspots.push({
-            venueName: business.name,
-            ABN: business.ABN,
-            city: business.address.city,
-            state: business.address.state,
-            postcode: business.address.postcode,
-            addressLine1: business.address.addressLine1,
-            addressLine2: business.address.addressLine2,
-            dateMarked: positiveBusinesses[key].date
+            venueName: positiveBusiness.name,
+            ABN: positiveBusiness.ABN,
+            city: positiveBusiness.address.city,
+            state: positiveBusiness.address.state,
+            postcode: positiveBusiness.address.postcode,
+            addressLine1: positiveBusiness.address.addressLine1,
+            addressLine2: positiveBusiness.address.addressLine2,
+            date: business.checkin.date
         });
-    });
+    }
 
     res.status(200).json({
         success: true,
@@ -213,7 +229,7 @@ router.get('/homepagestats', cache(10), asyncHandler(async (req, res) => {
     covidSummary["totalBusinesses"] = await Business.countDocuments();
     covidSummary["totalVaccinationRecords"] = await VaccinationRecord.countDocuments();
     covidSummary["totalVaccinationCentres"] = await VaccinationCentre.countDocuments();
-    covidSummary["totalHotspots"] = Object.keys(await getPositiveBusinesses()).length;
+    covidSummary["totalHotspots"] = await getPositiveBusinessesCount();
 
     const vaccinationSummaryUrl = 'https://covidlive.com.au/report/vaccinations';
     const vaccinationSummaryHtml = await rp(vaccinationSummaryUrl)

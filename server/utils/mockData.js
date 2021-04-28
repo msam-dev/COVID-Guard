@@ -1,3 +1,5 @@
+const moment = require("moment");
+
 const RegisteredGeneralPublic = require('../models/RegisteredGeneralPublic');
 const Address = require('../models/Address');
 const Business = require('../models/Business');
@@ -137,7 +139,7 @@ async function createMockCheckIns(save=false, numCheckIns=1, user=null, business
     let checkins = [];
     for(let i=0; i < numCheckIns; i++) {
         let checkin = new CheckIn();
-        checkin.date = faker.date.recent(30);
+        checkin.date = faker.date.recent(15);
         if(user){
             checkin.user = user;
             checkin.userModel = user.constructor.modelName;
@@ -168,6 +170,7 @@ async function createMockPositiveCases(save=false, numCases=1, user=null, userTy
     for(let i=0; i < numCases; i++) {
         let pCase = new PositiveCase();
         pCase.testDate = faker.date.recent(30);
+        pCase.infectiousStartDate =  moment(pCase.testDate).subtract(6, 'days').toDate();
         if(user){
             pCase.user = user;
             pCase.userModel = user.constructor.modelName;
