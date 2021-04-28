@@ -26,12 +26,28 @@ async function getPositiveBusinesses(){
     const filter = {testDate: {$gte: moment().subtract(30, 'days').toDate()}};
     let docs = await PositiveCase.aggregate([
         { $match: filter },
-        { $lookup: {
-                'from': CheckIn.collection.name,
-                'localField': 'user',
-                'foreignField': 'user',
-                'as': 'checkin'
-            }
+        {
+            $lookup:
+                {
+                    from: CheckIn.collection.name,
+                    let: {user1: "$user", userModel1: "$userModel"},
+                    pipeline: [
+                        {
+                            $match:
+                                {
+                                    $expr:
+                                        {
+                                            $and:
+                                                [
+                                                    {$eq: ["$user", "$$user1"]},
+                                                    {$eq: ["$userModel", "$$userModel1"]}
+                                                ]
+                                        }
+                                }
+                        },
+                    ],
+                    as: "checkin"
+                }
         },
         { $unwind : "$checkin" },
         { $match: {
@@ -42,6 +58,7 @@ async function getPositiveBusinesses(){
             }
         }
     ]);
+    console.log(docs);
     return docs;
 }
 
@@ -49,12 +66,28 @@ async function getPositiveBusinessesCount(){
     const filter = {testDate: {$gte: moment().subtract(30, 'days').toDate()}};
     let docs = await PositiveCase.aggregate([
         { $match: filter },
-        { $lookup: {
-                'from': CheckIn.collection.name,
-                'localField': 'user',
-                'foreignField': 'user',
-                'as': 'checkin'
-            }
+        {
+            $lookup:
+                {
+                    from: CheckIn.collection.name,
+                    let: {user1: "$user", userModel1: "$userModel"},
+                    pipeline: [
+                        {
+                            $match:
+                                {
+                                    $expr:
+                                        {
+                                            $and:
+                                                [
+                                                    {$eq: ["$user", "$$user1"]},
+                                                    {$eq: ["$userModel", "$$userModel1"]}
+                                                ]
+                                        }
+                                }
+                        },
+                    ],
+                    as: "checkin"
+                }
         },
         { $unwind : "$checkin" },
         { $match: {
