@@ -16,6 +16,7 @@ import Homepage from '../Screens/Homepage/Homepage';
 import TermsAndConditions from '../Screens/TermsAndConditions/TermsAndConditions';
 import MarkCovidCase from '../Screens/MarkCovidCase/MarkCovidCase';
 import ChangePassword from '../Screens/ChangePassword/ChangePassword';
+import VenueCode from '../Screens/VenueCode/VenueCode';
 
 function App() {
   return (
@@ -39,6 +40,7 @@ function App() {
                         <Route path={PATH.termsAndConditions}> <TermsAndConditions/> </Route>
                         <Route path={PATH.markCovidCase}> <MarkCovidCase/> </Route> 
                         <Route path={PATH.changePassword}> <ChangePassword/> </Route> 
+                        <Route path={PATH.venueCode}> <VenueCode/> </Route> 
                     </Switch>
                 </Router> 
             </div>
