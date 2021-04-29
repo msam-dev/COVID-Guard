@@ -36,7 +36,7 @@ router.get('/profile', authMiddleware(userType.BUSINESS), asyncHandler(async (re
         lastName: user.lastName,
         email: user.email,
         phone: user.phone,
-        ABN: user.business.ABN,
+        abn: user.business.abn,
         businessName: user.business.name,
     });
 }));

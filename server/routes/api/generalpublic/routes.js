@@ -117,6 +117,14 @@ router.get('/currenthotspots', cache(10), asyncHandler(async (req, res) => {
             addressLine1: positiveBusiness.address.addressLine1,
             addressLine2: positiveBusiness.address.addressLine2,
             date: business.checkin.date
+            venueName: business.name,
+            abn: business.abn,
+            city: business.address.city,
+            state: business.address.state,
+            postcode: business.address.postcode,
+            addressLine1: business.address.addressLine1,
+            addressLine2: business.address.addressLine2,
+            dateMarked: positiveBusinesses[key].date
         });
     }
 

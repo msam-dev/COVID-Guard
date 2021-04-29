@@ -128,7 +128,7 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                 email: "billy.jones@gmail.com",
                 password: "thisismypassword",
                 phone: "0567899934",
-                ABN: "15678956743",
+                abn: "15678956743",
                 businessName: "My Business",
                 addressLine1: "Unit 1",
                 addressLine2: "155 Musselbrook ave",
@@ -150,7 +150,7 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         assert.propertyVal(user, 'firstName', userData.firstName);
                         assert.propertyVal(user, 'lastName', userData.lastName);
                         assert.propertyVal(user, 'phone', userData.phone);
-                        assert.propertyVal(user.business, 'ABN', userData.ABN);
+                        assert.propertyVal(user.business, 'abn', userData.abn);
                         assert.propertyVal(user.business, 'name', userData.businessName);
                         assert.propertyVal(user.business.address, 'addressLine1', userData.addressLine1);
                         assert.propertyVal(user.business.address, 'addressLine2', userData.addressLine2);

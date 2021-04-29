@@ -4,7 +4,7 @@ const {generate5CharacterCode} = require("../utils/general");
 
 // Create Schema
 const BusinessSchema = new mongoose.Schema({
-    ABN: {
+    abn: {
         type: String,
         required: true,
         unique: true,
@@ -12,7 +12,7 @@ const BusinessSchema = new mongoose.Schema({
             validator: function(v) {
                 return /^[0-9]{11,11}$/.test(v);
             },
-            message: props => `${props.value} is not a valid ABN!`
+            message: props => `${props.value} is not a valid abn!`
         }
     },
     name: {

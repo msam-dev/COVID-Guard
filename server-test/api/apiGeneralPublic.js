@@ -90,7 +90,7 @@ describe("Covid App Server General Public Endpoints", () => {
             assert.isArray(res.body.hotspots);
             for(let hotspot of res.body.hotspots){
                 assert.property(hotspot, 'venueName');
-                assert.property(hotspot, 'ABN');
+                assert.property(hotspot, 'abn');
                 assert.property(hotspot, 'city');
                 assert.property(hotspot, 'state');
                 assert.property(hotspot, 'postcode');

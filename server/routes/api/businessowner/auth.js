@@ -70,9 +70,9 @@ router.post('/login', asyncHandler(async (req, res) => {
  */
 
 router.post('/register', asyncHandler(async (req, res) => {
-    const {firstName, lastName, email, password, phone, ABN, businessName, addressLine1, addressLine2, suburb, city, state, postcode} = req.body;
+    const {firstName, lastName, email, password, phone, abn, businessName, addressLine1, addressLine2, suburb, city, state, postcode} = req.body;
     // Simple validation
-    if (!firstName || !lastName || !email || !password || !ABN || !businessName || !addressLine1 || !suburb || !city || !state || !postcode) {
+    if (!firstName || !lastName || !email || !password || !abn || !businessName || !addressLine1 || !suburb || !city || !state || !postcode) {
         throw new BadRequest('Please enter all fields');
     }
 
@@ -92,7 +92,7 @@ router.post('/register', asyncHandler(async (req, res) => {
     if (!savedAddress) throw new ServerError('Something went wrong saving the user');
 
     const newBusiness = new Business({
-        ABN,
+        abn,
         name: businessName,
         address: newAddress
     });
@@ -104,7 +104,7 @@ router.post('/register', asyncHandler(async (req, res) => {
         lastName,
         email,
         password,
-        phone: phone,
+        phone,
         business: newBusiness
     });
 
