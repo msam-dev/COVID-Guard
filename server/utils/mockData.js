@@ -65,7 +65,7 @@ async function createMockBusinesses(save=false, numBusinesses=1, address=null){
     let businesses = [];
     for(let i=0; i < numBusinesses; i++) {
         let business = new Business();
-        business.ABN = faker.phone.phoneNumber("###########");
+        business.abn = faker.phone.phoneNumber("###########");
         // need to update this
         business.name = faker.company.companyName();
         if(address) {
@@ -112,7 +112,7 @@ async function createMockHealthProfessionalUsers(save=false, numUsers=1){
         user.password = password;
         user.rawPassword = password;
         user.phone = faker.phone.phoneNumber("0#########");
-        user.healthID = faker.datatype.uuid();
+        user.healthID = faker.phone.phoneNumber("###########");
         if (save) await user.save();
         users.push(user);
     }

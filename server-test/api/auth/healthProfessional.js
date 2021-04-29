@@ -130,7 +130,7 @@ describe("Covid App Server API Health Professional Auth", () => {
                     "firstName": "Johnny",
                     "lastName": "Smithy",
                     "phone": "0476898725",
-                    "healthID": "5656565656565656"
+                    "healthID": "56565656565"
                 })
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
@@ -147,6 +147,7 @@ describe("Covid App Server API Health Professional Auth", () => {
                         assert.propertyVal(user, 'firstName', "Johnny");
                         assert.propertyVal(user, 'lastName', "Smithy");
                         assert.propertyVal(user, 'phone', "0476898725");
+                        assert.propertyVal(user, 'healthID', "56565656565");
                         assert.isTrue(user.comparePassword("testPassword2"));
                         done();
                     }).catch((err) => {
@@ -256,6 +257,13 @@ describe("Covid App Server API Health Professional Auth", () => {
         });
     });
     describe("POST /api/healthprofessional/auth/forgotpassword", () => {
+        let mySpy;
+        beforeEach(function() {
+            mySpy = sinon.spy(HealthProfessionalUser.prototype, "setTemporaryPassword");
+        });
+        afterEach(function() {
+            mySpy.restore();
+        });
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/healthprofessional/auth/forgotpassword')
@@ -273,7 +281,6 @@ describe("Covid App Server API Health Professional Auth", () => {
         it("It creates a password reset request", (done) => {
             createMockHealthProfessionalUsers(true).then((users) => {
                 let user = users[0];
-                let mySpy = sinon.spy(HealthProfessionalUser.prototype, "setTemporaryPassword");
                 // reset the history so that you get the correct call
                 global.setApiKeyStub.resetHistory();
                 global.sendMailStub.resetHistory();
@@ -281,7 +288,6 @@ describe("Covid App Server API Health Professional Auth", () => {
                     .post('/api/healthprofessional/auth/forgotpassword')
                     .send({email: user.email})
                     .then((res) => {
-                        mySpy.restore();
                         if (res.status === 500) throw new Error(res.body.message);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);

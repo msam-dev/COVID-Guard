@@ -53,7 +53,7 @@ router.get('/currenthotspots', cache(10), asyncHandler(async (req, res) => {
         let business = positiveBusinesses[key].business;
         hotspots.push({
             venueName: business.name,
-            ABN: business.ABN,
+            abn: business.abn,
             city: business.address.city,
             state: business.address.state,
             postcode: business.address.postcode,
