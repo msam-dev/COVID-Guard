@@ -19,7 +19,8 @@ const BusinessForm = props => {
     const setUserState = props.setUserState;
     const [form] = useForm();
     const { width } = useViewport();
-    const [loading, setLoading] = useState();
+    const [loading, setLoading] = useState(false);
+    const numberInputs = onlyNumbers;
     let layoutA = layout3;
     let layoutB = layout4;
 
@@ -28,43 +29,46 @@ const BusinessForm = props => {
         layoutB = setCustLayout();
     }
 
-    const numberInputs = onlyNumbers;
-    
-    
+
+
+
+
     const register = () => {
         form.validateFields()
         .then(res => {
-          
-            console.log(res);
+            setLoading(true);
+            if(res.phone === "") delete res.phone;
+            const firstName = res.firstName;
             
             _registerBusiness(res)
-            .then(res => {
-                console.log("my result", res);
-                registerSuccessModal("bob");
+            .then(() => {
+                setLoading(false);
+                registerSuccessModal(firstName);
             })
             .catch(err => {
-                console.log("my err", err);
+                console.log(err);
+                setLoading(false);
                 form.setFields([
                     {
                         name: 'email',
-                        errors: ['Check email or ABN is not taken!'],
+                        errors: ['Check email or ABN is not already in use!'],
                     },
                     {
                         name: 'abn',
-                        errors: ['Check email or ABN is not taken!'],
+                        errors: ['Check email or ABN is not already in use!'],
                     }
                 ]);
             })
        })
        .catch(err => {
            console.log(err);
-           
        })
-
     }
 
 
 
+
+    
     return (
         <div>
             <div style={{textAlign: 'center', padding: '1%'}}>
@@ -120,8 +124,24 @@ const BusinessForm = props => {
                         <Input maxLength={30}/>
                     </Form.Item>
 
-                    <Form.Item label="Phone" name="phone" style={{color: "#0E5F76"}}>
-                        <Input onChange={e => {numberInputs(e, form, 'phone')}} maxLength={30}/>
+                    <Form.Item 
+                        label="Phone" 
+                        name="phone" 
+                        style={{color: "#0E5F76"}}
+                        validateTrigger={['onBlur']}
+                        rules={[
+                            {
+                                validator: async (_, phone) => {
+                                    if(phone !== undefined && phone !== ""){
+                                        if (phone.length < 10) {
+                                            return Promise.reject(new Error('Phone number must be valid'));
+                                        }
+                                    }
+                                },
+                              },
+                        ]}
+                    >
+                        <Input onChange={e => {numberInputs(e, form, 'phone')}} maxLength={10}/>
                     </Form.Item>
 
                     <Form.Item
@@ -267,13 +287,14 @@ const BusinessForm = props => {
                         ]}
                     >
                         <Select placeholder="Select State">
-                            <Option value="qld">QLD</Option>
-                            <Option value="nsw">NSW</Option>
-                            <Option value="vic">VIC</Option>
-                            <Option value="tas">TAS</Option>
-                            <Option value="vic">SA</Option>
-                            <Option value="vic">WA</Option>
-                            <Option value="vic">NT</Option>
+                            <Option value="QLD">QLD</Option>
+                            <Option value="NSW">NSW</Option>
+                            <Option value="VIC">VIC</Option>
+                            <Option value="TAS">TAS</Option>
+                            <Option value="SA">SA</Option>
+                            <Option value="WA">WA</Option>
+                            <Option value="NT">NT</Option>
+                            <Option value="ACT">ACT</Option>
                         </Select>
                     </Form.Item>
 
@@ -302,7 +323,7 @@ const BusinessForm = props => {
             </div>
 
             <div style={{textAlign: 'center'}}>
-                <Button type="primary" onClick={() => {register()}}>Sign me up</Button>
+                <Button loading={loading} type="primary" onClick={() => {register()}}>Sign me up</Button>
                 <span style={{color: "#0E5F76", paddingLeft: '15px'}}>Not you? <u style={{cursor: "pointer"}} onClick={() => { setUserState(USER_TYPE.UNREGISTERED)}}>Click here</u></span>
             </div> 
         </div>

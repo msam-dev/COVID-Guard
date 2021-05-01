@@ -23,7 +23,7 @@ const GeneralForm = props => {
     const register = () => {
         const user = form.getFieldValue();
         setLoading(true);
-        console.log(user);
+        if(user.phone === "") delete user.phone;
         _registerGeneral(user)
         .then(() => {
             setLoading(false);
@@ -99,7 +99,23 @@ const GeneralForm = props => {
                     <Input maxLength={30}/>
                 </Form.Item>
 
-                <Form.Item label="Phone" name="phone" style={{color: "#0E5F76"}}>
+                <Form.Item 
+                        label="Phone" 
+                        name="phone" 
+                        style={{color: "#0E5F76"}}
+                        validateTrigger={['onBlur']}
+                        rules={[
+                            {
+                                validator: async (_, phone) => {
+                                    if(phone !== undefined && phone !== ""){
+                                        if (phone.length < 10) {
+                                            return Promise.reject(new Error('Phone number must be valid'));
+                                        }
+                                    }
+                                },
+                              },
+                        ]}
+                    >
                     <Input onChange={e => {numberInputs(e, form, 'phone')}} maxLength={30}/>
                 </Form.Item>
 
