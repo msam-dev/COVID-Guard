@@ -23,3 +23,7 @@ export const _registerBusiness = user => {
 export const _registerHealth = user => {
     return axios.post('api/healthprofessional/auth/register', user);
 }
+
+export const _getVaccineCenters = () => {
+    return axios.get('/api/generalpublic/vaccinationcentres');
+}

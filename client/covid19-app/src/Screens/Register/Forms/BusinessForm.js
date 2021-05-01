@@ -34,15 +34,16 @@ const BusinessForm = props => {
     const register = () => {
         form.validateFields()
         .then(res => {
-            delete res.passwordConfirm;
+          
             console.log(res);
             
             _registerBusiness(res)
             .then(res => {
+                console.log("my result", res);
                 registerSuccessModal("bob");
             })
             .catch(err => {
-                console.log(err);
+                console.log("my err", err);
                 form.setFields([
                     {
                         name: 'email',

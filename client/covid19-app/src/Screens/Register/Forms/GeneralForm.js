@@ -23,7 +23,7 @@ const GeneralForm = props => {
     const register = () => {
         const user = form.getFieldValue();
         setLoading(true);
-        
+        console.log(user);
         _registerGeneral(user)
         .then(() => {
             setLoading(false);
