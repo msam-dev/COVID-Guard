@@ -21,6 +21,11 @@ const RegisteredUserSchema = extendSchema(userSchema, {
         expiry: {
             type: Date
         }
+    },
+    registrationDate: {
+        required: true,
+        type: Date,
+        default: Date.now
     }
 })
 // this is not persisted and is just used for testing
