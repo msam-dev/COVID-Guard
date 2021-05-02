@@ -301,7 +301,7 @@ function getRawUserData(users) {
 async function createDevData() {
     await db.connect();
     await mongoose.connection.db.dropDatabase();
-    let registeredGeneralPublicUsers = await createMockRegisteredGeneralPublicUsers(true, 5000);
+    let registeredGeneralPublicUsers = await createMockRegisteredGeneralPublicUsers(true, 10000);
     console.log("Registered General Public Users created");
     let registeredGeneralPublicUsersRaw = getRawUserData(registeredGeneralPublicUsers);
     let healthProfessionalUsers = await createMockHealthProfessionalUsers(true, 500);
@@ -324,90 +324,58 @@ async function createDevData() {
     }
     console.log("users file created");
 
-    let generalPublicUsers = await createMockGeneralPublicUsers(true, 5000);
+    let generalPublicUsers = await createMockGeneralPublicUsers(true, 10000);
     console.log("general public users created")
 
-    let positiveCases = [];
-    let vaccinationRecords = [];
-    let checkins = [];
-    for (let i = 0; i < registeredGeneralPublicUsers.length; i++) {
+
+    for (let i = 0; i < Math.min(registeredGeneralPublicUsers.length, generalPublicUsers.length); i++) {
+        let checkins = [];
+        let positiveCases = [];
+        let vaccinationRecords = [];
         let rUser = registeredGeneralPublicUsers[i];
+        let gUser = generalPublicUsers[i];
         for (let _ of Array(faker.datatype.number({
             'min': 0,
-            'max': 25
+            'max': 20
         }))) {
-            checkins = checkins.concat(await createMockCheckIns(false, faker.datatype.number({
+            checkins.push(...await createMockCheckIns(false, faker.datatype.number({
                 'min': 1,
-                'max': 10
+                'max': 5
             }), rUser, businessUsers[faker.datatype.number({
                 'min': 0,
                 'max': businessUsers.length - 1
             })].business, USER_TYPE.GENERAL));
-        }
-        if (faker.datatype.number({
-            'min': 0,
-            'max': 100
-        }) === 0) {
-            positiveCases = positiveCases.concat(await createMockPositiveCases(false, 1, rUser, USER_TYPE.GENERAL));
-        }
-        if (faker.datatype.number({
-            'min': 0,
-            'max': 10
-        }) === 0) {
-            vaccinationRecords = vaccinationRecords.concat(await createMockVaccinationRecord(false, 1, rUser));
-        }
 
-        let gUser = generalPublicUsers[i];
-        for (let _ of Array(faker.datatype.number({
-            'min': 0,
-            'max': 25
-        }))) {
-            checkins = checkins.concat(await createMockCheckIns(false, faker.datatype.number({
+            checkins.push(...await createMockCheckIns(false, faker.datatype.number({
                 'min': 1,
-                'max': 10
+                'max': 5
             }), gUser, businessUsers[faker.datatype.number({
                 'min': 0,
                 'max': businessUsers.length - 1
             })].business));
-            if (faker.datatype.number({
-                'min': 0,
-                'max': 100
-            }) === 0) {
-                positiveCases = positiveCases.concat(await createMockPositiveCases(false, 1, gUser, USER_TYPE.UNREGISTERED));
-            }
         }
-    }
-
-
-    for (let user of generalPublicUsers) {
-        for (let _ of Array(faker.datatype.number({
+        if (faker.datatype.number({
             'min': 0,
-            'max': 25
-        }))) {
-            checkins = checkins.concat(await createMockCheckIns(false, faker.datatype.number({
-                'min': 1,
-                'max': 10
-            }), user, businessUsers[faker.datatype.number({
-                'min': 0,
-                'max': businessUsers.length - 1
-            })].business));
-            if (faker.datatype.number({
-                'min': 0,
-                'max': 50
-            }) === 0) {
-                positiveCases = positiveCases.concat(await createMockPositiveCases(false, 1, user, USER_TYPE.UNREGISTERED));
-            }
+            'max': 500
+        }) === 0) {
+            positiveCases.push(...await createMockPositiveCases(false, 1, rUser));
+            positiveCases.push(...await createMockPositiveCases(false, 1, gUser));
         }
+        if (faker.datatype.number({
+            'min': 0,
+            'max': 5
+        }) === 0) {
+            vaccinationRecords.push(...await createMockVaccinationRecord(false, 1, rUser));
+        }
+        await PositiveCase.insertMany(positiveCases);
+        console.log("positive cases created")
+        await CheckIn.insertMany(checkins);
+        console.log("checkins created");
+        await VaccinationRecord.insertMany(vaccinationRecords);
+        console.log("vaccination records created");
     }
 
-    await PositiveCase.insertMany(positiveCases);
-    console.log("positive cases created")
-    await CheckIn.insertMany(checkins);
-    console.log("checkins created")
-    await VaccinationRecord.insertMany(vaccinationRecords);
-    console.log("vaccination records created")
-
-    await createMockVaccinationCentres(true, 100);
+    await createMockVaccinationCentres(true, 500);
     console.log("dev data created");
 }
 
