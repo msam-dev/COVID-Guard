@@ -356,7 +356,7 @@ async function createDevData() {
         }
         if (faker.datatype.number({
             'min': 0,
-            'max': 500
+            'max': 100
         }) === 0) {
             positiveCases.push(...await createMockPositiveCases(false, 1, rUser));
             positiveCases.push(...await createMockPositiveCases(false, 1, gUser));

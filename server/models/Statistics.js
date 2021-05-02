@@ -13,80 +13,108 @@ const VaccinationCentre = require("./VaccinationCentre");
 // Create Schema
 const StatisticsSchema = new mongoose.Schema({
         covidSummary: {
+            // from scraped
             totalHospitalised: {
                 type: Number,
                 required: true
             },
+            // from scraped
             totalDeaths: {
                 type: Number,
                 required: true
             },
+            // from scraped
             totalTests: {
                 type: Number,
                 required: true
             },
+            // from scraped
             totalTestsLast24Hours: {
                 type: Number,
                 required: true
             },
+            // from scraped
             totalOverseasCasesLast24Hours: {
                 type: Number,
                 required: true
             },
+            totalPositiveCases: {
+                type: Number,
+                required: true
+            },
+            totalPositiveCasesLast24Hours: {
+                type: Number,
+                required: true
+            },
+            totalPositiveCasesByMonth: [{
+                month: Number,
+                year: Number,
+                positiveCases: Number
+            }],
             totalCheckins: {
                 type: Number,
                 required: true
             },
-            totalHotspots: {
+            checkinsLast24Hours: {
                 type: Number,
                 required: true
-            }
+            },
+            totalCurrentHotspotVenues: {
+                type: Number,
+                required: true
+            },
+            totalBusinessRegistered: {
+                type: Number,
+                required: true
+            },
+            totalRegisteredGeneralPublicUsers: {
+                type: Number,
+                required: true
+            },
+            businessesByState: [{
+                state: String,
+                numberOfBusinesses: Number
+            }],
+            businessRegistrationsByMonth: [{
+                month: String,
+                year: Number,
+                numberOfBusinesses: Number
+            }],
+            businessesByState: [{
+                state: String,
+                numberOfBusinesses: Number
+            }],
+            generalPublicUserRegistrationsByMonth: [{
+                month: String,
+                year: Number,
+                numberOfUsers: Number
+            }]
         },
         vaccinationSummary: {
-            totalQLDVaccinations: {
+            totalVaccinations: {
                 type: Number,
                 required: true
             },
-            totalNSWVaccinations: {
+            vaccinationsYesterday: {
                 type: Number,
                 required: true
             },
-            totalVICVaccinations: {
-                type: Number,
-                required: true
-            },
-            totalTASVaccinations: {
-                type: Number,
-                required: true
-            },
-            totalSAVaccinations: {
-                type: Number,
-                required: true
-            },
-            totalWAVaccinations: {
-                type: Number,
-                required: true
-            },
-            totalACTVaccinations: {
-                type: Number,
-                required: true
-            },
-            totalNTVaccinations: {
-                type: Number,
-                required: true
-            },
-            totalCommonwealthVaccinations: {
-                type: Number,
-                required: true
-            },
-            totalGPClinicVaccinations: {
-                type: Number,
-                required: true
-            },
-            totalAustraliaVaccinations: {
-                type: Number,
-                required: true
-            }
+            vaccinationsByType: [{
+                vaccinationType: String,
+                numberOfVaccinations: String,
+            }],
+            vaccinationCentresByState: [{
+                state: String,
+                numberOfVaccinationCentres: Number,
+            }],
+            vaccinationsByStatus: [{
+                status: String,
+                numberOfVaccinations: Number,
+            }]
+        },
+        checkins: {
+            checkinsByMonth: [{year: Number, month: Number, numberOfCheckins: Number}],
+            checkinsByUserType: [{userType: String, numberOfCheckins: Number}]
         }
     }
 );
