@@ -23,7 +23,6 @@ router.post('/checkin', authMiddleware(userType.GENERAL), asyncHandler(async (re
     if (!userId || !venueCode) {
         throw new BadRequest('Please enter all fields');
     }
-    console.log(req.body);
 
     // Check for existing user
     const business = await Business.findOne({ code: venueCode });
