@@ -23,9 +23,16 @@ const BusinessSchema = new mongoose.Schema({
     code: {
         type: String,
         default: generate5CharacterCode,
-        unique: true
+        unique: true,
+        required: true
     },
     address: { type: mongoose.Schema.Types.ObjectId, ref: 'Address', required: true},
+});
+
+BusinessSchema.pre('save', async function() {
+    while (await Business.findOne({code: this.code})){
+        this.code = generate5CharacterCode();
+    }
 });
 
 autoPopulateField(BusinessSchema, 'address');

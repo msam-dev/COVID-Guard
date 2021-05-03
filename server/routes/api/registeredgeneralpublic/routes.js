@@ -23,11 +23,11 @@ router.post('/checkin', authMiddleware(userType.GENERAL), asyncHandler(async (re
     if (!userId || !venueCode) {
         throw new BadRequest('Please enter all fields');
     }
+    console.log(req.body);
 
     // Check for existing user
     const business = await Business.findOne({ code: venueCode });
     if (!business) throw new BadRequest('Business venue does not exist');
-
     // check id is valid
     if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
 

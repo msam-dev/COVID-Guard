@@ -47,7 +47,7 @@ async function createMockRegisteredGeneralPublicUsers(save = false, numUsers = 1
         users[user.email] = user;
     }
     try {
-        if (save) await RegisteredGeneralPublic.collection.insertMany(Object.values(users), {ordered: false});
+        if (save) await RegisteredGeneralPublic.insertMany(Object.values(users), {ordered: false});
     } catch (e) {
         console.error(e);
     }
@@ -74,8 +74,11 @@ async function createMockAddresses(save = false, numAddresses = 1, addCoordinate
 
         addresses.push(address);
     }
-    if (save) await Address.collection.insertMany(addresses);
-
+    try {
+        if (save) await Address.insertMany(addresses);
+    } catch (e) {
+        console.error(e);
+    }
     return addresses;
 }
 
@@ -93,8 +96,11 @@ async function createMockBusinesses(save = false, numBusinesses = 1, address = n
         }
         businesses.push(business);
     }
-    if (save) await Business.collection.insertMany(businesses);
-
+    try {
+        if (save) await Business.insertMany(businesses);
+    } catch (e) {
+        console.error(e);
+    }
     return businesses;
 }
 
@@ -115,11 +121,11 @@ async function createMockBusinessUsers(save = false, numUsers = 1, business = nu
             user.business = (await createMockBusinesses(save))[0];
         }
         if (user.email in users) continue
-        users[user.email] = user;
         user.registrationDate = faker.date.recent(150);
+        users[user.email] = user;
     }
     try {
-        if (save) await BusinessUser.collection.insertMany(Object.values(users), {ordered: false});
+        if (save) await BusinessUser.insertMany(Object.values(users), {ordered: false});
     } catch (e) {
         console.error(e);
     }
@@ -144,7 +150,7 @@ async function createMockHealthProfessionalUsers(save = false, numUsers = 1) {
         user.registrationDate = faker.date.recent(150);
     }
     try {
-        if (save) await HealthProfessional.collection.insertMany(Object.values(users), {ordered: false});
+        if (save) await HealthProfessional.insertMany(Object.values(users), {ordered: false});
     } catch (e) {
         console.error(e);
     }
@@ -163,7 +169,7 @@ async function createMockGeneralPublicUsers(save = false, numUsers = 1) {
         users[user.email] = user;
     }
     try {
-        if (save) await GeneralPublicUser.collection.insertMany(Object.values(users), {ordered: false});
+        if (save) await GeneralPublicUser.insertMany(Object.values(users), {ordered: false});
     } catch (e) {
         console.error(e);
     }
@@ -197,7 +203,7 @@ async function createMockCheckIns(save = false, numCheckIns = 1, user = null, bu
         checkins.push(checkin);
     }
 
-    if (save) await CheckIn.collection.insertMany(checkins);
+    if (save) await CheckIn.insertMany(checkins);
 
     return checkins;
 }
@@ -228,7 +234,7 @@ async function createMockPositiveCases(save = false, numCases = 1, user = null, 
         pCases.push(pCase);
     }
 
-    if (save) await PositiveCase.collection.insertMany(pCases);
+    if (save) await PositiveCase.insertMany(pCases);
 
     return pCases;
 }
@@ -249,7 +255,7 @@ async function createMockVaccinationRecord(save = false, numRecords = 1, user = 
         vRecords.push(vRecord);
     }
 
-    if (save) await VaccinationRecord.collection.insertMany(vRecords);
+    if (save) await VaccinationRecord.insertMany(vRecords);
 
     return vRecords;
 }
@@ -269,7 +275,7 @@ async function createMockVaccinationCentres(save = false, numCentres = 1, addres
         vaccinationCentres.push(vaccinationCentre);
     }
 
-    if (save) await VaccinationCentre.collection.insertMany(vaccinationCentres);
+    if (save) await VaccinationCentre.insertMany(vaccinationCentres);
 
     return vaccinationCentres;
 }
@@ -284,7 +290,7 @@ async function createMockCoordinates(save = false, numCoordinates = 1) {
         coordinates.push(coordinate);
     }
 
-    if (save) await Coordinates.collection.insertMany(coordinates);
+    if (save) await Coordinates.insertMany(coordinates);
 
     return coordinates;
 }

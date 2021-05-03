@@ -13,6 +13,7 @@ const GeneralPublic = require("../../../models/GeneralPublic");
 const rp = require('request-promise');
 const $ = require('cheerio');
 const RegisteredGeneralPublic = require("../../../models/RegisteredGeneralPublic");
+const Statistics = require("../../../models/Statistics");
 const {cache} = require("../../../middleware/cache");
 const {convertToNumber} = require("../../../utils/general");
 
@@ -22,89 +23,9 @@ const {convertToNumber} = require("../../../utils/general");
  * @access  Public
  */
 
-async function getPositiveBusinesses(){
-    const filter = {testDate: {$gte: moment().subtract(30, 'days').toDate()}};
-    let docs = await PositiveCase.aggregate([
-        { $match: filter },
-        {
-            $lookup:
-                {
-                    from: CheckIn.collection.name,
-                    let: {user1: "$user", userModel1: "$userModel"},
-                    pipeline: [
-                        {
-                            $match:
-                                {
-                                    $expr:
-                                        {
-                                            $and:
-                                                [
-                                                    {$eq: ["$user", "$$user1"]},
-                                                    {$eq: ["$userModel", "$$userModel1"]}
-                                                ]
-                                        }
-                                }
-                        },
-                    ],
-                    as: "checkin"
-                }
-        },
-        { $unwind : "$checkin" },
-        { $match: {
-                $and: [
-                    {$expr:{$gte:["$checkin.date", "$infectiousStartDate"]}},
-                    {$expr:{$lte:["$checkin.date", "$testDate"]}},
-                ],
-            }
-        }
-    ]);
-    return docs;
-}
-
-async function getPositiveBusinessesCount(){
-    const filter = {testDate: {$gte: moment().subtract(30, 'days').toDate()}};
-    let docs = await PositiveCase.aggregate([
-        { $match: filter },
-        {
-            $lookup:
-                {
-                    from: CheckIn.collection.name,
-                    let: {user1: "$user", userModel1: "$userModel"},
-                    pipeline: [
-                        {
-                            $match:
-                                {
-                                    $expr:
-                                        {
-                                            $and:
-                                                [
-                                                    {$eq: ["$user", "$$user1"]},
-                                                    {$eq: ["$userModel", "$$userModel1"]}
-                                                ]
-                                        }
-                                }
-                        },
-                    ],
-                    as: "checkin"
-                }
-        },
-        { $unwind : "$checkin" },
-        { $match: {
-                $and: [
-                    {$expr:{$gte:["$checkin.date", "$infectiousStartDate"]}},
-                    {$expr:{$lte:["$checkin.date", "$testDate"]}},
-                ],
-            }
-        },
-        {$group: {_id: "$checkin.business"}},
-        {$group: {_id: null, count: {$sum: 1}}}
-    ]);
-    return docs[0].count;
-}
-
 router.get('/currenthotspots', cache(10), asyncHandler(async (req, res) => {
     // do it the easiest way first then try aggregate
-    let positiveBusinesses = await getPositiveBusinesses();
+    let positiveBusinesses = await Statistics.getPositiveBusinessesCheckinDates();
     let hotspots = [];
     for (let business of positiveBusinesses){
         let positiveBusiness = await Business.findById(business.checkin.business);
@@ -261,7 +182,7 @@ router.get('/homepagestats', cache(10), asyncHandler(async (req, res) => {
     covidSummary["totalBusinesses"] = await Business.countDocuments();
     covidSummary["totalVaccinationRecords"] = await VaccinationRecord.countDocuments();
     covidSummary["totalVaccinationCentres"] = await VaccinationCentre.countDocuments();
-    covidSummary["totalHotspots"] = await getPositiveBusinessesCount();
+    covidSummary["totalHotspots"] = (await Statistics.getPositiveBusinessesCheckinDates()).length;
 
     const vaccinationSummaryUrl = 'https://covidlive.com.au/report/vaccinations';
     const vaccinationSummaryHtml = await rp(vaccinationSummaryUrl)

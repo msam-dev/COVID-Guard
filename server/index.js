@@ -47,13 +47,13 @@ app.get('*', (request, response) => {
 app.use(errorHandler);
 
 app.listen(PORT, () => console.log(`Server started on PORT ${PORT}`));
-Statistics.getVaccinationsByMonth().then((v)=>console.log(v));
-Statistics.getCheckinByMonth().then((v)=>console.log(v));
-Statistics.getPositiveCasesByMonth().then((v)=>console.log(v));
-Statistics.getGeneralPublicRegistrationsByMonth().then((v)=>console.log(v));
-Statistics.getBusinessRegistrationsByMonth().then((v)=>console.log(v));
-Statistics.getVaccinationCentresByState().then((v)=>console.log(v));
-Statistics.getBusinessesByState().then((v)=>console.log(v));
-Statistics.getPositiveBusinessesCheckinDates().then((v)=>console.log(v));
+// Statistics.getVaccinationsByMonth().then((v)=>console.log(v));
+// Statistics.getCheckinByMonth().then((v)=>console.log(v));
+// Statistics.getPositiveCasesByMonth().then((v)=>console.log(v));
+// Statistics.getGeneralPublicRegistrationsByMonth().then((v)=>console.log(v));
+// Statistics.getBusinessRegistrationsByMonth().then((v)=>console.log(v));
+// Statistics.getVaccinationCentresByState().then((v)=>console.log(v));
+// Statistics.getBusinessesByState().then((v)=>console.log(v));
+// Statistics.getPositiveBusinessesCheckinDates().then((v)=>console.log(v));
 
 module.exports = app;
