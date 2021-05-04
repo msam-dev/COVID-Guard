@@ -1,4 +1,5 @@
 import './homepage.css';
+
 const data = {
     total_case :23273,
     total_death :909,
