@@ -28,7 +28,7 @@ router.get('/currenthotspots', cache(10), asyncHandler(async (req, res) => {
     let positiveBusinesses = await Statistics.getPositiveBusinessesCheckinDates();
     let hotspots = [];
     for (let business of positiveBusinesses){
-        let positiveBusiness = await Business.findById(business.checkin.business);
+        let positiveBusiness = await Business.findById(business.business);
         hotspots.push({
             venueName: positiveBusiness.name,
             abn: positiveBusiness.abn,
@@ -37,7 +37,7 @@ router.get('/currenthotspots', cache(10), asyncHandler(async (req, res) => {
             postcode: positiveBusiness.address.postcode,
             addressLine1: positiveBusiness.address.addressLine1,
             addressLine2: positiveBusiness.address.addressLine2,
-            date: business.checkin.date
+            date: business.dateVisited
         });
     }
 
