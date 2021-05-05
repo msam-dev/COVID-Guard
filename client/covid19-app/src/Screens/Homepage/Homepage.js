@@ -22,10 +22,10 @@ const Homepage =() => {
     return(
         <div>
             <div style =  {{backgroundColor: '#FDC500'}}> 
-                <h1 className='homepage_text_one'> COVID Guard homepage </h1>
+                <h1 className='homepage_title'> COVID Guard homepage </h1>
             </div>
 
-            <div className='homepage_text_two'>
+            <div className='homepage_text_one'>
                 <text>COVID-19 Statistics summary</text>
                 <div style= {{width:'100%',height:'10px'}}> </div>
             </div>
@@ -79,7 +79,7 @@ const Homepage =() => {
                 <text style = {{fontSize:'25px',fontWeight:'400'}}>{data.total_hospitalized}</text>
             </div>
 
-            <div className='text_two'>
+            <div className='homepage_text_two'>
                 <text>COVID-19 Vaccine statistics summary</text>
                 <div style= {{width:'100%',height:'10px'}}> </div>
             </div>

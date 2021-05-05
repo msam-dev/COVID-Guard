@@ -1,9 +1,9 @@
-.homepage_text_one{
+.homepage_title{
     color: #0E5F76;
     font-size:25px;
 }
 
-.homepage_text_two{
+.homepage_text_one{
     padding-left: 350px;
     padding-top: 20px;
     font-weight: bolder;
@@ -78,7 +78,7 @@
     float:left;
 }
 
-.text_two{
+.homepage_text_two{
     padding-left: 350px;
     padding-top: 230px;
     font-weight: bolder;
@@ -152,3 +152,251 @@
     border:2px black solid;
     float:left;
 }
+
+@media only screen and (max-width: 1020px) and (min-width: 762px)
+{
+    .box_one{
+        margin-left: 12%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+
+    .box_five{
+        
+        margin-top: 20px;
+        margin-left: 12%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+
+    .box_nine{
+        margin-left: 12%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left; 
+    }
+
+    .box_thirteen{
+        margin-top: 20px;
+        margin-left: 12%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+    .homepage_text_one{
+        padding-left: 350px;
+        padding-top: 0px;
+        font-weight: bolder;
+        font-size: 18px;
+    }
+    .homepage_text_two{
+        padding-left: 350px;
+        padding-top: 180px;
+        font-weight: bolder;
+        font-size: 18px;
+    }
+}
+@media only screen and (max-width: 762px) and (min-width: 678px) {
+   
+    .box_one{
+        margin-left: 1%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+
+    .box_five{
+        
+        margin-top: 20px;
+        margin-left: 1%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+    
+
+    .box_nine{
+        margin-left: 1%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left; 
+    }
+
+    .box_thirteen{
+        margin-top: 20px;
+        margin-left: 1%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+    .homepage_text_one{
+        padding-left: 50px;
+        padding-top: 0px;
+        font-weight: bolder;
+        font-size: 18px;
+    }
+    .homepage_text_two{
+        padding-left: 50px;
+        padding-top: 180px;
+        font-weight: bolder;
+        font-size: 18px;
+    }
+}
+
+@media only screen and (max-width: 678px) {
+   
+    .box_one{
+        margin-left: 1%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+
+    .box_three{
+        margin-top: 1%;
+        margin-left: 1%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+
+    .box_four{
+        margin-top: 1%;
+        margin-left: 50px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+
+    .box_five{
+        
+        margin-top: 1%;
+        margin-left: 1%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+    
+    .box_six{
+        margin-top: 1%;
+        margin-left: 50px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+
+    .box_seven{
+        margin-top: 1%;
+        margin-left: 1%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+    
+    .box_eight{
+        margin-top: 1%;
+        margin-left: 50px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+
+    .box_nine{
+        margin-left: 1%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left; 
+    }
+
+    .box_eleven{
+        margin-top: 1%;
+        margin-left: 1%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+    
+    .box_twelve{
+        margin-top: 1%;
+        margin-left: 50px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+
+    .box_thirteen{
+        margin-top: 1%;
+        margin-left: 1%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+
+    .box_fourteen{
+        margin-top: 1%;
+        margin-left: 50px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;  
+    }
+    .homepage_text_one{
+        padding-left: 50px;
+        padding-top: 0px;
+        font-weight: bolder;
+        font-size: 10px;
+    }
+    .homepage_text_two{
+        padding-left: 50px;
+        padding-top: 335px;
+        font-weight: bolder;
+        font-size: 10px;
+    }
+
+    .box_fifteen{
+        margin-top: 1%;
+        margin-left: 1%;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+        bottom: 0%;
+    }
+    
+    .box_sixteen{
+        margin-top: 1%;
+        margin-left: 50px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+        bottom: 0%;
+    }
+    
+    .homepage_title{
+        color: #0E5F76;
+        font-size:18px;
+    }
+}
+
