@@ -3,9 +3,6 @@ import GoogleMap from '../../Components/GoogleMap/GoogleMap';
 import { useState } from 'react';
 import { useViewport } from '../../_helpers/viewPort';
 
-
-
-
 const Center = props => {
     const [mapVisible, setVisible] = useState(false);
     const { width } = useViewport();
@@ -17,8 +14,6 @@ const Center = props => {
     const clinicName = props.clinicName;
     const addressLine1 = props.addressLine1;
     const phone = props.phone;
-
-    
 
     const googleMapProps = {
         lat: -33.8688,
@@ -65,29 +60,31 @@ const Center = props => {
 
     const desktop = (
         <table id="vaccine-center-table">
-            <tr>
-                <td>
-                    <b>{clinicName}</b>
-                    <span>, {addressLine1}</span>
-                </td>
-                <td >
-                    <b>{suburb}</b>
-                    <span>, {city}, {state}, {postCode}</span>
-                </td>
-                <td>
-                    {phone}
-                </td>
-                <td>
-                    <Dropdown 
-                        overlay={addressMenu} 
-                        placement="bottomRight"
-                        visible={mapVisible} 
-                        onVisibleChange={ flag => { setVisible(flag) }}
-                    >
-                        <u style={{cursor: 'pointer'}}>Map</u>
-                    </Dropdown>
-                </td>
-            </tr>
+            <tbody>
+                <tr>
+                    <td>
+                        <b>{clinicName}</b>
+                        <span>, {addressLine1}</span>
+                    </td>
+                    <td >
+                        <b>{suburb}</b>
+                        <span>, {city}, {state}, {postCode}</span>
+                    </td>
+                    <td>
+                        {phone}
+                    </td>
+                    <td>
+                        <Dropdown 
+                            overlay={addressMenu} 
+                            placement="bottomRight"
+                            visible={mapVisible} 
+                            onVisibleChange={ flag => { setVisible(flag) }}
+                        >
+                            <u style={{cursor: 'pointer'}}>Map</u>
+                        </Dropdown>
+                    </td>
+                </tr>
+            </tbody>
         </table>
     );
 
@@ -104,10 +101,6 @@ const Center = props => {
             </Dropdown>
         </div>
     );
-
-
-
-
 
     return(
         <div>

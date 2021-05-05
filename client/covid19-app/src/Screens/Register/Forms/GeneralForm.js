@@ -1,4 +1,4 @@
-import { Form, Input, Button, Modal } from 'antd';
+import { Form, Input, Button } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
 import { layout2, tailLayout } from '../Helpers/Layouts';
 import USER_TYPE from '../../../_constants/userTypes';
