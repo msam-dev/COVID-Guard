@@ -3,6 +3,7 @@ import { Input } from 'antd';
 import Hotspot from './Hotspot';
 import { useState } from 'react';
 import { filterHotspots } from './Functions';
+import axios from 'axios';
 
 
 let dataArray = [];
@@ -29,9 +30,10 @@ for(let i = 0; i < 100; i++){
 const CurrentHotspots = () => {
     const [hotspots, setHotspots] = useState(dataArray); 
     const [hotspotsFilter] = useState(hotspots);
+    //const [loading, setLoading] = useState(false);
+    //const [error, setError] = useState(false);
 
 
-    
 
 
 

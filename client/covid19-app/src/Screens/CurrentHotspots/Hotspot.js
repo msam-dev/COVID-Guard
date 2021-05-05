@@ -2,10 +2,12 @@ import monthNames from '../../_constants/months';
 import { Menu, Dropdown } from 'antd';
 import GoogleMap from '../../Components/GoogleMap/GoogleMap';
 import { useState } from 'react';
+import { useViewport } from '../../_helpers/viewPort';
 
 
 const Hotspot = props => {
     const [mapVisible, setVisible] = useState(false);
+    const { width } = useViewport();
     
     const city = props.city;
     const state = props.state;
@@ -33,6 +35,32 @@ const Hotspot = props => {
             </Menu.Item>
         </Menu>
     );
+
+    /*
+    const mobileMenu = (
+        <Menu>
+            <Menu.Item >
+                <div>
+                    {addressLine1}
+                </div>    
+            </Menu.Item>
+            <Menu.Item >
+                <div>
+                    {suburb}, {city}, {state}
+                </div>    
+            </Menu.Item>
+            <Menu.Item >
+                <div>
+                    Phone: {phone}
+                </div>    
+            </Menu.Item>
+            <Menu.Item >
+                <div>
+                    <GoogleMap {...googleMapProps} />
+                </div>    
+            </Menu.Item>
+        </Menu>
+    );*/
 
     return(
         <div style ={{justifyContent: 'space-between', fontSize: "20px", color: "#0E5F76" }} id="current-hotspot-flexbox">
