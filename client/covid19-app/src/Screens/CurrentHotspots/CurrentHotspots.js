@@ -26,7 +26,6 @@ for(let i = 0; i < 100; i++){
 
 
 
-
 const CurrentHotspots = () => {
     const [hotspots, setHotspots] = useState(dataArray); 
     const [hotspotsFilter] = useState(hotspots);
@@ -35,7 +34,13 @@ const CurrentHotspots = () => {
 
 
 
-
+    axios.get('http://localhost:5000/api/generalpublic/currenthotspots')
+    .then(res => {
+        console.log(res);
+    })
+    .catch(err => {
+        console.log(err);
+    });
 
     return (
         <div>
