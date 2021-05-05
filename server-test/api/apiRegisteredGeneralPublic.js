@@ -54,8 +54,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
             let users = await createMockRegisteredGeneralPublicUsers(true);
             let business = businesses[0];
             let user = users[0];
-
-            chai.request(app)
+            return chai.request(app)
                 .post('/api/registeredgeneralpublic/checkin')
                 .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
                 .send({
@@ -68,9 +67,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'venueCode', business.code);
                     assert.propertyVal(res.body, 'userId', user.id);
-                }).catch((err) => {
-                done(err);
-            });
+                });
             });
         });
     describe("GET /api/registeredgeneralpublic/profile", () => {
