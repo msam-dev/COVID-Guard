@@ -13,11 +13,10 @@ const VaccineCenters = () => {
     const [error, setError] = useState(false);
 
     useEffect(() => {
-        if(centers.length === 0){
+        if(centers.length === 0 && centerFilter.length === 0){
             setLoading(true);
             _getVaccineCenters()
             .then(res => {
-                console.log(res);
                 setLoading(false);
                 setCenters(res.data.vaccinationCentres);
                 setCenterFilter(res.data.vaccinationCentres);
@@ -29,7 +28,7 @@ const VaccineCenters = () => {
             });
         }
         
-    }, [centers.length]);
+    }, [centers.length, centerFilter.length]);
     
     return (
         <div>

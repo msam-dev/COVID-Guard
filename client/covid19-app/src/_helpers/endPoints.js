@@ -25,5 +25,9 @@ export const _registerHealth = user => {
 }
 
 export const _getVaccineCenters = () => {
-    return axios.get('/api/generalpublic/vaccinationcentres');
+    return axios.get('api/generalpublic/vaccinationcentres');
+}
+
+export const _getCurrentHotspots = () => {
+    return axios.get('api/generalpublic/currenthotspots');
 }
