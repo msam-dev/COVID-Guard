@@ -1,33 +1,40 @@
 
 import './VaccineCenters.css';
-import { Input } from 'antd';
+import { Input, Spin } from 'antd';
 import Center from './Center';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { filterCenters } from './Functions';
+import { _getVaccineCenters } from '../../_helpers/endPoints';
 
 
-let dataArray = [];
-
-for(let i = 0; i < 100; i++){
-    const data = {
-        city: "Wollongong",
-        state: "NSW",
-        postCode: 1500 + i + "",
-        venueName: "Wollongong Hospital",
-        addressLine1: "90 Crown Street",
-        addressLine2: "",
-    }
-    dataArray[i] = data;
-}
 
 
 
 
 const VaccineCenters = () => {
-    const [centers, setCenters] = useState(dataArray); 
-    const [centerFilter] = useState(centers);
+    const [centers, setCenters] = useState([]); 
+    const [centerFilter, setCenterFilter] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
 
-
+    useEffect(() => {
+        if(centers.length === 0){
+            setLoading(true);
+            _getVaccineCenters()
+            .then(res => {
+                console.log(res);
+                setLoading(false);
+                setCenters(res.data.vaccinationCentres);
+                setCenterFilter(res.data.vaccinationCentres);
+            })
+            .catch(err => {
+                setLoading(false);
+                setError(true);
+                console.log(err);
+            });
+        }
+        
+    }, []);
     
 
 
@@ -53,6 +60,7 @@ const VaccineCenters = () => {
             </div>
             
             <div style={{clear: "both", paddingTop: "1%"}}>
+
                 <div id='vaccine-center-wrapper'>
                     {
                         centers.map((center, i) => {

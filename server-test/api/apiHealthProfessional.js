@@ -5,6 +5,8 @@ const chaiHttp = require("chai-http");
 const app = require("../../server");
 const assert = require('chai').assert
 const HealthProfessional = require("../../server/models/HealthProfessional");
+const USER_TYPE = require("../../server/_constants/usertypes");
+const {createAuthToken} = require("../../server/utils/general");
 const {createMockHealthProfessionalUsers} = require("../../server/utils/mockData");
 
 // Configure chai
@@ -15,6 +17,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .get('/api/healthprofessional/profile')
+                .set('x-auth-token', createAuthToken(null, USER_TYPE.HEALTH))
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
                     assert.equal(res.status, 400);
@@ -29,6 +32,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
         it("it returns error message 'User does not exist'", (done) => {
             chai.request(app)
                 .get('/api/healthprofessional/profile')
+                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.HEALTH))
                 .send({
                     userId: "41224d776a326fb40f000001"
                 })
@@ -49,6 +53,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
 
             const res = await chai.request(app)
                 .get('/api/healthprofessional/profile')
+                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.HEALTH))
                 .send({
                     userId: user.id
                 })
@@ -64,6 +69,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
         it("returns error message 'Please enter all fields'", (done) => {
             chai.request(app)
                 .post('/api/healthprofessional/profile')
+                .set('x-auth-token', createAuthToken(null, USER_TYPE.HEALTH))
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
                     assert.equal(res.status, 400);
@@ -78,6 +84,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
         it("it returns error message 'User does not exist'", (done) => {
             chai.request(app)
                 .post('/api/healthprofessional/profile')
+                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.HEALTH))
                 .send({
                     userId: "41224d776a326fb40f000001",
                     firstName: "Bob",
@@ -101,6 +108,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
 
             const res = await chai.request(app)
                 .post('/api/healthprofessional/profile')
+                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.HEALTH))
                 .send({
                     userId: user.id,
                     firstName: "Bob",

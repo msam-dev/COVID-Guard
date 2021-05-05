@@ -22,7 +22,7 @@ const {convertToNumber} = require("../../../utils/general");
  */
 
 async function getPositiveBusinesses(){
-    let positiveCases = await PositiveCase.find();
+    let positiveCases = await PositiveCase.find({testDate: {$gt: moment().subtract(14, 'days').toDate()}});
     let positiveCheckInsAll = [];
     for(let positiveCase of positiveCases){
         let positiveCheckIns = await CheckIn.find({user: positiveCase.user, date: {$gt: moment().subtract(14, 'days').toDate()}});
@@ -53,7 +53,7 @@ router.get('/currenthotspots', cache(10), asyncHandler(async (req, res) => {
         let business = positiveBusinesses[key].business;
         hotspots.push({
             venueName: business.name,
-            ABN: business.ABN,
+            abn: business.abn,
             city: business.address.city,
             state: business.address.state,
             postcode: business.address.postcode,
