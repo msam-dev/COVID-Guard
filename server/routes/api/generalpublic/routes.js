@@ -12,6 +12,8 @@ const Business = require("../../../models/Business");
 const GeneralPublic = require("../../../models/GeneralPublic");
 const rp = require('request-promise');
 const $ = require('cheerio');
+const RegisteredGeneralPublic = require("../../../models/RegisteredGeneralPublic");
+const Statistics = require("../../../models/Statistics");
 const {cache} = require("../../../middleware/cache");
 const {convertToNumber} = require("../../../utils/general");
 
@@ -21,47 +23,23 @@ const {convertToNumber} = require("../../../utils/general");
  * @access  Public
  */
 
-async function getPositiveBusinesses(){
-    let positiveCases = await PositiveCase.find({testDate: {$gt: moment().subtract(14, 'days').toDate()}});
-    let positiveCheckInsAll = [];
-    for(let positiveCase of positiveCases){
-        let positiveCheckIns = await CheckIn.find({user: positiveCase.user, date: {$gt: moment().subtract(14, 'days').toDate()}});
-        positiveCheckInsAll = positiveCheckInsAll.concat(positiveCheckIns);
-    }
-    let positiveBusinesses = {};
-    for(let positiveCheckIn of positiveCheckInsAll){
-        if(!positiveBusinesses[positiveCheckIn.business.id]){
-            positiveBusinesses[positiveCheckIn.business.id] = positiveCheckIn;
-        } else if(positiveBusinesses[positiveCheckIn.business.id].date < positiveCheckIn.date){
-            positiveBusinesses[positiveCheckIn.business.id] = positiveCheckIn;
-        }
-    }
-    return positiveBusinesses;
-}
-
 router.get('/currenthotspots', cache(10), asyncHandler(async (req, res) => {
     // do it the easiest way first then try aggregate
-    let positiveCases = await PositiveCase.find();
-    let positiveCheckInsAll = [];
-    for(let positiveCase of positiveCases){
-        let positiveCheckIns = await CheckIn.find({user: positiveCase.user, date: {$gt: moment().subtract(14, 'days').toDate()}});
-        positiveCheckInsAll = positiveCheckInsAll.concat(positiveCheckIns);
-    }
-    let positiveBusinesses = await getPositiveBusinesses();
+    let positiveBusinesses = await Statistics.getPositiveBusinessesCheckinDates();
     let hotspots = [];
-    Object.keys(positiveBusinesses).map(function(key) {
-        let business = positiveBusinesses[key].business;
+    for (let business of positiveBusinesses){
+        let positiveBusiness = await Business.findById(business.checkin.business);
         hotspots.push({
-            venueName: business.name,
-            abn: business.abn,
-            city: business.address.city,
-            state: business.address.state,
-            postcode: business.address.postcode,
-            addressLine1: business.address.addressLine1,
-            addressLine2: business.address.addressLine2,
-            dateMarked: positiveBusinesses[key].date
+            venueName: positiveBusiness.name,
+            abn: positiveBusiness.abn,
+            city: positiveBusiness.address.city,
+            state: positiveBusiness.address.state,
+            postcode: positiveBusiness.address.postcode,
+            addressLine1: positiveBusiness.address.addressLine1,
+            addressLine2: positiveBusiness.address.addressLine2,
+            date: business.checkin.date
         });
-    });
+    }
 
     res.status(200).json({
         success: true,
@@ -200,7 +178,11 @@ router.get('/homepagestats', cache(10), asyncHandler(async (req, res) => {
     covidSummary["totalLocalCasesLast24Hours"] = dailySummary(covidSummaryHtml, "New Cases").total() - dailySummary(covidSummaryHtml, "Overseas").net();
     covidSummary["totalCases"] = dailySummary(covidSummaryHtml, "Cases").total();
     covidSummary["totalCheckins"] = await CheckIn.countDocuments();
-    covidSummary["totalHotspots"] = Object.keys(await getPositiveBusinesses()).length;
+    covidSummary["totalRegisteredGeneralPublicUsers"] = await RegisteredGeneralPublic.countDocuments();
+    covidSummary["totalBusinesses"] = await Business.countDocuments();
+    covidSummary["totalVaccinationRecords"] = await VaccinationRecord.countDocuments();
+    covidSummary["totalVaccinationCentres"] = await VaccinationCentre.countDocuments();
+    covidSummary["totalHotspots"] = (await Statistics.getPositiveBusinessesCheckinDates()).length;
 
     const vaccinationSummaryUrl = 'https://covidlive.com.au/report/vaccinations';
     const vaccinationSummaryHtml = await rp(vaccinationSummaryUrl)
