@@ -7,7 +7,7 @@ const TermsAndConditions = () => {
             <h1 style = {{color: "#0E5F76", textAlign: "left", backgroundColor: "#FDC500", paddingLeft: "1%",width:"100%"}}>Terms & Conditions</h1>
             <h1 style = {{textAlign: "center", color: "#0E5F76", padding: "2%",width:"100%"}}>COVID Guard Terms & Conditions</h1>
             
-            
+            <div className="Terms_and_condition_flex">
             <text className='terms_text_one'>
                 We provide information about the
                 Department of Health and its responsibilities
@@ -29,7 +29,7 @@ const TermsAndConditions = () => {
             <span id='terms_text_two_content'>the Australian Government or indicate a commitment to a particular course of action.</span>
              
             </text>
-            
+            </div>
           </div>
     );
 }
