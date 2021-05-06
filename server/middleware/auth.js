@@ -7,8 +7,8 @@ const JWT_SECRET = config.get('JWT_SECRET');
 module.exports = (usertype) => {
     return (req, res, next) => {
         // skip this for the moment
-        next();
-        return;
+        //next();
+        //return;
         const token = req.header('x-auth-token');
 
         // Check for token
