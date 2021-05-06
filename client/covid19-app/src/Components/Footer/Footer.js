@@ -25,7 +25,7 @@ const Footer = () => {
                     <div className='navbar-menuitem-text'>Terms and Conditions</div>
                 </Item>
                 
-                <Item style={{float: 'right'}}>
+                <Item onClick={() => { history.push(PATH.home)}} style={{float: 'right'}}>
                     <img width={50} src={logo_basic} alt="Logo" />
                 </Item>
             </Menu>

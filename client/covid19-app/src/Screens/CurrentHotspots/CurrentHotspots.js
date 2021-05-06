@@ -13,6 +13,8 @@ const CurrentHotspots = () => {
 
     useEffect(() => {
         if(hotspots.length === 0 && hotspotsFilter.length === 0){
+            const ac = new AbortController();
+    
             setLoading(true);
             _getCurrentHotspots()
             .then(res => {
@@ -25,9 +27,11 @@ const CurrentHotspots = () => {
                 setLoading(false);
                 setError(true);
             });
+            return () => ac.abort();
         }
         
     }, [hotspots.length, hotspotsFilter.length]);
+
     
     return (
         <div>

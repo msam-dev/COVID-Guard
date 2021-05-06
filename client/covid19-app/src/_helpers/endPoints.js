@@ -31,3 +31,18 @@ export const _getVaccineCenters = () => {
 export const _getCurrentHotspots = () => {
     return axios.get('api/generalpublic/currenthotspots');
 }
+
+export const _checkGeneralUser = token => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.get('api/registeredgeneralpublic/auth/user', config);
+}
+
+export const _checkHealthUser = token => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.get('api/healthprofessional/auth/user', config);
+}
+
+export const _checkBusinessUser = token => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.get('/api/businessowner/auth/user', config);
+}

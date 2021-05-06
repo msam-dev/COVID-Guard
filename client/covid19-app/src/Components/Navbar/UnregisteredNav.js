@@ -11,7 +11,7 @@ const UnregisteredNav = () => {
     return (
         <div >
             <Menu style ={{backgroundColor: "#0E5F76"}} mode="horizontal" >
-                <Item>
+                <Item onClick={() => { history.push(PATH.home)}}>
                     <img width={200} src={logo} alt="Logo" />
                 </Item>
 
