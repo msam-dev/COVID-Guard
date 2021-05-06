@@ -26,7 +26,10 @@ const RegisteredUserSchema = extendSchema(userSchema, {
         required: true,
         type: Date,
         default: Date.now
-    }
+    },
+    accessToken: {
+        type: String
+    },
 })
 // this is not persisted and is just used for testing
 RegisteredUserSchema.virtual('rawPassword').get(function() {
