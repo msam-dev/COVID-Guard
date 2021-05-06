@@ -3,8 +3,11 @@ import { layout3, layout4 } from '../Helpers/Layouts';
 import { useForm } from 'antd/lib/form/Form';
 import USER_TYPE from '../../../_constants/userTypes';
 import { useViewport } from '../../../_helpers/viewPort';
-import { setCustLayout, handleSubmitBusiness } from '../Helpers/Functions';
+import { setCustLayout } from '../Helpers/Functions';
 import { onlyNumbers } from '../../../_helpers/sharedFunctions';
+import { _registerBusiness } from '../../../_helpers/endPoints';
+import { registerSuccessModal } from '../Helpers/Modals';
+import { useState } from 'react';
 
 const { Option } = Select;
 
@@ -16,6 +19,8 @@ const BusinessForm = props => {
     const setUserState = props.setUserState;
     const [form] = useForm();
     const { width } = useViewport();
+    const [loading, setLoading] = useState(false);
+    const numberInputs = onlyNumbers;
     let layoutA = layout3;
     let layoutB = layout4;
 
@@ -24,13 +29,46 @@ const BusinessForm = props => {
         layoutB = setCustLayout();
     }
 
-    const handleSubmit = handleSubmitBusiness;
-    const numberInputs = onlyNumbers;
 
 
 
 
+    const register = () => {
+        form.validateFields()
+        .then(res => {
+            setLoading(true);
+            if(res.phone === "") delete res.phone;
+            const firstName = res.firstName;
+            
+            _registerBusiness(res)
+            .then(() => {
+                setLoading(false);
+                registerSuccessModal(firstName);
+            })
+            .catch(err => {
+                console.log(err);
+                setLoading(false);
+                form.setFields([
+                    {
+                        name: 'email',
+                        errors: ['Check email or ABN is not already in use!'],
+                    },
+                    {
+                        name: 'abn',
+                        errors: ['Check email or ABN is not already in use!'],
+                    }
+                ]);
+            })
+       })
+       .catch(err => {
+           console.log(err);
+       })
+    }
 
+
+
+
+    
     return (
         <div>
             <div style={{textAlign: 'center', padding: '1%'}}>
@@ -41,7 +79,7 @@ const BusinessForm = props => {
             <Form {...layoutA} form={form}>
                     <Form.Item
                         label="First Name"
-                        name="firstname"
+                        name="firstName"
                         style={{color: "#0E5F76"}}
                         rules={[
                             {
@@ -56,7 +94,7 @@ const BusinessForm = props => {
             
                     <Form.Item
                         label="Last Name"
-                        name="lastname"
+                        name="lastName"
                         style={{color: "#0E5F76"}}
                         rules={[
                             {
@@ -73,6 +111,7 @@ const BusinessForm = props => {
                         label="Email"
                         name="email"
                         style={{color: "#0E5F76"}}
+                        validateTrigger={['onBlur']}
                         rules={[
                             {
                                 required: true,
@@ -85,8 +124,24 @@ const BusinessForm = props => {
                         <Input maxLength={30}/>
                     </Form.Item>
 
-                    <Form.Item label="Phone" name="phone" style={{color: "#0E5F76"}}>
-                        <Input onChange={e => {numberInputs(e, form, 'phone')}} maxLength={30}/>
+                    <Form.Item 
+                        label="Phone" 
+                        name="phone" 
+                        style={{color: "#0E5F76"}}
+                        validateTrigger={['onBlur']}
+                        rules={[
+                            {
+                                validator: async (_, phone) => {
+                                    if(phone !== undefined && phone !== ""){
+                                        if (phone.length < 10) {
+                                            return Promise.reject(new Error('Phone number must be valid'));
+                                        }
+                                    }
+                                },
+                              },
+                        ]}
+                    >
+                        <Input onChange={e => {numberInputs(e, form, 'phone')}} maxLength={10}/>
                     </Form.Item>
 
                     <Form.Item
@@ -108,6 +163,7 @@ const BusinessForm = props => {
                         label="Confirm Password"
                         name="passwordConfirm"
                         style={{color: "#0E5F76"}}
+                        validateTrigger={['onBlur']}
                         rules={[
                             {
                                 required: true,
@@ -116,9 +172,8 @@ const BusinessForm = props => {
                             ({ getFieldValue }) => ({
                                 validator(_, value) {
                                     if (!value || getFieldValue('password') === value) return Promise.resolve();
-                                    return Promise.reject(new Error('The two passwords that you entered do not match!'));
-                                },
-                                validateTrigger: 'onSubmit'
+                                    return Promise.reject(new Error('Passwords do not match!'));
+                                }
                             })
                         ]}
                     >
@@ -132,12 +187,19 @@ const BusinessForm = props => {
                         rules={[
                             {
                                 required: true,
-                                message: 'Please input your ABN',
+                                message: 'Please input your ABN!',
                                 whitespace: true
+                            },
+                            {   
+                                validateTrigger: 'onsubmit',
+                                validator: async (_, abn) => {
+                                    if(!abn) return Promise.resolve();
+                                    else if(abn.length < 11) return Promise.reject(new Error('ABN must be 11 digits!'));
+                                }
                             }
                         ]}
                     >
-                        <Input onChange={e => {numberInputs(e, form, 'abn')}} maxLength={30}/>
+                        <Input onChange={e => {numberInputs(e, form, 'abn')}} maxLength={11}/>
                     </Form.Item>
                 </Form>
             </div>
@@ -146,7 +208,7 @@ const BusinessForm = props => {
             <Form {...layoutB} form={form}>
                     <Form.Item
                         label="Venue Name"
-                        name="vanueName"
+                        name="businessName"
                         style={{color: "#0E5F76"}}
                         rules={[
                             {
@@ -161,7 +223,7 @@ const BusinessForm = props => {
             
                     <Form.Item
                         label="Address Line 1"
-                        name="address1"
+                        name="addressLine1"
                         style={{color: "#0E5F76"}}
                         rules={[
                             {
@@ -176,7 +238,7 @@ const BusinessForm = props => {
 
                     <Form.Item
                         label="Address Line 2"
-                        name="address2"
+                        name="addressLine2"
                         style={{color: "#0E5F76"}}
                     >
                         <Input maxLength={30}/>
@@ -209,7 +271,7 @@ const BusinessForm = props => {
                             }
                         ]}
                     >
-                        <Input.Password maxLength={30}/>
+                        <Input maxLength={30}/>
                     </Form.Item>
 
                     <Form.Item
@@ -225,35 +287,43 @@ const BusinessForm = props => {
                         ]}
                     >
                         <Select placeholder="Select State">
-                            <Option value="qld">QLD</Option>
-                            <Option value="nsw">NSW</Option>
-                            <Option value="vic">VIC</Option>
-                            <Option value="tas">TAS</Option>
-                            <Option value="vic">SA</Option>
-                            <Option value="vic">WA</Option>
-                            <Option value="vic">NT</Option>
+                            <Option value="QLD">QLD</Option>
+                            <Option value="NSW">NSW</Option>
+                            <Option value="VIC">VIC</Option>
+                            <Option value="TAS">TAS</Option>
+                            <Option value="SA">SA</Option>
+                            <Option value="WA">WA</Option>
+                            <Option value="NT">NT</Option>
+                            <Option value="ACT">ACT</Option>
                         </Select>
                     </Form.Item>
 
                     <Form.Item
                         label="Post Code"
-                        name="postCode"
+                        name="postcode"
                         style={{color: "#0E5F76"}}
                         rules={[
                             {
                                 required: true,
-                                message: 'Please input the post code of your venue!',
+                                message: 'Please input the postcode of your venue!',
                                 whitespace: true
+                            },
+                            {   
+                                validateTrigger: 'onsubmit',
+                                validator: async (_, postcode) => {
+                                    if(!postcode) return Promise.resolve();
+                                    else if(postcode.length < 4) return Promise.reject(new Error('Postcode must be 4 digits!'));
+                                }
                             }
                         ]}
                     >
-                        <Input onChange={e => {numberInputs(e, form, 'postCode')}} maxLength={4} pattern="[a-zA-Z]*"/>     
+                        <Input onChange={e => {numberInputs(e, form, 'postcode')}} maxLength={4} />     
                     </Form.Item>
                 </Form>
             </div>
 
             <div style={{textAlign: 'center'}}>
-                <Button type="primary" onClick={() => {handleSubmit(form)}}>Sign me up</Button>
+                <Button loading={loading} type="primary" onClick={() => {register()}}>Sign me up</Button>
                 <span style={{color: "#0E5F76", paddingLeft: '15px'}}>Not you? <u style={{cursor: "pointer"}} onClick={() => { setUserState(USER_TYPE.UNREGISTERED)}}>Click here</u></span>
             </div> 
         </div>

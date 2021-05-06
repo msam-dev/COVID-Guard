@@ -1,27 +1,21 @@
 .terms_text_one{
-    text-align: left;
-    margin-top: 5%;
-    margin-left: 20%;
-position: absolute;
-width: 788px;
-height: 175px;
-
-top: 152px;
-
-
+  text-align: left;
+  margin-top: 5%;
+  margin-left: 20%;
+  position: absolute;
+  width: 788px;
+  height: 175px;
+  top: 152px;
 }
 
-.terms_text_two{
-    
-   text-align: left;
-    margin-top: 15%;
-    margin-left: 20%;
-position: absolute;
-width: 788px;
-height: 175px;
-top: 152px;
-
-
+.terms_text_two{    
+  text-align: left;
+  margin-top: 15%;
+  margin-left: 20%;
+  position: absolute;
+  width: 788px;
+  height: 175px;
+  top: 152px;
 }
 
 #terms_text_two_title::after{

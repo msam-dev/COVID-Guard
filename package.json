@@ -9,7 +9,7 @@
     "server-install": "npm install",
     "all-install": "npm run client-install && npm run server-install",
     "dev-client": "cd client/covid19-app && npm start",
-    "dev-create-mock-data": "node server/utils/createDevData.js",
+    "dev-create-mock-data": "node server/utils/createDevData.js --max-old-space-size=8192",
     "dev": "concurrently \"npm run dev-server\" \"npm run dev-client\"",
     "build": "cd client/covid19-app && npm install && npm run build",
     "server-test": "mocha server-test --require ./server-test/fixtures.js --timeout 30000 --recursive"
@@ -36,12 +36,14 @@
     "lodash.clonedeep": "^4.5.0",
     "memory-cache": "^0.2.0",
     "moment": "^2.29.1",
+    "mongo-sanitize": "^1.1.0",
     "mongoose": "^5.11.15",
     "mongoose-extend-schema": "^1.0.0",
     "puppeteer": "^8.0.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.6",
     "sinon": "^10.0.0",
-    "uuid": "^8.3.2"
+    "uuid": "^8.3.2",
+    "validator": "^13.6.0"
   }
 }

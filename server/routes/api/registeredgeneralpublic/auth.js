@@ -3,6 +3,8 @@ const express = require('express')
 const router = express.Router();
 const RegisteredGeneralPublicUser = require('../../../models/RegisteredGeneralPublic')
 const jwt = require('jsonwebtoken');
+const config = require('config');
+const JWT_SECRET = config.get('JWT_SECRET');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
 const {BadRequest} = require('../../../utils/errors')
@@ -38,6 +40,9 @@ router.post('/login', asyncHandler(async (req, res) => {
     if(user.isTemporaryExpiryValid()){
         isMatch = user.compareTemporaryPassword(password);
         isTemporary = true;
+        user.passwordReset = undefined;
+        const savedUser = await user.save();
+        if (!savedUser) throw new ServerError('Something went wrong updating the user');
     } else {
         isMatch = user.comparePassword(password);
     }
@@ -154,7 +159,7 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
     const user = await RegisteredGeneralPublicUser.findOne({email});
     if (!user) throw new BadRequest('User does not exist');
 
-    user.setTemporaryPassword();
+    let temporaryPassword = user.setTemporaryPassword();
 
     const savedUser = await user.save();
 
@@ -166,7 +171,7 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
         to: 'mr664@uowmail.edu.au', // Change to your recipient
         from: 'mr664@uowmail.edu.au', // Change to your verified sender
         subject: 'Reset Password',
-        html: `<strong>The following is your temporay password to login. It expires in 24 hours.<br>You will be directed to chnage your password after you login: ${savedUser.passwordReset.temporaryPassword}</strong>`,
+        html: `<strong>The following is your one-time temporary password to login. It expires in 1 hour.<br>You will be directed to chnage your password after you login: ${temporaryPassword}</strong>`,
     }
 
     const msgSent = await sgMail.send(msg)

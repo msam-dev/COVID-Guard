@@ -1,4 +1,5 @@
 const mongoose = require('mongoose')
+const validator = require('validator');
 
 // Create Schema
 const UserSchema = new mongoose.Schema({
@@ -13,7 +14,11 @@ const UserSchema = new mongoose.Schema({
     email: {
         type: String,
         required: true,
-        unique: true
+        unique: true,
+        validate: {
+            validator: validator.isEmail,
+            message: (props) => `${props.value} is not a valid email!`
+        }
     },
     phone: {
         type: String,
