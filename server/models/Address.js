@@ -1,6 +1,7 @@
 const mongoose = require('mongoose')
 const validator = require('validator');
-
+const {autoPopulateField} = require("../utils/db");
+require("./Coordinates");
 // Create Schema
 const AddressSchema = new mongoose.Schema({
     addressLine1: {
@@ -35,6 +36,8 @@ const AddressSchema = new mongoose.Schema({
     },
     coordinates: { type: mongoose.Schema.Types.ObjectId, ref: 'Coordinates' }
 });
+
+autoPopulateField(AddressSchema, 'coordinates');
 
 const Address = mongoose.model('Address', AddressSchema);
 
