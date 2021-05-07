@@ -43,6 +43,7 @@ async function createMockRegisteredGeneralPublicUsers(save = false, numUsers = 1
         user.rawPassword = password;
         user.phone = faker.phone.phoneNumber("0#########");
         user.registrationDate = faker.date.recent(150);
+        user.setAccessToken();
         if (user.email in users) continue
         users[user.email] = user;
     }
@@ -115,6 +116,7 @@ async function createMockBusinessUsers(save = false, numUsers = 1, business = nu
         user.password = password;
         user.rawPassword = password;
         user.phone = faker.phone.phoneNumber("0#########");
+        user.setAccessToken();
         if (business) {
             user.business = business;
         } else {
@@ -144,7 +146,7 @@ async function createMockHealthProfessionalUsers(save = false, numUsers = 1) {
         user.rawPassword = password;
         user.phone = faker.phone.phoneNumber("0#########");
         user.healthID = faker.phone.phoneNumber("###########");
-
+        user.setAccessToken();
         if (user.email in users) continue
         users[user.email] = user;
         user.registrationDate = faker.date.recent(150);
@@ -186,7 +188,7 @@ async function createMockCheckIns(save = false, numCheckIns = 1, user = null, bu
             checkin.userModel = user.constructor.modelName;
         } else {
             let user;
-            if (userType == USER_TYPE.GENERAL) {
+            if (userType === USER_TYPE.GENERAL) {
                 user = (await createMockRegisteredGeneralPublicUsers(save))[0];
             } else {
                 user = (await createMockGeneralPublicUsers(save))[0];

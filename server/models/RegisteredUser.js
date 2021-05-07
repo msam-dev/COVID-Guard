@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const {encryptPassword} = require("../utils/general");
 const faker = require("faker");
 const moment = require('moment');
+const {createAuthToken} = require("../utils/general");
 
 // Create Schema
 const RegisteredUserSchema = extendSchema(userSchema, {
@@ -56,6 +57,14 @@ RegisteredUserSchema.methods.setTemporaryPassword = function() {
     this.passwordReset.temporaryPassword = rawTemporaryPassword;
     this.passwordReset.expiry = moment().add(1, "hour");
     return rawTemporaryPassword;
+};
+
+RegisteredUserSchema.methods.setAccessToken = function() {
+    this.accessToken = createAuthToken(this.id, this.type);
+};
+
+RegisteredUserSchema.methods.revokeAccessToken = function() {
+    this.accessToken = undefined;
 };
 
 module.exports = RegisteredUserSchema;
