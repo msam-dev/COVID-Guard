@@ -1,8 +1,6 @@
 const express = require('express')
 const router = express.Router();
 const BusinessUser = require('../../../models/BusinessUser')
-const faker = require('faker');
-const moment = require('moment');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const JWT_SECRET = config.get('JWT_SECRET');
@@ -10,7 +8,6 @@ const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes");
 const {BadRequest} = require('../../../utils/errors');
 const asyncHandler = require('express-async-handler');
-const {encryptPassword} = require("../../../utils/general");
 const Business = require("../../../models/Business");
 const Address = require("../../../models/Address");
 const mongoose = require("mongoose");
@@ -220,17 +217,12 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
 
 /*
 * @route   GET api/businessowner/auth/user
-* @desc    Check user valid
+* @desc    Check user logged in
 * @access  Private
 */
 
 router.get('/user', authMiddleware(userType.BUSINESS), asyncHandler(async (req, res) => {
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(req.userId)) throw new BadRequest('UserId is invalid');
-
-    const user = await BusinessUser.findById(req.userId);
-    if (!user) throw new Unauthorized('User does not exist');
-    res.json({id: user.id, type: userType.BUSINESS});
+    res.json({success: true});
 }));
 
 /**

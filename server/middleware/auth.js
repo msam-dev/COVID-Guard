@@ -25,6 +25,7 @@ module.exports = (usertype) => {
         }
         if (decoded.userType !== usertype) throw new Unauthorized('Invalid usertype for token');
         if (!mongoose.Types.ObjectId.isValid(decoded.userId)) throw new Unauthorized('UserId is invalid');
+
         let user;
         if(usertype === USER_TYPE.GENERAL){
             user = await RegisteredGeneralPublic.findById(decoded.userId);
