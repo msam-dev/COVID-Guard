@@ -1,70 +1,68 @@
 import { Form, Input, Button } from 'antd';
+import { useState } from 'react';
 import { layout, tailLayout } from './layouts';
+import { VACCINE_STATE } from './VaccineStates';
+import { CheckOutlined, RiseOutlined, CloseOutlined } from '@ant-design/icons';
 
 const CheckVaccStatus = () => {
-
-    const dbSearchReturnData = {"name": "", "code": ""};
-    const testData = [  {"name": "big man a", "code": "123"}, 
-                        {"name": "big man b", "code": "456"}, 
-                        {"name": "big man c", "code": "789"}]
-
-    const showSuccessfulVac = value => {
-        console.log("Code:", value, " has been submitted.");
-        testData.forEach(dbSimCode => testForCodeEquivalence(dbSimCode.code, value))
-    };
-
-    const testForCodeEquivalence = (dbSimCode, formVal) => {
-        if (dbSimCode === formVal.code) {
-            console.log("A match has been found.");
-            dbSearchReturnData.name = dbSimCode.name;
-            dbSearchReturnData.code = dbSimCode.code;
-            console.log(dbSearchReturnData);
-            console.log(dbSimCode);
-            document.getElementById("vaccResultString").innerHTML = dbSearchReturnData.name + " has been vaccinated!"
-        }
-    }
-    
-    const showFailedVac = errorInfo => {
-        console.log("Failed:", errorInfo);
-    };
+    const [vaccinationRecord] = useState({});
 
     return (
-        <div style={{color: "#0E5F76"}}>
-
-
+        <div>
             <h1 style = {{color: "#0E5F76", textAlign: "left", backgroundColor: "#FDC500", paddingLeft: "1%"}}>Check Vaccination Status</h1>
-            <h1 style = {{color: "#0E5F76", padding: "2%", textAlign: "center"}}>Check Civilian Vaccination Status</h1>
+            <h1 style = {{color: "#0E5F76", padding: "2%", textAlign: "center"}}>Check Vaccination Status</h1>
 
             <Form
                 {...layout}
                 name="basic"
-                onFinish={showSuccessfulVac}
-                onFinishFailed={showFailedVac}
             >
                 <Form.Item
                         label="Code"
                         name="code"
                         rules={[
-                        {
-                            required: true,
-                            message: 'Please input your vaccination code.',
-                        },
+                            {
+                                required: true,
+                                whitespace: true,
+                                message: 'Please input a valid vaccination code!',
+                                validateTrigger: 'onSubmit'
+                            },
                         ]}
                 
                 >   
-                <Input/>
-
+                    <Input placeholder="Enter vaccination code here" maxLength={50}/>
                 </Form.Item>
-            
                 <Form.Item {...tailLayout}>
-                    <Button type="primary" htmlType="submit">Search</Button>
+                    <Button type="primary" htmlType="submit">Check Status</Button>
                 </Form.Item>
             </Form>
-
-            <div id="vaccResultString"></div>
-
+            
+            <div style={{textAlign: 'center'}}>
+                {
+                    vaccinationRecord.vaccinationStatus === VACCINE_STATE.Complete
+                    ?
+                    <div>
+                        <span style={{color: "#0E5F76"}}>Complete </span>
+                        <CheckOutlined style={{fontSize: '30px', color: 'green'}} />
+                    </div>
+                    :
+                    vaccinationRecord.vaccinationStatus === VACCINE_STATE.Partial
+                    ?
+                    <div>
+                        <span style={{color: "#0E5F76"}}>Partial </span>
+                        <RiseOutlined style={{fontSize: '30px', color: '#FDC500'}} />
+                    </div>
+                    :
+                    vaccinationRecord.vaccinationStatus === VACCINE_STATE.NoVaccination
+                    ?
+                    <div>
+                        <span style={{color: "#0E5F76"}}>Not Vaccinated </span>
+                        <CloseOutlined style={{fontSize: '30px', color: 'red'}} />
+                    </div>
+                    : 
+                    <></>
+                }
+            </div>
         </div>
-
     );
 };
 

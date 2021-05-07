@@ -29,7 +29,7 @@ const GeneralNav = () => {
                 <Item>
                     <div className='navbar-menuitem-text'>My Profile</div>
                 </Item>
-                <Item>
+                <Item onClick={() => {history.push(PATH.myVaccineStatus)}}>
                     <div className='navbar-menuitem-text'>My Status</div>
                 </Item>
                 <Item  onClick={() => {logout(updateAuth)}} style={{float: 'right', paddingTop: '3px'}}>

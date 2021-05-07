@@ -27,7 +27,7 @@ const UnregisteredNav = () => {
                     <div  className='navbar-menuitem-text'>Current Hotspots</div>
                 </Item>
 
-                <Item onClick={() => {history.push(PATH.checkvaccstatus)}}>
+                <Item onClick={() => {history.push(PATH.checkVaccineStatus)}}>
                     <div className='navbar-menuitem-text'>Check Status</div>
                 </Item>
 

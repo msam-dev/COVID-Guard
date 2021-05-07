@@ -87,7 +87,7 @@ const Login = () => {
                     },
                     ]}
                 >
-                    <Input maxLength={30}/>
+                    <Input maxLength={50}/>
                 </Form.Item>
         
                 <Form.Item
@@ -128,7 +128,7 @@ const Login = () => {
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
-                    <span style={{color: "#0E5F76"}}>Forgot Password? <a href="/login"><u>Click here</u></a></span>
+                    <span style={{color: "#0E5F76"}}>Forgot Password? <a href={PATH.forgotPassword}><u>Click here</u></a></span>
                 </Form.Item>
             </Form>
         </div>

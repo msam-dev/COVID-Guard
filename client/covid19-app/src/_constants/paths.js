@@ -3,14 +3,16 @@ const PATH = {
     login: "/login",
     register: "/register",
     currentHotspots: "/currentHotspots",
-    moreinfo: "/moreinfo",
+    moreInfo: "/moreInfo",
     vaccineCenters: "/vaccineCenters",
     support: "/support",
-    checkvaccstatus: "/checkvaccstatus",
+    checkVaccineStatus: "/checkVaccineStatus",
     termsAndConditions: "/termsAndConditions",
     markCovidCase: "/markCovidCase",
     changePassword: "/changePassword",
-    venueCode: "/venueCode"
+    venueCode: "/venueCode",
+    forgotPassword: "/forgotPassword",
+    myVaccineStatus: "/myVaccineStatus"
 }
 
 export default PATH;

@@ -17,6 +17,8 @@ import TermsAndConditions from '../Screens/TermsAndConditions/TermsAndConditions
 import MarkCovidCase from '../Screens/MarkCovidCase/MarkCovidCase';
 import ChangePassword from '../Screens/ChangePassword/ChangePassword';
 import VenueCode from '../Screens/VenueCode/VenueCode';
+import ForgotPassword from '../Screens/ForgotPassword/ForgotPassword';
+import MyVaccineStatus from '../Screens/MyVaccineStatus/MyVaccineStatus';
 
 function App() {
   return (
@@ -29,18 +31,20 @@ function App() {
             <div id="body-wrapper">
                 <Router history={history}>
                     <Switch>
+                        <Route exact path={PATH.home}> <Homepage/> </Route>
                         <Route path={PATH.login}><Login /></Route>
                         <Route path={PATH.register}><Register /></Route>
                         <Route path={PATH.currentHotspots}><CurrentHotspots /></Route>
                         <Route path={PATH.vaccineCenters}><VaccineCenters /></Route>
                         <Route path={PATH.support}><Support /></Route> 
-                        <Route path={PATH.checkvaccstatus}><CheckVaccStatus /></Route>
-                        <Route path={PATH.moreinfo}> <MoreInfo/> </Route> 
-                        <Route exact path={PATH.home}> <Homepage/> </Route>
+                        <Route path={PATH.checkVaccineStatus}><CheckVaccStatus /></Route>
+                        <Route path={PATH.moreInfo}> <MoreInfo/> </Route> 
                         <Route path={PATH.termsAndConditions}> <TermsAndConditions/> </Route>
                         <Route path={PATH.markCovidCase}> <MarkCovidCase/> </Route> 
                         <Route path={PATH.changePassword}> <ChangePassword/> </Route> 
                         <Route path={PATH.venueCode}> <VenueCode/> </Route> 
+                        <Route path={PATH.forgotPassword}> <ForgotPassword/> </Route>
+                        <Route path={PATH.myVaccineStatus}> <MyVaccineStatus /> </Route>
                     </Switch>
                 </Router> 
             </div>
