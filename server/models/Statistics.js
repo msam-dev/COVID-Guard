@@ -76,7 +76,11 @@ const StatisticsSchema = new mongoose.Schema({
                 month: String,
                 year: Number,
                 numberOfBusinesses: Number
-            }]
+            }],
+            businessesDeemedHotspot24Hours: [{
+                business: mongoose.Schema.Types.ObjectId,
+                dateVisited: Date
+            }],
         },
         vaccinationsSummary: {
             totalVaccinations: {
@@ -91,6 +95,10 @@ const StatisticsSchema = new mongoose.Schema({
                 vaccinationType: String,
                 numberOfVaccinations: String,
             }],
+            totalVaccinationCentres: {
+                type: Number,
+                required: true
+            },
             vaccinationCentresByState: [{
                 state: String,
                 numberOfVaccinationCentres: Number,
@@ -377,6 +385,41 @@ StatisticsSchema.statics.getPositiveBusinessesCheckinDates = async function(){
         });
 };
 
+StatisticsSchema.statics.getBusinessesDeemedHotspot24Hours = async function(){
+    return PositiveCase.aggregate()
+        .match({testDate: {$gte: moment().subtract(1, 'days').toDate()}})
+        .lookup({
+            from: CheckIn.collection.name,
+            let: {user1: "$user", userModel1: "$userModel"},
+            pipeline: [
+                {
+                    $match:
+                        {
+                            $expr:
+                                {
+                                    $and:
+                                        [
+                                            {$eq: ["$user", "$$user1"]},
+                                            {$eq: ["$userModel", "$$userModel1"]}
+                                        ]
+                                }
+                        }
+                },
+            ],
+            as: "checkin"
+        })
+        .unwind("$checkin")
+        .match({
+            $and: [
+                {$expr: {$gte: ["$checkin.date", "$infectiousStartDate"]}},
+                {$expr: {$lte: ["$checkin.date", "$testDate"]}},
+            ],
+        })
+        .project({
+            _id: 0, business: "$checkin.business", dateVisited: "$checkin.date"
+        });
+};
+
 StatisticsSchema.statics.getCheckinsLast24Hours = async function () {
     let docs = await CheckIn
         .find({date: {$gte: moment().subtract(24, 'hours').toDate()}})
@@ -433,10 +476,13 @@ StatisticsSchema.methods.updateData = async function(){
     this.vaccinationsSummary.vaccinationsByType = await Statistics.getVaccinationsByType();
     this.vaccinationsSummary.vaccinationCentresByState = await Statistics.getVaccinationCentresByState();
     this.vaccinationsSummary.vaccinationsByStatus = await Statistics.getVaccinationsByStatus();
+    this.vaccinationsSummary.totalVaccinationCentres = await VaccinationCentre.countDocuments();
 
     this.businessesSummary.totalBusinessesRegistered = await Business.countDocuments();
     this.businessesSummary.businessesByState = await Statistics.getBusinessesByState();
     this.businessesSummary.businessRegistrationsByMonth = await Statistics.getBusinessRegistrationsByMonth();
+    this.businessesSummary.businessesDeemedHotspot24Hours = await Statistics.getBusinessesDeemedHotspot24Hours();
+
     try {
         await this.save();
     } catch (e){
