@@ -76,12 +76,12 @@ router.post('/profile', authMiddleware(userType.BUSINESS), asyncHandler(async (r
 }));
 
 /*
-* @route   POST api/businessowner/venueinfo
+* @route   GET api/businessowner/venueinfo
 * @desc    Returns business name and code
 * @access  Private
 */
 
-router.post('/venueinfo', authMiddleware(userType.BUSINESS), asyncHandler(async (req, res) => {
+router.get('/venueinfo', authMiddleware(userType.BUSINESS), asyncHandler(async (req, res) => {
     const { userId } = req.body;
 
     // Simple validation

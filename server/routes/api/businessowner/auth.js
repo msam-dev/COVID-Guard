@@ -1,8 +1,6 @@
 const express = require('express')
 const router = express.Router();
 const BusinessUser = require('../../../models/BusinessUser')
-const faker = require('faker');
-const moment = require('moment');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const JWT_SECRET = config.get('JWT_SECRET');
@@ -10,7 +8,6 @@ const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes");
 const {BadRequest} = require('../../../utils/errors');
 const asyncHandler = require('express-async-handler');
-const {encryptPassword} = require("../../../utils/general");
 const Business = require("../../../models/Business");
 const Address = require("../../../models/Address");
 const mongoose = require("mongoose");
@@ -53,6 +50,11 @@ router.post('/login', asyncHandler(async (req, res) => {
 
     const token = jwt.sign({userId: user._id, userType: userType.BUSINESS}, JWT_SECRET, {expiresIn: 3600});
     if (!token) throw new BadRequest('Couldn\'t sign the token');
+
+    user.accessToken = token;
+
+    const savedUser = await user.save();
+    if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
     res.status(200).json({
         success: true,
@@ -112,8 +114,13 @@ router.post('/register', asyncHandler(async (req, res) => {
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
     const token = jwt.sign({userId: savedUser._id, userType: userType.BUSINESS}, JWT_SECRET, {
-        expiresIn: 3600
+        expiresIn: 60*60*24
     });
+
+    savedUser.accessToken = token;
+
+    const savedUser2 = await savedUser.save();
+    if (!savedUser2) throw new ServerError('Something went wrong saving the user');
 
     res.status(200).json({
         success: true,
@@ -210,17 +217,30 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
 
 /*
 * @route   GET api/businessowner/auth/user
-* @desc    Check user valid
+* @desc    Check user logged in
 * @access  Private
 */
 
 router.get('/user', authMiddleware(userType.BUSINESS), asyncHandler(async (req, res) => {
+    res.json({success: true});
+}));
+
+/**
+ * @route   GET api/registeredgeneralpublic/auth/logout
+ * @desc    Logout user
+ * @access  Private
+ */
+
+router.get('/logout', authMiddleware(userType.BUSINESS), asyncHandler(async (req, res) => {
     // check id is valid
     if(!mongoose.Types.ObjectId.isValid(req.userId)) throw new BadRequest('UserId is invalid');
 
     const user = await BusinessUser.findById(req.userId);
     if (!user) throw new Unauthorized('User does not exist');
-    res.json({id: user.id, type: userType.BUSINESS});
+    user.accesssToken = undefined;
+    const savedUser = await user.save();
+    if(!savedUser) throw new BadRequest('Error logging out user');
+    res.json({success: true});
 }));
 
 module.exports = router;

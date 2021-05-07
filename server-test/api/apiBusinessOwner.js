@@ -5,57 +5,18 @@ const chaiHttp = require("chai-http");
 const app = require("../../server");
 const assert = require('chai').assert
 const BusinessOwner = require("../../server/models/BusinessUser");
-const USER_TYPE = require("../../server/_constants/usertypes");
-const {createAuthToken} = require("../../server/utils/general");
 const {createMockBusinessUsers} = require("../../server/utils/mockData");
 // Configure chai
 chai.use(chaiHttp);
 
 describe("Covid App Server Business Owner Endpoints", () => {
     describe("GET /api/businessowner/profile", () => {
-        it("returns error message 'Please enter all fields'", (done) => {
-            chai.request(app)
-                .get('/api/businessowner/profile')
-                .set('x-auth-token', createAuthToken(null, USER_TYPE.BUSINESS))
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
-                    done();
-                }).catch((err) => {
-                done(err);
-            });
-        });
-        it("it returns error message 'User does not exist'", (done) => {
-            chai.request(app)
-                .get('/api/businessowner/profile')
-                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.BUSINESS))
-                .send({
-                    userId: "41224d776a326fb40f000001"
-                })
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'User does not exist');
-                    done();
-                }).catch((err) => {
-                done(err);
-            });
-        });
         it("returns user data", async () => {
             let users = await createMockBusinessUsers(true);
             let user = users[0];
-
             const res = await chai.request(app)
                 .get('/api/businessowner/profile')
-                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.BUSINESS))
-                .send({
-                    userId: user.id
-                })
+                .set('x-auth-token', user.accessToken);
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
             assert.propertyVal(res.body, "userId", user.id);
@@ -65,41 +26,18 @@ describe("Covid App Server Business Owner Endpoints", () => {
         });
     });
     describe("POST /api/businessowner/profile", () => {
-        it("returns error message 'Please enter all fields'", (done) => {
-            chai.request(app)
+        it("returns error message 'Please enter all fields'", async () => {
+            let users = await createMockBusinessUsers(true);
+            let user = users[0];
+            const res = await chai.request(app)
                 .post('/api/businessowner/profile')
-                .set('x-auth-token', createAuthToken(null, USER_TYPE.BUSINESS))
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
-                    done();
-                }).catch((err) => {
-                done(err);
-            });
-        });
-        it("it returns error message 'User does not exist'", (done) => {
-            chai.request(app)
-                .post('/api/businessowner/profile')
-                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.BUSINESS))
-                .send({
-                    userId: "41224d776a326fb40f000001",
-                    firstName: "Bob",
-                    lastName: "Costas",
-                    phone: "0405060607"
-                })
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'User does not exist');
-                    done();
-                }).catch((err) => {
-                done(err);
-            });
+                .set('x-auth-token', user.accessToken)
+                .send();
+                if (res.status === 500) throw new Error(res.body.message);
+                assert.equal(res.status, 400);
+                assert.propertyVal(res.body, 'errCode', 400);
+                assert.propertyVal(res.body, 'success', false);
+                assert.propertyVal(res.body, 'message', 'Please enter all fields');
         });
         it("updates user data", async () => {
             let users = await createMockBusinessUsers(true);
@@ -107,9 +45,8 @@ describe("Covid App Server Business Owner Endpoints", () => {
 
             const res = await chai.request(app)
                 .post('/api/businessowner/profile')
-                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.BUSINESS))
+                .set('x-auth-token', user.accessToken)
                 .send({
-                    userId: user.id,
                     firstName: "Bob",
                     lastName: "Costas",
                     phone: "0405060607"
@@ -124,50 +61,15 @@ describe("Covid App Server Business Owner Endpoints", () => {
             assert.propertyVal(changedUser, "phone", "0405060607");
         });
     });
-    describe("POST /api/businessowner/venueinfo", () => {
-        it("returns error message 'Please enter all fields'", (done) => {
-            chai.request(app)
-                .post('/api/businessowner/venueinfo')
-                .set('x-auth-token', createAuthToken(null, USER_TYPE.BUSINESS))
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
-                    done();
-                }).catch((err) => {
-                done(err);
-            });
-        });
-        it("it returns error message 'User does not exist'", (done) => {
-            chai.request(app)
-                .post('/api/businessowner/venueinfo')
-                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.BUSINESS))
-                .send({
-                    userId: "41224d776a326fb40f000001"
-                })
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'User does not exist');
-                    done();
-                }).catch((err) => {
-                done(err);
-            });
-        });
+    describe("GET /api/businessowner/venueinfo", () => {
         it("displays venue info", async () => {
             let users = await createMockBusinessUsers(true);
             let user = users[0];
 
             const res = await chai.request(app)
-                .post('/api/businessowner/venueinfo')
-                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.BUSINESS))
-                .send({
-                    userId: user.id,
-                });
+                .get('/api/businessowner/venueinfo')
+                .set('x-auth-token', user.accessToken)
+                .send();
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
             assert.propertyVal(res.body, 'businessName', user.business.name);

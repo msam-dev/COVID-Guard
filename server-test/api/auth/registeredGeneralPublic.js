@@ -11,7 +11,6 @@ const {createMockRegisteredGeneralPublicUsers} = require('../../../server/utils/
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const sinon = require("sinon");
-const {createAuthToken} = require("../../../server/utils/general");
 const JWT_SECRET = config.get('JWT_SECRET');
 
 // Configure chai
@@ -158,9 +157,11 @@ describe("Covid App Server API Registered General Public Auth", () => {
     });
     describe("POST /api/registeredgeneralpublic/auth/changepassword", () => {
         it("returns error message 'Please enter all fields'", (done) => {
+            createMockRegisteredGeneralPublicUsers(true).then((users) => {
+                let user = users[0];
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/changepassword')
-                .set('x-auth-token', createAuthToken(null, USER_TYPE.GENERAL))
+                .set('x-auth-token', user.accessToken)
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
                     assert.equal(res.status, 400);
@@ -171,25 +172,32 @@ describe("Covid App Server API Registered General Public Auth", () => {
                 }).catch((err) => {
                 done(err);
             });
+        }).catch((err) => {
+                done(err);
+            });
         });
         it("returns error message 'Password and confirm password do not match'", (done) => {
-            chai.request(app)
-                .post('/api/registeredgeneralpublic/auth/changepassword')
-                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.GENERAL))
-                .send({
-                    "userId": "41224d776a326fb40f000001",
-                    "currentPassword": "oldPassword",
-                    "newPassword": "newPassword",
-                    "confirmPassword": "newPasswordDifferent",
-                })
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'Password and confirm password do not match');
-                    done();
-                }).catch((err) => {
+            createMockRegisteredGeneralPublicUsers(true).then((users) => {
+                let user = users[0];
+                chai.request(app)
+                    .post('/api/registeredgeneralpublic/auth/changepassword')
+                    .set('x-auth-token', user.accessToken)
+                    .send({
+                        "currentPassword": "oldPassword",
+                        "newPassword": "newPassword",
+                        "confirmPassword": "newPasswordDifferent",
+                    })
+                    .then((res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        assert.equal(res.status, 400);
+                        assert.propertyVal(res.body, 'errCode', 400);
+                        assert.propertyVal(res.body, 'success', false);
+                        assert.propertyVal(res.body, 'message', 'Password and confirm password do not match');
+                        done();
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
                 done(err);
             });
         });
@@ -198,9 +206,8 @@ describe("Covid App Server API Registered General Public Auth", () => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/changepassword')
-                    .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
+                    .set('x-auth-token', user.accessToken)
                     .send({
-                        "userId": user.id,
                         "currentPassword": "oldPassword",
                         "newPassword": "newPassword",
                         "confirmPassword": "newPassword"
@@ -215,16 +222,17 @@ describe("Covid App Server API Registered General Public Auth", () => {
                     }).catch((err) => {
                     done(err);
                 });
+            }).catch((err) => {
+                done(err);
             });
         });
-        it("It changes a RegisteredGeneralPublicUsers password", (done) => {
+        it("It changes a RegisteredGeneralPublicUsers password",  (done) => {
             createMockRegisteredGeneralPublicUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/changepassword')
-                    .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
+                    .set('x-auth-token', user.accessToken)
                     .send({
-                        "userId": user.id,
                         "currentPassword": user.rawPassword,
                         "newPassword": "newPassword",
                         "confirmPassword": "newPassword"
