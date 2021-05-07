@@ -3,6 +3,9 @@ import { useForm } from 'antd/lib/form/Form';
 import { layout2, tailLayout } from '../Helpers/Layouts';
 import USER_TYPE from '../../../_constants/userTypes';
 import { onlyNumbers } from '../../../_helpers/sharedFunctions';
+import { useState } from 'react';
+import { _registerHealth } from '../../../_helpers/endPoints';
+import { registerSuccessModal } from '../Helpers/Modals'; 
 
 
 
@@ -12,7 +15,39 @@ const HealthForm = props => {
     const [form] = useForm();
     const setUserState = props.setUserState;
     const numberInputs = onlyNumbers;
+    const [loading, setLoading] = useState(false);
 
+    const register = () => {
+        form.validateFields()
+        .then(res => {
+            setLoading(true);
+            if(res.phone === "") delete res.phone;
+            const firstName = res.firstName;
+
+            _registerHealth(res)
+            .then(() => {
+                setLoading(false);
+                registerSuccessModal(firstName);
+            })
+            .catch(err => {
+                console.log(err);
+                setLoading(false);
+                form.setFields([
+                    {
+                        name: 'email',
+                        errors: ['Check email or ID is not already in use!'],
+                    },
+                    {
+                        name: 'healthID',
+                        errors: ['Check email or ID is not already in use!'],
+                    }
+                ]);
+            })
+       })
+       .catch(err => {
+           console.log(err);
+       })
+    }
 
 
 
@@ -23,10 +58,10 @@ const HealthForm = props => {
                 <h1 style={{color: "#0E5F76"}}>COVID Guard Register</h1>
             </div>
 
-            <Form {...layout2} form={form}>
+            <Form {...layout2} form={form} onFinish={register}>
                 <Form.Item
                     label="First Name"
-                    name="firstname"
+                    name="firstName"
                     style={{color: "#0E5F76"}}
                     rules={[
                         {
@@ -41,7 +76,7 @@ const HealthForm = props => {
         
                 <Form.Item
                     label="Last Name"
-                    name="lastname"
+                    name="lastName"
                     style={{color: "#0E5F76"}}
                     rules={[
                         {
@@ -58,6 +93,7 @@ const HealthForm = props => {
                     label="Email"
                     name="email"
                     style={{color: "#0E5F76"}}
+                    validateTrigger={['onBlur']}
                     rules={[
                         {
                             required: true,
@@ -70,8 +106,24 @@ const HealthForm = props => {
                     <Input maxLength={30}/>
                 </Form.Item>
 
-                <Form.Item label="Phone" name="phone" style={{color: "#0E5F76"}}>
-                    <Input onChange={e => {numberInputs(e, form, 'phone')}} maxLength={30}/>
+                <Form.Item 
+                        label="Phone" 
+                        name="phone" 
+                        style={{color: "#0E5F76"}}
+                        validateTrigger={['onBlur']}
+                        rules={[
+                            {
+                                validator: async (_, phone) => {
+                                    if(phone !== undefined && phone !== ""){
+                                        if (phone.length < 10) {
+                                            return Promise.reject(new Error('Phone number must be valid'));
+                                        }
+                                    }
+                                }
+                              }
+                        ]}
+                    >
+                    <Input onChange={e => {numberInputs(e, form, 'phone')}} maxLength={10}/>
                 </Form.Item>
 
                 <Form.Item
@@ -93,6 +145,7 @@ const HealthForm = props => {
                     label="Confirm Password"
                     name="passwordConfirm"
                     style={{color: "#0E5F76"}}
+                    validateTrigger={['onBlur']}
                     rules={[
                         {
                             required: true,
@@ -102,8 +155,7 @@ const HealthForm = props => {
                             validator(_, value) {
                                 if (!value || getFieldValue('password') === value) return Promise.resolve();
                                 return Promise.reject(new Error('The two passwords that you entered do not match!'));
-                            },
-                            validateTrigger: 'onSubmit'
+                            }
                         })
                     ]}
                 >
@@ -112,21 +164,28 @@ const HealthForm = props => {
 
                 <Form.Item
                     label="Health Worker ID"
-                    name="healthId"
+                    name="healthID"
                     style={{color: "#0E5F76"}}
+                    validateTrigger={['onBlur']}
                     rules={[
                         {
                             required: true,
-                            message: 'Please input your health worker ID!',
+                            message: 'Please input your ID!',
                             whitespace: true
+                        },
+                        {   
+                            validator: async (_, abn) => {
+                                if(!abn) return Promise.resolve();
+                                else if(abn.length < 11) return Promise.reject(new Error('ID must be 11 digits!'));
+                            }
                         }
                     ]}
                 >
-                    <Input maxLength={30}/>
+                    <Input onChange={e => {numberInputs(e, form, 'healthID')}} maxLength={11}/>
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>
-                    <Button  type="primary" htmlType="submit">Sign me up</Button>
+                    <Button loading={loading} type="primary" htmlType="submit">Sign me up</Button>
                 </Form.Item>
 
                 <Form.Item {...tailLayout}>

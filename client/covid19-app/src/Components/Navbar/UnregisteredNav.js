@@ -11,21 +11,26 @@ const UnregisteredNav = () => {
     return (
         <div >
             <Menu style ={{backgroundColor: "#0E5F76"}} mode="horizontal" >
-                <Item>
+                <Item onClick={() => { history.push(PATH.home)}}>
                     <img width={200} src={logo} alt="Logo" />
                 </Item>
+
                 <Item  >
                     <div className='navbar-menuitem-text'>Location Sign In</div>
                 </Item>
-                <Item>
-                    <div onClick={() => {history.push(PATH.vaccineCenters)}} className='navbar-menuitem-text'>Vaccine Center</div>
+
+                <Item onClick={() => {history.push(PATH.vaccineCenters)}} >
+                    <div className='navbar-menuitem-text'>Vaccine Center</div>
                 </Item>
-                <Item>
-                    <div onClick={() => {history.push(PATH.currentHotspots)}} className='navbar-menuitem-text'>Current Hotspots</div>
+
+                <Item onClick={() => {history.push(PATH.currentHotspots)}}>
+                    <div  className='navbar-menuitem-text'>Current Hotspots</div>
                 </Item>
-                <Item>
+
+                <Item onClick={() => {history.push(PATH.checkvaccstatus)}}>
                     <div className='navbar-menuitem-text'>Check Status</div>
                 </Item>
+
                 <Item onClick={() => {history.push(PATH.login)}} style={{float: 'right', paddingTop: '3px'}}>
                     <div className='navbar-menuitem-text'>Login/Register</div>
                 </Item>
