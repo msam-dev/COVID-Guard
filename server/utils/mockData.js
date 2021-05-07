@@ -93,7 +93,7 @@ async function createMockBusinesses(save = false, numBusinesses = 1, address = n
         if (address) {
             business.address = address;
         } else {
-            business.address = (await createMockAddresses(save))[0];
+            business.address = (await createMockAddresses(save, 1, true))[0];
         }
         businesses.push(business);
     }
