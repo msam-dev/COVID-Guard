@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const config = require('config');
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = config.get('JWT_SECRET');
+const $ = require('cheerio');
 
 function convertToNumber(str) {
     return Number(str.replace(/,/g, ''))
@@ -28,6 +29,21 @@ function encryptPassword(password)
 }
 
 function createAuthToken(userId, userType){
-    return jwt.sign({ userId, userType }, JWT_SECRET, { expiresIn: 3600 });
+    return jwt.sign({ userId, userType }, JWT_SECRET, { expiresIn: 60*60*24 });
 }
-module.exports = {convertToNumber, generate5CharacterCode, encryptPassword, createAuthToken};
+
+function dailySummary(html, category){
+    let cat = matchText($(html).find('table.DAILY-SUMMARY td.CATEGORY a'), category).parent().parent();
+    return {
+        total: () => {return convertToNumber(cat.find("td.TOTAL").text())},
+        net: () => {return convertToNumber(cat.find("td.NET").text())}
+    };
+}
+
+function matchText(selector, text){
+    return selector.filter(function() {
+        return $(this).text().trim() === text;
+    });
+}
+
+module.exports = {convertToNumber, generate5CharacterCode, encryptPassword, createAuthToken, dailySummary, matchText};

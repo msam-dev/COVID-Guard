@@ -15,39 +15,32 @@ chai.use(chaiHttp);
 
 describe("Covid App Server Registered General Public Endpoints", () => {
     describe("POST /api/registeredgeneralpublic/checkin", () => {
-        it("returns error message 'Please enter all fields'", (done) => {
-            chai.request(app)
+        it("returns error message 'Please enter all fields'", async () => {
+            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let user = users[0];
+            const res = await chai.request(app)
                 .post('/api/registeredgeneralpublic/checkin')
-                .set('x-auth-token', createAuthToken(null, USER_TYPE.GENERAL))
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
-                    done();
-                }).catch((err) => {
-                done(err);
-            });
+                .set('x-auth-token', user.accessToken);
+                if (res.status === 500) throw new Error(res.body.message);
+                assert.equal(res.status, 400);
+                assert.propertyVal(res.body, 'errCode', 400);
+                assert.propertyVal(res.body, 'success', false);
+                assert.propertyVal(res.body, 'message', 'Please enter all fields');
         });
-        it("it returns error message 'Business venue does not exist'", (done) => {
-            chai.request(app)
+        it("it returns error message 'Business venue does not exist'", async () => {
+            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let user = users[0];
+            const res = await chai.request(app)
                 .post('/api/registeredgeneralpublic/checkin')
-                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.GENERAL))
+                .set('x-auth-token', user.accessToken)
                 .send({
-                    venueCode: "thisisinvalid",
-                    userId: "41224d776a326fb40f000001"
-                })
-                .then((res) => {
+                    venueCode: "thisisinvalid"
+                });
                     if (res.status === 500) throw new Error(res.body.message);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Business venue does not exist');
-                    done();
-                }).catch((err) => {
-                done(err);
-            });
         });
         it("returns valid checkin", async () => {
             let businesses = await createMockBusinesses(true);
@@ -56,10 +49,9 @@ describe("Covid App Server Registered General Public Endpoints", () => {
             let user = users[0];
             return chai.request(app)
                 .post('/api/registeredgeneralpublic/checkin')
-                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
+                .set('x-auth-token', user.accessToken)
                 .send({
                     venueCode: business.code,
-                    userId: user.id
                 })
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
@@ -71,49 +63,13 @@ describe("Covid App Server Registered General Public Endpoints", () => {
             });
         });
     describe("GET /api/registeredgeneralpublic/profile", () => {
-        it("returns error message 'Please enter all fields'", (done) => {
-            chai.request(app)
-                .get('/api/registeredgeneralpublic/profile')
-                .set('x-auth-token', createAuthToken(null, USER_TYPE.GENERAL))
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
-                    done();
-                }).catch((err) => {
-                done(err);
-            });
-        });
-        it("it returns error message 'User does not exist'", (done) => {
-            chai.request(app)
-                .get('/api/registeredgeneralpublic/profile')
-                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.GENERAL))
-                .send({
-                    userId: "41224d776a326fb40f000001"
-                })
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'User does not exist');
-                    done();
-                }).catch((err) => {
-                done(err);
-            });
-        });
         it("returns user data", async () => {
             let users = await createMockRegisteredGeneralPublicUsers(true);
             let user = users[0];
 
             const res = await chai.request(app)
                 .get('/api/registeredgeneralpublic/profile')
-                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
-                .send({
-                    userId: user.id
-                })
+                .set('x-auth-token', user.accessToken);
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
             assert.propertyVal(res.body, "userId", user.id);
@@ -123,41 +79,18 @@ describe("Covid App Server Registered General Public Endpoints", () => {
         });
     });
     describe("POST /api/registeredgeneralpublic/profile", () => {
-        it("returns error message 'Please enter all fields'", (done) => {
-            chai.request(app)
+        it("returns error message 'Please enter all fields'", async () => {
+            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let user = users[0];
+            const res = await chai.request(app)
                 .post('/api/registeredgeneralpublic/profile')
-                .set('x-auth-token', createAuthToken(null, USER_TYPE.GENERAL))
-                .then((res) => {
+                .set('x-auth-token', user.accessToken);
+
                     if (res.status === 500) throw new Error(res.body.message);
                     assert.equal(res.status, 400);
                     assert.propertyVal(res.body, 'errCode', 400);
                     assert.propertyVal(res.body, 'success', false);
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
-                    done();
-                }).catch((err) => {
-                done(err);
-            });
-        });
-        it("it returns error message 'User does not exist'", (done) => {
-            chai.request(app)
-                .post('/api/registeredgeneralpublic/profile')
-                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.GENERAL))
-                .send({
-                    userId: "41224d776a326fb40f000001",
-                    firstName: "Bob",
-                    lastName: "Costas",
-                    phone: "0405060607"
-                })
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'User does not exist');
-                    done();
-                }).catch((err) => {
-                done(err);
-            });
         });
         it("updates user data", async () => {
             let users = await createMockRegisteredGeneralPublicUsers(true);
@@ -167,7 +100,6 @@ describe("Covid App Server Registered General Public Endpoints", () => {
                 .post('/api/registeredgeneralpublic/profile')
                 .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
                 .send({
-                    userId: user.id,
                     firstName: "Bob",
                     lastName: "Costas",
                     phone: "0405060607"
