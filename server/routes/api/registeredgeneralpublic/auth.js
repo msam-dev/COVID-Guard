@@ -1,4 +1,3 @@
-const moment = require("moment");
 const express = require('express')
 const router = express.Router();
 const RegisteredGeneralPublicUser = require('../../../models/RegisteredGeneralPublic')
@@ -9,13 +8,10 @@ const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
 const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
-const {encryptPassword} = require("../../../utils/general");
-const faker = require('faker');
 const mongoose = require("mongoose");
 const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
 const sgMail = require('@sendgrid/mail');
-const {generate5CharacterCode} = require("../../../utils/general");
 
 /*
 * @route   POST api/registeredgeneralpublic/auth/login
@@ -198,17 +194,12 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
 
 /**
  * @route   GET api/registeredgeneralpublic/auth/user
- * @desc    Check user valid
+ * @desc    Check user logged in
  * @access  Private
  */
 
 router.get('/user', authMiddleware(userType.GENERAL), asyncHandler(async (req, res) => {
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(req.userId)) throw new BadRequest('UserId is invalid');
-
-    const user = await RegisteredGeneralPublicUser.findById(req.userId);
-    if (!user) throw new Unauthorized('User does not exist');
-    res.json({id: user.id, type: userType.GENERAL});
+    res.json({success: true});
 }));
 
 /**
