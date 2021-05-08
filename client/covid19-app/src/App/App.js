@@ -19,6 +19,7 @@ import ChangePassword from '../Screens/ChangePassword/ChangePassword';
 import VenueCode from '../Screens/VenueCode/VenueCode';
 import ForgotPassword from '../Screens/ForgotPassword/ForgotPassword';
 import MyVaccineStatus from '../Screens/MyVaccineStatus/MyVaccineStatus';
+import ConfirmUserVaccination from '../Screens/ConfirmUserVaccination/ConfirmUserVaccination';
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
                         <Route path={PATH.venueCode}> <VenueCode/> </Route> 
                         <Route path={PATH.forgotPassword}> <ForgotPassword/> </Route>
                         <Route path={PATH.myVaccineStatus}> <MyVaccineStatus /> </Route>
+                        <Route path={PATH.confirmUserVaccination}> <ConfirmUserVaccination /> </Route>
                     </Switch>
                 </Router> 
             </div>

@@ -12,7 +12,8 @@ const PATH = {
     changePassword: "/changePassword",
     venueCode: "/venueCode",
     forgotPassword: "/forgotPassword",
-    myVaccineStatus: "/myVaccineStatus"
+    myVaccineStatus: "/myVaccineStatus",
+    confirmUserVaccination: "/confirmUserVaccination",
 }
 
 export default PATH;

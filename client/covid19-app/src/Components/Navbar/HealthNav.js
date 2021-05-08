@@ -23,7 +23,7 @@ const HealthNav = () => {
                 <Item>
                     <div className='navbar-menuitem-text'>Add Vaccine Clinic</div>
                 </Item>
-                <Item>
+                <Item onClick={() => { history.push(PATH.confirmUserVaccination) }}>
                     <div className='navbar-menuitem-text'>Vaccinate Patient</div>
                 </Item>
                 <Item>

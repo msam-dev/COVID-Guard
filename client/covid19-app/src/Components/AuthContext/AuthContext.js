@@ -20,7 +20,6 @@ const initialAuth = () => {
 
 const AuthProvider = ({children}) => {
     const [authType, setAuthType] = useState(initialAuth());
-    console.log('user info', authType);
 
     const updateAuth = USER => {
         setAuthType(USER);
