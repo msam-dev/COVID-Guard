@@ -98,7 +98,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
 
             const res = await chai.request(app)
                 .post('/api/registeredgeneralpublic/profile')
-                .set('x-auth-token', createAuthToken(user.id, USER_TYPE.GENERAL))
+                .set('x-auth-token', user.accessToken)
                 .send({
                     firstName: "Bob",
                     lastName: "Costas",
