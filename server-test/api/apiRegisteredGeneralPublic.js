@@ -7,7 +7,7 @@ const assert = require('chai').assert
 const RegisteredGeneralPublic = require("../../server/models/RegisteredGeneralPublic");
 const USER_TYPE = require("../../server/_constants/usertypes");
 const {createAuthToken} = require("../../server/utils/general");
-const {createMockRegisteredGeneralPublicUsers} = require("../../server/utils/mockData");
+const {createMockRegisteredGeneralPublicUsers, createMockVaccinationRecord} = require("../../server/utils/mockData");
 const {createMockBusinesses} = require("../../server/utils/mockData");
 
 // Configure chai
@@ -112,6 +112,29 @@ describe("Covid App Server Registered General Public Endpoints", () => {
             assert.propertyVal(changedUser, "firstName", "Bob");
             assert.propertyVal(changedUser, "lastName", "Costas");
             assert.propertyVal(changedUser, "phone", "0405060607");
+        });
+    });
+    describe("GET /api/registeredgeneralpublic/vaccinationstatus", () => {
+        it("returns user vaccination status (0 records)", async () => {
+            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let user = users[0];
+
+            const res = await chai.request(app)
+                .get('/api/registeredgeneralpublic/vaccinationstatus')
+                .set('x-auth-token', user.accessToken);
+            assert.equal(res.status, 200);
+            assert.equal(res.body.vaccinationRecords.length, 0);
+        });
+        it("returns user vaccination status (5 records)", async () => {
+            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let user = users[0];
+            let vaccinationRecords = await createMockVaccinationRecord(true, 5, user);
+
+            const res = await chai.request(app)
+                .get('/api/registeredgeneralpublic/vaccinationstatus')
+                .set('x-auth-token', user.accessToken);
+            assert.equal(res.status, 200);
+            assert.equal(res.body.vaccinationRecords.length, 5);
         });
     });
 });
