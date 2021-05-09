@@ -1,4 +1,7 @@
 const bcrypt = require('bcryptjs');
+const config = require('config');
+const jwt = require("jsonwebtoken");
+const JWT_SECRET = config.get('JWT_SECRET');
 
 function convertToNumber(str) {
     return Number(str.replace(/,/g, ''))
@@ -24,4 +27,7 @@ function encryptPassword(password)
     return hash;
 }
 
-module.exports = {convertToNumber, generate5CharacterCode, encryptPassword};
+function createAuthToken(userId, userType){
+    return jwt.sign({ userId, userType }, JWT_SECRET, { expiresIn: 3600 });
+}
+module.exports = {convertToNumber, generate5CharacterCode, encryptPassword, createAuthToken};

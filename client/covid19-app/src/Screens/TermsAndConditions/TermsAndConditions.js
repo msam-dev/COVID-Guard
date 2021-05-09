@@ -5,7 +5,7 @@ import './TermsAndConditions.css'
 
 const TermsAndConditions = () => {
     return (
-        <div style = {{color: "#0E5F76"}}>
+        <div style = {{color: "#0E5F76", maxWidth: '100%'}}>
 
             <h1 style = {{color: "#0E5F76", textAlign: "left", backgroundColor: "#FDC500", paddingLeft: "1%",width:"100%"}}>Terms & Conditions</h1>
             <h1 style = {{textAlign: "center", color: "#0E5F76", padding: "2%",width:"100%"}}>COVID Guard Terms & Conditions</h1>

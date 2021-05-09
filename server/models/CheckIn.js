@@ -20,7 +20,11 @@ const CheckInSchema = new mongoose.Schema({
         required: true,
         enum: ['RegisteredGeneralPublic', 'GeneralPublic']
     },
-    business: { type: mongoose.Schema.Types.ObjectId, ref: 'Business', required: true }
+    business: { type: mongoose.Schema.Types.ObjectId, ref: 'Business', required: true },
+    userNotified: {
+        type: Boolean,
+        default: false
+    }
 });
 autoPopulateField(CheckInSchema, 'user');
 autoPopulateField(CheckInSchema, 'business');

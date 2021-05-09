@@ -4,6 +4,8 @@ const BusinessUser = require('../../../models/BusinessUser')
 const faker = require('faker');
 const moment = require('moment');
 const jwt = require('jsonwebtoken');
+const config = require('config');
+const JWT_SECRET = config.get('JWT_SECRET');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes");
 const {BadRequest} = require('../../../utils/errors');
@@ -40,6 +42,9 @@ router.post('/login', asyncHandler(async (req, res) => {
     if(user.isTemporaryExpiryValid()){
         isMatch = user.compareTemporaryPassword(password);
         isTemporary = true;
+        user.passwordReset = undefined;
+        const savedUser = await user.save();
+        if (!savedUser) throw new ServerError('Something went wrong updating the user');
     } else {
         isMatch = user.comparePassword(password);
     }
@@ -65,9 +70,9 @@ router.post('/login', asyncHandler(async (req, res) => {
  */
 
 router.post('/register', asyncHandler(async (req, res) => {
-    const {firstName, lastName, email, password, phone, ABN, businessName, addressLine1, addressLine2, suburb, city, state, postcode} = req.body;
+    const {firstName, lastName, email, password, phone, abn, businessName, addressLine1, addressLine2, suburb, city, state, postcode} = req.body;
     // Simple validation
-    if (!firstName || !lastName || !email || !password || !ABN || !businessName || !addressLine1 || !suburb || !city || !state || !postcode) {
+    if (!firstName || !lastName || !email || !password || !abn || !businessName || !addressLine1 || !suburb || !city || !state || !postcode) {
         throw new BadRequest('Please enter all fields');
     }
 
@@ -87,7 +92,7 @@ router.post('/register', asyncHandler(async (req, res) => {
     if (!savedAddress) throw new ServerError('Something went wrong saving the user');
 
     const newBusiness = new Business({
-        ABN,
+        abn,
         name: businessName,
         address: newAddress
     });
@@ -99,7 +104,7 @@ router.post('/register', asyncHandler(async (req, res) => {
         lastName,
         email,
         password,
-        phone: phone,
+        phone,
         business: newBusiness
     });
 
@@ -176,7 +181,7 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
     const user = await BusinessUser.findOne({email});
     if (!user) throw new BadRequest('User does not exist');
 
-    user.setTemporaryPassword();
+    let temporaryPassword = user.setTemporaryPassword();
 
     const savedUser = await user.save();
 
@@ -188,7 +193,7 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
         to: 'mr664@uowmail.edu.au', // Change to your recipient
         from: 'mr664@uowmail.edu.au', // Change to your verified sender
         subject: 'Reset Password',
-        html: `<strong>The following is your temporaray password to login. It expires in 24 hours.<br>You will be directed to chnage your password after you login: ${savedUser.passwordReset.temporaryPassword}</strong>`,
+        html: `<strong>The following is your one-time temporary password to login. It expires in 1 hour.<br>You will be directed to chnage your password after you login: ${temporaryPassword}</strong>`,
     }
 
     const msgSent = await sgMail.send(msg)

@@ -7,6 +7,10 @@ const PositiveCaseSchema = new mongoose.Schema({
         type: Date,
         required: true
     },
+    infectiousStartDate: {
+        type: Date,
+        required: true
+    },
     // linked to RegisteredGeneralPublic or GeneralPublicUser (https://mongoosejs.com/docs/populate.html)
     user: {
         type: mongoose.Schema.Types.ObjectId,

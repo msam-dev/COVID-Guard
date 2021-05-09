@@ -1,66 +1,78 @@
 
 import './VaccineCenters.css';
-import { Input } from 'antd';
+import { Input, Spin } from 'antd';
 import Center from './Center';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { filterCenters } from './Functions';
-
-
-let dataArray = [];
-
-for(let i = 0; i < 100; i++){
-    const data = {
-        city: "Wollongong",
-        state: "NSW",
-        postCode: 1500 + i + "",
-        venueName: "Wollongong Hospital",
-        addressLine1: "90 Crown Street",
-        addressLine2: "",
-    }
-    dataArray[i] = data;
-}
-
-
-
+import { _getVaccineCenters } from '../../_helpers/endPoints';
 
 const VaccineCenters = () => {
-    const [centers, setCenters] = useState(dataArray); 
-    const [centerFilter] = useState(centers);
+    const [centers, setCenters] = useState([]); 
+    const [centerFilter, setCenterFilter] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
 
-
+    useEffect(() => {
+        if(centers.length === 0 && centerFilter.length === 0){
+            setLoading(true);
+            _getVaccineCenters()
+            .then(res => {
+                setLoading(false);
+                setCenters(res.data.vaccinationCentres);
+                setCenterFilter(res.data.vaccinationCentres);
+            })
+            .catch(err => {
+                setLoading(false);
+                setError(true);
+                console.log(err);
+            });
+        }
+        
+    }, [centers.length, centerFilter.length]);
     
-
-
-
     return (
         <div>
             <div style={{backgroundColor: "#FDC500"}}>
                 <h1 style={{color: "#0E5F76", paddingLeft: "1%"}}>COVID-19 Vaccine Centers</h1>
             </div>
 
-            <div id="vaccine-center-upper-body">
-                <div className="vaccine-center-column-left">
-                    <div>
-                        <span style={{color: "#0E5F76", fontSize: "28px"}}>Nation wide COVID-19 Vaccination Centers</span>
+            {
+                error
+                ? 
+                <div style={{textAlign: 'center'}}>Error loading data. Please try refreshing page or contact support. </div>
+                :
+                <div>
+                    <div id="vaccine-center-upper-body">
+                        <div className="vaccine-center-column-left">
+                            <div>
+                                <span style={{color: "#0E5F76", fontSize: "28px"}}>Nation wide COVID-19 Vaccination Centers</span>
 
-                        <div style={{width: '300px', paddingTop: "1%"}}>
-                            <Input onChange={e => { filterCenters(e, setCenters, centers.length, centerFilter) }} placeholder="Enter your post code"/>
+                                <div style={{width: '300px', paddingTop: "1%"}}>
+                                    <Input onChange={e => { filterCenters(e, setCenters, centers.length, centerFilter) }} placeholder="Enter your post code"/>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    
+                    <div style={{clear: "both", paddingTop: "1%"}}>
+                        {
+                            loading
+                            ?
+                            <div style={{textAlign: 'center'}}>
+                                <Spin size='large'/>
+                            </div> 
+                            : 
+                            <div id='vaccine-center-wrapper'>
+                                {
+                                    centers.map((center, i) => {
+                                        return <Center key={i} {...center}/>
+                                    })
+                                }
+                            </div>
+                        }
+                    </div>
                 </div>
-                
-              
-            </div>
-            
-            <div style={{clear: "both", paddingTop: "1%"}}>
-                <div id='vaccine-center-wrapper'>
-                    {
-                        centers.map((center, i) => {
-                            return <Center key={i} {...center}/>
-                        })
-                    }
-                </div>
-            </div>
+            }
         </div>
     );
 }
