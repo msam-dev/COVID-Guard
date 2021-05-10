@@ -22,7 +22,10 @@ const VaccinationRecordSchema = new mongoose.Schema({
         type : Date,
         required: true
     },
-    patient: { type: mongoose.Schema.Types.ObjectId, ref: 'RegisteredGeneralPublic' }
+    patient: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'RegisteredGeneralPublic' || 'GeneralPublic'
+    }
 });
 
 autoPopulateField(VaccinationRecordSchema, 'patient');

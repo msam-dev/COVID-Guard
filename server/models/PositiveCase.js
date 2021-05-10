@@ -19,6 +19,10 @@ const PositiveCaseSchema = new mongoose.Schema({
         type: String,
         required: true,
         enum: ['RegisteredGeneralPublic', 'GeneralPublic']
+    },
+    daysPositive: {
+        type: Number,
+        required: true
     }
 });
 

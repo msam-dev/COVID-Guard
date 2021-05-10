@@ -181,6 +181,7 @@ async function createMockPositiveCases(save=false, numCases=1, user=null, userTy
             pCase.user = user;
             pCase.userModel = user.constructor.modelName;
         }
+        pCase.daysPositive = faker.datatype.number({'min':1,'max':30});
         if (save) await pCase.save();
         pCases.push(pCase);
     }

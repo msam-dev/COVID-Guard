@@ -1,6 +1,11 @@
 const express = require('express')
 const router = express.Router();
 const HealthProfessional = require('../../../models/HealthProfessional');
+const RegisteredGeneralPublic = require('../../../models/RegisteredGeneralPublic');
+const VaccinationRecord = require('../../../models/VaccinationRecord');
+const RegisteredUser = require('../../../models/RegisteredUser');
+const User = require('../../../models/User');
+const PositiveCase = require('../../../models/PositiveCase');
 const moment = require('moment');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
@@ -72,6 +77,69 @@ router.post('/profile', authMiddleware(userType.HEALTH), asyncHandler(async (req
     res.status(200).json({
         success: true,
         userId: user.id
+    });
+}));
+
+/**
+* @route   POST api/healthprofessional/markpatientpositive
+* @desc    Marks a user as positive for the virus
+* @access  Private
+*/
+
+router.post('/markpatientpositive', authMiddleware(userType.HEALTH), asyncHandler(async (req, res) => {
+    const { email, testDate, daysPositive } = req.body;
+
+    // Simple validation
+    if (!email || !testDate || !daysPositive) {
+        throw new BadRequest('Please enter all fields');
+    }
+
+    // Check for existing user
+    const user = await RegisteredGeneralPublic.findOne( { email: email } );
+    console.log(user);
+    if (!user) throw new BadRequest('User does not exist');
+    console.log(user);
+
+    // Marks user as positive case
+    const positiveCase = new PositiveCase({ testDate: testDate, user: user, userModel: "RegisteredGeneralPublic", daysPositive: daysPositive });
+    await positiveCase.save();
+    console.log(positiveCase);
+
+    res.status(200).json({
+        success: true
+    });
+}));
+
+/**
+ * @route   POST api/healthprofessional/confirmpatientvaccinationinformation
+ * @desc    confirms patient vaccination information
+ * @access  Private
+ */
+//npm run server-test -- --grep "/api/healthprofessional/confirmpatientvaccinationinformation"
+router.post('/confirmpatientvaccinationinformation', authMiddleware(userType.HEALTH), asyncHandler(async (req, res) => {
+    const { email, vaccinationType, dateAdministered } = req.body;
+
+    // Simple validation
+    if (!email || !vaccinationType || !dateAdministered) {
+        throw new BadRequest('Please enter all fields');
+    }
+
+    // Check for existing patient
+    const user = await RegisteredGeneralPublic.findOne( { email: email } );
+    console.log(user);
+    if (!user) throw new BadRequest('Patient does not exist');
+    console.log(user);
+
+    //const patient = await PositiveCase.findOne({ email: user.email });
+
+    //console.log(patient);
+
+    //const vaccineConfirmation = new VaccinationRecord({ vaccinationCode: "a", vaccinationType: vaccinationType, vaccinationStatus: "Partial", dateAdministered: dateAdministered, patient: patient });
+    //await vaccineConfirmation.save();
+    //console.log(vaccineConfirmation);
+
+    res.status(200).json({
+        success: true
     });
 }));
 
