@@ -87,10 +87,10 @@ router.post('/profile', authMiddleware(userType.HEALTH), asyncHandler(async (req
 */
 
 router.post('/markpatientpositive', authMiddleware(userType.HEALTH), asyncHandler(async (req, res) => {
-    const { email, testDate, daysPositive } = req.body;
+    const { email, testDate, infectiousStartDate } = req.body;
 
     // Simple validation
-    if (!email || !testDate || !daysPositive) {
+    if (!email || !testDate || !infectiousStartDate) {
         throw new BadRequest('Please enter all fields');
     }
 
@@ -101,7 +101,7 @@ router.post('/markpatientpositive', authMiddleware(userType.HEALTH), asyncHandle
     console.log(user);
 
     // Marks user as positive case
-    const positiveCase = new PositiveCase({ testDate: testDate, user: user, userModel: "RegisteredGeneralPublic", daysPositive: daysPositive });
+    const positiveCase = new PositiveCase({ testDate: testDate, user: user, userModel: "RegisteredGeneralPublic", infectiousStartDate: infectiousStartDate });
     await positiveCase.save();
     console.log(positiveCase);
 
@@ -117,10 +117,10 @@ router.post('/markpatientpositive', authMiddleware(userType.HEALTH), asyncHandle
  */
 //npm run server-test -- --grep "/api/healthprofessional/confirmpatientvaccinationinformation"
 router.post('/confirmpatientvaccinationinformation', authMiddleware(userType.HEALTH), asyncHandler(async (req, res) => {
-    const { email, vaccinationType, dateAdministered } = req.body;
+    const { email, vaccinationType, dateAdministered, status } = req.body;
 
     // Simple validation
-    if (!email || !vaccinationType || !dateAdministered) {
+    if (!email || !vaccinationType || !dateAdministered || !status) {
         throw new BadRequest('Please enter all fields');
     }
 
