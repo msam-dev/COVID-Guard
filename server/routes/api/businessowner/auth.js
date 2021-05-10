@@ -195,7 +195,7 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
     const msg = {
-        to: 'mr664@uowmail.edu.au', // Change to your recipient
+        to: user.email, // Change to your recipient
         from: 'mr664@uowmail.edu.au', // Change to your verified sender
         subject: 'Reset Password',
         html: `<strong>The following is your one-time temporary password to login. It expires in 1 hour.<br>You will be directed to chnage your password after you login: ${temporaryPassword}</strong>`,
