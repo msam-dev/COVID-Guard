@@ -44,5 +44,23 @@ export const _checkHealthUser = token => {
 
 export const _checkBusinessUser = token => {
     const config = { headers:{ "x-auth-token" : token }}
-    return axios.get('/api/businessowner/auth/user', config);
+    return axios.get('api/businessowner/auth/user', config);
+}
+
+export const _forgotPasswordGeneral = email => {
+    return axios.post('api/registeredgeneralpublic/auth/forgotpassword', email);
+}
+
+export const _checkVaccinationValid = vaccinationCode => {
+    return axios.post('api/generalpublic/checkvaccinationvalid', vaccinationCode);
+}
+
+export const _getVaccinationStatus = token => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.get('api/registeredgeneralpublic/vaccinationstatus', config);
+}
+
+export const _getGeneralProfile = token => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.get('api/registeredgeneralpublic/profile', config);
 }

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { _checkGeneralUser, _checkBusinessUser, _checkHealthUser } from '../../_helpers/endPoints';
 import  USER_TYPE  from '../../_constants/userTypes';
-import { logout } from '../../_helpers/sharedFunctions';
+//import { logout } from '../../_helpers/sharedFunctions';
 import { useAuthUpdate } from '../AuthContext/AuthContext';
 
 export const useAuthValidator = auth => {
@@ -18,7 +18,7 @@ export const useAuthValidator = auth => {
                 .catch(err => {
                     console.log(err);
                     setValidated(false);
-                    logout(updateAuth);
+                  //  logout(updateAuth);
                 });
                 break;
             }
@@ -30,7 +30,7 @@ export const useAuthValidator = auth => {
                 .catch(err => {
                     console.log(err);
                     setValidated(false);
-                    logout(updateAuth);
+                  //  logout(updateAuth);
                 });
                 break;
             }
@@ -42,7 +42,7 @@ export const useAuthValidator = auth => {
                 .catch(err => {
                     console.log(err);
                     setValidated(false);
-                    logout(updateAuth);
+                   // logout(updateAuth);
                 });
                 break;
             }

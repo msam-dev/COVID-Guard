@@ -60,3 +60,15 @@ export const nth = d => {
         default: return "th";
     }
 }
+
+export const formatDate = dateAdministered => {
+    if(dateAdministered==="") return "";
+    const date = new Date(dateAdministered);
+    return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
+}
+
+export const nameEndingInS = lastName => {
+    if(lastName[lastName.length -1] === 's') return lastName += "'";
+    else if(lastName.length !== 0) return lastName += "s";
+    else return lastName;
+}

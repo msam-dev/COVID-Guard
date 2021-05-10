@@ -1,5 +1,10 @@
 import { layout, tailLayout } from './Layouts';
-import { Form, Button, Input } from 'antd';
+import { Form, Button, Input, Radio } from 'antd';
+//import { _forgotPasswordGeneral } from '../../_helpers/endPoints'; 
+import USER_TYPE from '../../_constants/userTypes';
+
+
+
 
 const ForgotPassword = () => {
     return (
@@ -29,6 +34,19 @@ const ForgotPassword = () => {
                         ]}
                     >
                         <Input placeholder="Enter your email here" maxLength={50}/>
+                    </Form.Item>
+
+                    <Form.Item 
+                        {...layout} 
+                        name="type" 
+                        label="User type"
+                        rules={[{ required: true }]}
+                    >
+                        <Radio.Group>
+                            <Radio value={USER_TYPE.GENERAL}>General Public</Radio>
+                            <Radio value={USER_TYPE.HEALTH}>Health Professional</Radio>
+                            <Radio value={USER_TYPE.BUSINESS}>Venue Owner</Radio>
+                        </Radio.Group>
                     </Form.Item>
             
                     <Form.Item {...tailLayout}>

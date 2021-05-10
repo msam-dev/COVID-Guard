@@ -21,6 +21,7 @@ import ForgotPassword from '../Screens/ForgotPassword/ForgotPassword';
 import MyVaccineStatus from '../Screens/MyVaccineStatus/MyVaccineStatus';
 import ConfirmUserVaccination from '../Screens/ConfirmUserVaccination/ConfirmUserVaccination';
 
+
 function App() {
   return (
     <div className="App">
