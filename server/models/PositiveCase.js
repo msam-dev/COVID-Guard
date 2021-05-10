@@ -74,7 +74,7 @@ PositiveCaseSchema.statics.sendEmailsToAffectedUsers = function(positiveCase){
                      .then((effectedCheckins)=>{
                          for(let effectedCheckin of effectedCheckins){
                              //Emailer.sendEmail
-                             console.log(effectedCheckin);
+                             //console.log(effectedCheckin);
                          }
                      });
              }
