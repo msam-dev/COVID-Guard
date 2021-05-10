@@ -8,13 +8,3 @@ export const setCustLayout = () => {
         },
     };
 }
-
-export const handleSubmitBusiness = form => {
-    form.validateFields()
-    .then(res => {
-        console.log(res);
-    })
-    .catch(err => {
-        console.log(err);
-    })
-}

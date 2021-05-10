@@ -3,9 +3,9 @@ export const filterHotspots = (e, setHotspots, hotspotsLength, hotspotsFilter) =
     const valLength = currentValue.length;
 
     const updateState = hotspotsFilter.filter(hotspot => {
-        const postCode = hotspot.postCode;
-        const postCodeSub = postCode.substring(0, valLength);
-        return postCodeSub === currentValue;
+        const postcode = hotspot.postcode;
+        const postcodeSub = postcode.substring(0, valLength);
+        return postcodeSub === currentValue;
     });
 
     if(updateState.length !== hotspotsLength) setHotspots(updateState);

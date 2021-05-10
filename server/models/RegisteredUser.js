@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const {encryptPassword} = require("../utils/general");
 const faker = require("faker");
 const moment = require('moment');
+const {createAuthToken} = require("../utils/general");
 
 // Create Schema
 const RegisteredUserSchema = extendSchema(userSchema, {
@@ -15,12 +16,21 @@ const RegisteredUserSchema = extendSchema(userSchema, {
     },
     passwordReset: {
         temporaryPassword: {
-            type: String
+            type: String,
+            set: (p) => { return encryptPassword(p)}
         },
         expiry: {
             type: Date
         }
-    }
+    },
+    registrationDate: {
+        required: true,
+        type: Date,
+        default: Date.now
+    },
+    accessToken: {
+        type: String
+    },
 })
 // this is not persisted and is just used for testing
 RegisteredUserSchema.virtual('rawPassword').get(function() {
@@ -34,7 +44,7 @@ RegisteredUserSchema.methods.comparePassword = function(password) {
 };
 
 RegisteredUserSchema.methods.compareTemporaryPassword = function(password) {
-    return password == this.passwordReset.temporaryPassword;
+    return bcrypt.compareSync(password, this.passwordReset.temporaryPassword)
 };
 
 RegisteredUserSchema.methods.isTemporaryExpiryValid = function() {
@@ -43,9 +53,18 @@ RegisteredUserSchema.methods.isTemporaryExpiryValid = function() {
 };
 
 RegisteredUserSchema.methods.setTemporaryPassword = function() {
-    const tempPass = faker.internet.password();
-    this.passwordReset.temporaryPassword = tempPass;
-    this.passwordReset.expiry = moment().add(1, "days");
+    let rawTemporaryPassword = faker.internet.password();
+    this.passwordReset.temporaryPassword = rawTemporaryPassword;
+    this.passwordReset.expiry = moment().add(1, "hour");
+    return rawTemporaryPassword;
+};
+
+RegisteredUserSchema.methods.setAccessToken = function() {
+    this.accessToken = createAuthToken(this.id, this.type);
+};
+
+RegisteredUserSchema.methods.revokeAccessToken = function() {
+    this.accessToken = undefined;
 };
 
 module.exports = RegisteredUserSchema;

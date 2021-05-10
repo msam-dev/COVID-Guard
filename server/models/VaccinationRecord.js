@@ -20,12 +20,15 @@ const VaccinationRecordSchema = new mongoose.Schema({
     },
     dateAdministered: {
         type : Date,
-        required: true
+        required: true,
+        validate: {
+            validator: function(v) {
+                return v <= Date.now();
+            },
+            message: props => `${props.value} must be in the past`
+        }
     },
-    patient: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'RegisteredGeneralPublic' || 'GeneralPublic'
-    }
+    patient: { type: mongoose.Schema.Types.ObjectId, ref: 'RegisteredGeneralPublic', required: true }
 });
 
 autoPopulateField(VaccinationRecordSchema, 'patient');

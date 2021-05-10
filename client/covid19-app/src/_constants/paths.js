@@ -1,8 +1,17 @@
 const PATH = {
+    home: "/",
     login: "/login",
-    regiester: "/register",
+    register: "/register",
     currentHotspots: "/currentHotspots",
-    vaccineCenters: "/vaccineCenters"
+    moreinfo: "/moreinfo",
+    vaccineCenters: "/vaccineCenters",
+    support: "/support",
+    checkvaccstatus: "/checkvaccstatus",
+    termsAndConditions: "/termsAndConditions",
+    markCovidCase: "/markCovidCase",
+    changePassword: "/changePassword",
+    venueCode: "/venueCode"
 }
 
 export default PATH;
+

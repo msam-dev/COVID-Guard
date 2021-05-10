@@ -1,14 +1,15 @@
 import { Route, Redirect } from 'react-router';
-import { useAuth } from './AuthContext'; 
-import  USER_TYPE  from '../../_constants/userTypes';
+import { useAuth } from '../AuthContext/AuthContext'; 
+import USER_TYPE  from '../../_constants/userTypes';
+import PATH from '../../_constants/paths';
 
 export const GeneralPrivateRoute = ({component: Component, ...rest}) => {
-    const auth = useAuth();
+    const user = useAuth();
     return (
         <Route {...rest} render={props => (
-            auth === USER_TYPE.GENERAL ?
+            user.type === USER_TYPE.GENERAL ?
                 <Component {...props} />
-            : <Redirect to="/" />
+            : <Redirect to={PATH.login} />
         )} />
     );
 };

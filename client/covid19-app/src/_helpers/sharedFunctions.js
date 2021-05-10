@@ -1,3 +1,13 @@
+import USER_TYPE from '../_constants/userTypes';
+import PATH from '../_constants/paths';
+import history from '../_helpers/history';
+
+export const logout = updateAuth => {
+    localStorage.setItem('USER', JSON.stringify({type: USER_TYPE.UNREGISTERED}));
+    updateAuth({type: USER_TYPE.UNREGISTERED});
+    history.push(PATH.login);
+}
+
 //Event handler that only allows numbers as input
 export const onlyNumbers = (e, form, field, index, subfield) => {
     const reg = /^[0-9]*$/;
@@ -29,4 +39,24 @@ export const makeNumber = str => {
         }
     }
     return str;
+}
+
+export const isWhiteSpace = s => {
+    for(let i = 0; i < s.length; i++) if(s[i] !== ' ') return false;
+    return true;
+}
+
+export const validateEmail = email => {
+    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(String(email).toLowerCase());
+}
+
+export const nth = d => {
+    if (d > 3 && d < 21) return 'th';
+    switch (d % 10) {
+        case 1:  return "st";
+        case 2:  return "nd";
+        case 3:  return "rd";
+        default: return "th";
+    }
 }

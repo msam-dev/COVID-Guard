@@ -1,20 +1,19 @@
 const express = require('express')
 const router = express.Router();
 const BusinessUser = require('../../../models/BusinessUser')
-const faker = require('faker');
-const moment = require('moment');
 const jwt = require('jsonwebtoken');
+const config = require('config');
+const JWT_SECRET = config.get('JWT_SECRET');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes");
 const {BadRequest} = require('../../../utils/errors');
 const asyncHandler = require('express-async-handler');
-const {encryptPassword} = require("../../../utils/general");
 const Business = require("../../../models/Business");
 const Address = require("../../../models/Address");
 const mongoose = require("mongoose");
 const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
-const sgMail = require('@sendgrid/mail');
+const {Emailer} = require("../../../utils/general");
 
 /**
  * @route   POST api/businessowner/auth/login
@@ -40,6 +39,9 @@ router.post('/login', asyncHandler(async (req, res) => {
     if(user.isTemporaryExpiryValid()){
         isMatch = user.compareTemporaryPassword(password);
         isTemporary = true;
+        user.passwordReset = undefined;
+        const savedUser = await user.save();
+        if (!savedUser) throw new ServerError('Something went wrong updating the user');
     } else {
         isMatch = user.comparePassword(password);
     }
@@ -48,6 +50,11 @@ router.post('/login', asyncHandler(async (req, res) => {
 
     const token = jwt.sign({userId: user._id, userType: userType.BUSINESS}, JWT_SECRET, {expiresIn: 3600});
     if (!token) throw new BadRequest('Couldn\'t sign the token');
+
+    user.accessToken = token;
+
+    const savedUser = await user.save();
+    if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
     res.status(200).json({
         success: true,
@@ -65,9 +72,9 @@ router.post('/login', asyncHandler(async (req, res) => {
  */
 
 router.post('/register', asyncHandler(async (req, res) => {
-    const {firstName, lastName, email, password, phone, ABN, businessName, addressLine1, addressLine2, suburb, city, state, postcode} = req.body;
+    const {firstName, lastName, email, password, phone, abn, businessName, addressLine1, addressLine2, suburb, city, state, postcode} = req.body;
     // Simple validation
-    if (!firstName || !lastName || !email || !password || !ABN || !businessName || !addressLine1 || !suburb || !city || !state || !postcode) {
+    if (!firstName || !lastName || !email || !password || !abn || !businessName || !addressLine1 || !suburb || !city || !state || !postcode) {
         throw new BadRequest('Please enter all fields');
     }
 
@@ -87,7 +94,7 @@ router.post('/register', asyncHandler(async (req, res) => {
     if (!savedAddress) throw new ServerError('Something went wrong saving the user');
 
     const newBusiness = new Business({
-        ABN,
+        abn,
         name: businessName,
         address: newAddress
     });
@@ -99,7 +106,7 @@ router.post('/register', asyncHandler(async (req, res) => {
         lastName,
         email,
         password,
-        phone: phone,
+        phone,
         business: newBusiness
     });
 
@@ -107,8 +114,13 @@ router.post('/register', asyncHandler(async (req, res) => {
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
     const token = jwt.sign({userId: savedUser._id, userType: userType.BUSINESS}, JWT_SECRET, {
-        expiresIn: 3600
+        expiresIn: 60*60*24
     });
+
+    savedUser.accessToken = token;
+
+    const savedUser2 = await savedUser.save();
+    if (!savedUser2) throw new ServerError('Something went wrong saving the user');
 
     res.status(200).json({
         success: true,
@@ -176,22 +188,20 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
     const user = await BusinessUser.findOne({email});
     if (!user) throw new BadRequest('User does not exist');
 
-    user.setTemporaryPassword();
+    let temporaryPassword = user.setTemporaryPassword();
 
     const savedUser = await user.save();
 
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-
     const msg = {
         to: 'mr664@uowmail.edu.au', // Change to your recipient
         from: 'mr664@uowmail.edu.au', // Change to your verified sender
         subject: 'Reset Password',
-        html: `<strong>The following is your temporaray password to login. It expires in 24 hours.<br>You will be directed to chnage your password after you login: ${savedUser.passwordReset.temporaryPassword}</strong>`,
+        html: `<strong>The following is your one-time temporary password to login. It expires in 1 hour.<br>You will be directed to chnage your password after you login: ${temporaryPassword}</strong>`,
     }
 
-    const msgSent = await sgMail.send(msg)
+    const msgSent = await Emailer.sendEmail(msg);
 
     if(!msgSent || msgSent[0].statusCode !== 202){
         throw new ServerError("Error sending email");
@@ -205,17 +215,30 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
 
 /*
 * @route   GET api/businessowner/auth/user
-* @desc    Check user valid
+* @desc    Check user logged in
 * @access  Private
 */
 
 router.get('/user', authMiddleware(userType.BUSINESS), asyncHandler(async (req, res) => {
+    res.json({success: true});
+}));
+
+/**
+ * @route   GET api/registeredgeneralpublic/auth/logout
+ * @desc    Logout user
+ * @access  Private
+ */
+
+router.get('/logout', authMiddleware(userType.BUSINESS), asyncHandler(async (req, res) => {
     // check id is valid
     if(!mongoose.Types.ObjectId.isValid(req.userId)) throw new BadRequest('UserId is invalid');
 
     const user = await BusinessUser.findById(req.userId);
     if (!user) throw new Unauthorized('User does not exist');
-    res.json({id: user.id, type: userType.BUSINESS});
+    user.accesssToken = undefined;
+    const savedUser = await user.save();
+    if(!savedUser) throw new BadRequest('Error logging out user');
+    res.json({success: true});
 }));
 
 module.exports = router;

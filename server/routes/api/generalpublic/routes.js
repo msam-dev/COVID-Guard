@@ -10,8 +10,8 @@ const {BadRequest} = require('../../../utils/errors');
 const moment = require("moment");
 const Business = require("../../../models/Business");
 const GeneralPublic = require("../../../models/GeneralPublic");
-const rp = require('request-promise');
-const $ = require('cheerio');
+const RegisteredGeneralPublic = require("../../../models/RegisteredGeneralPublic");
+const Statistics = require("../../../models/Statistics");
 const {cache} = require("../../../middleware/cache");
 const {convertToNumber} = require("../../../utils/general");
 
@@ -21,47 +21,24 @@ const {convertToNumber} = require("../../../utils/general");
  * @access  Public
  */
 
-async function getPositiveBusinesses(){
-    let positiveCases = await PositiveCase.find();
-    let positiveCheckInsAll = [];
-    for(let positiveCase of positiveCases){
-        let positiveCheckIns = await CheckIn.find({user: positiveCase.user, date: {$gt: moment().subtract(14, 'days').toDate()}});
-        positiveCheckInsAll = positiveCheckInsAll.concat(positiveCheckIns);
-    }
-    let positiveBusinesses = {};
-    for(let positiveCheckIn of positiveCheckInsAll){
-        if(!positiveBusinesses[positiveCheckIn.business.id]){
-            positiveBusinesses[positiveCheckIn.business.id] = positiveCheckIn;
-        } else if(positiveBusinesses[positiveCheckIn.business.id].date < positiveCheckIn.date){
-            positiveBusinesses[positiveCheckIn.business.id] = positiveCheckIn;
-        }
-    }
-    return positiveBusinesses;
-}
-
 router.get('/currenthotspots', cache(10), asyncHandler(async (req, res) => {
     // do it the easiest way first then try aggregate
-    let positiveCases = await PositiveCase.find();
-    let positiveCheckInsAll = [];
-    for(let positiveCase of positiveCases){
-        let positiveCheckIns = await CheckIn.find({user: positiveCase.user, date: {$gt: moment().subtract(14, 'days').toDate()}});
-        positiveCheckInsAll = positiveCheckInsAll.concat(positiveCheckIns);
-    }
-    let positiveBusinesses = await getPositiveBusinesses();
+    let positiveBusinesses = await Statistics.getPositiveBusinessesCheckinDates();
     let hotspots = [];
-    Object.keys(positiveBusinesses).map(function(key) {
-        let business = positiveBusinesses[key].business;
+    for (let business of positiveBusinesses){
+        let positiveBusiness = await Business.findById(business.business);
         hotspots.push({
-            venueName: business.name,
-            ABN: business.ABN,
-            city: business.address.city,
-            state: business.address.state,
-            postcode: business.address.postcode,
-            addressLine1: business.address.addressLine1,
-            addressLine2: business.address.addressLine2,
-            dateMarked: positiveBusinesses[key].date
+            venueName: positiveBusiness.name,
+            abn: positiveBusiness.abn,
+            city: positiveBusiness.address.city,
+            state: positiveBusiness.address.state,
+            postcode: positiveBusiness.address.postcode,
+            addressLine1: positiveBusiness.address.addressLine1,
+            addressLine2: positiveBusiness.address.addressLine2,
+            coordinates: positiveBusiness.address.coordinates,
+            date: business.dateVisited
         });
-    });
+    }
 
     res.status(200).json({
         success: true,
@@ -141,7 +118,7 @@ router.post('/checkvaccinationisvalid', asyncHandler(async (req, res) => {
  */
 
 router.get('/vaccinationcentres', cache(10), asyncHandler(async (req, res) => {
-    const vaccinationCentre = await VaccinationCentre.find();
+    const vaccinationCentre = await VaccinationCentre.find().sort({ clinicName: 1 });
     const vaccinationCentres = [];
 
     // iterates through and pushes all vaccination centres to the return array
@@ -155,7 +132,8 @@ router.get('/vaccinationcentres', cache(10), asyncHandler(async (req, res) => {
                 suburb:vaccinationCentre.address.suburb,
                 city:vaccinationCentre.address.city,
                 state:vaccinationCentre.address.state,
-                postcode:vaccinationCentre.address.postcode
+                postcode:vaccinationCentre.address.postcode,
+                coordinates: vaccinationCentre.address.coordinates
             }
         )
     );
@@ -172,59 +150,36 @@ router.get('/vaccinationcentres', cache(10), asyncHandler(async (req, res) => {
  * @access  Public
  */
 
-function dailySummary(html, category){
-    let cat = matchText($(html).find('table.DAILY-SUMMARY td.CATEGORY a'), category).parent().parent();
-    return {
-        total: () => {return convertToNumber(cat.find("td.TOTAL").text())},
-        net: () => {return convertToNumber(cat.find("td.NET").text())}
-    };
-}
-
-function matchText(selector, text){
-    return selector.filter(function() {
-        return $(this).text().trim() === text;
-    });
-}
-
 router.get('/homepagestats', cache(10), asyncHandler(async (req, res) => {
-    const covidSummaryUrl = 'https://covidlive.com.au/australia';
-
-    const covidSummaryHtml = await rp(covidSummaryUrl);
-    const covidSummary = {};
-    covidSummary["totalHospitalised"] = dailySummary(covidSummaryHtml, "Hospitalised").total();
-    covidSummary["totalDeaths"] = dailySummary(covidSummaryHtml, "Deaths").total();
-    covidSummary["totalActiveCases"] = dailySummary(covidSummaryHtml, "Active").total();
-    covidSummary["totalTests"] = dailySummary(covidSummaryHtml, "Tests").total();
-    covidSummary["totalTestsLast24Hours"] = dailySummary(covidSummaryHtml, "Tests").net();
-    covidSummary["totalOverseasCasesLast24Hours"] = dailySummary(covidSummaryHtml, "Overseas").net();
-    covidSummary["totalLocalCasesLast24Hours"] = dailySummary(covidSummaryHtml, "New Cases").total() - dailySummary(covidSummaryHtml, "Overseas").net();
-    covidSummary["totalCases"] = dailySummary(covidSummaryHtml, "Cases").total();
-    covidSummary["totalCheckins"] = await CheckIn.countDocuments();
-    covidSummary["totalHotspots"] = Object.keys(await getPositiveBusinesses()).length;
-
-    const vaccinationSummaryUrl = 'https://covidlive.com.au/report/vaccinations';
-    const vaccinationSummaryHtml = await rp(vaccinationSummaryUrl)
-    const vaccinationMap = {
-        "QLD": "Queensland",
-        "NSW": "NSW",
-        "VIC": "Victoria",
-        "TAS":"Tasmania",
-        "SA": "SA",
-        "WA": "WA",
-        "ACT":"ACT",
-        "NT":"NT",
-        "Commonwealth":"Commonwealth",
-        "GPClinic": "GP Clinics",
-        "Australia":"Australia"
-    };
-    const vaccinationSummary = {};
-    for(const loc in vaccinationMap){
-        vaccinationSummary[`total${loc}Vaccinations`] = convertToNumber($(vaccinationSummaryHtml).find(`table.VACCINATIONS td.STATE:contains('${vaccinationMap[loc]}')`).parent().find("td.DOSES").text());
-    }
-
-    const stats = {
-        "covidSummary": covidSummary,
-        "vaccinationSummary": vaccinationSummary
+    let statistics = await Statistics.getSingleton();
+    let stats = {
+        covidSummary:
+            {
+                totalHospitalised: statistics.covidSummary.totalHospitalised,
+                totalDeaths: statistics.covidSummary.totalDeaths,
+                totalTests: statistics.covidSummary.totalTests,
+                totalTestsLast24Hours: statistics.covidSummary.totalTestsLast24Hours,
+                totalOverseasCasesLast24Hours: statistics.covidSummary.totalOverseasCasesLast24Hours,
+                totalCurrentHotspotVenues: statistics.covidSummary.totalCurrentHotspotVenues,
+                totalPositiveCasesLast24Hours: statistics.covidSummary.totalPositiveCasesLast24Hours,
+                totalPositiveCases: statistics.covidSummary.totalPositiveCases
+            },
+        checkinsSummary: {
+            totalCheckins: statistics.checkinsSummary.totalCheckins,
+            checkinsLast24Hours: statistics.checkinsSummary.checkinsLast24Hours
+        },
+        businessesSummary: {
+            totalBusinessesRegistered: statistics.businessesSummary.totalBusinessesRegistered,
+            businessesDeemedHotspot24Hours: statistics.businessesSummary.businessesDeemedHotspot24Hours.length
+        },
+        vaccinationsSummary: {
+            vaccinationsYesterday: statistics.vaccinationsSummary.vaccinationsYesterday,
+            totalVaccinations: statistics.vaccinationsSummary.totalVaccinations,
+            totalVaccinationCentres: statistics.vaccinationsSummary.totalVaccinationCentres
+        },
+        usersSummary: {
+            totalRegisteredGeneralPublicUsers: statistics.usersSummary.totalRegisteredGeneralPublicUsers
+        }
     };
 
     // add rest of logic

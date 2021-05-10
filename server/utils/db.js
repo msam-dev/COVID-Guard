@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const assert = require('chai').assert
+const clonedeep = require('lodash.clonedeep');
 
 function autoPopulateField(schema, field){
     const autoPopulate = function (next) {
@@ -19,12 +19,12 @@ function extendSchema (Schema, definition={}, options={}) {
         Object.assign({}, Schema.obj, definition),
         Object.assign({}, Schema._userProvidedOptions, options)
     );
-    newSchema.virtuals = Schema.virtuals;
-    newSchema.methods = Schema.methods;
-    newSchema.statics = Schema.statics;
-    newSchema.query = Schema.query;
-    newSchema.aliases = Schema.aliases;
-    //newSchema.plugins = Schema.plugins; causing error for some users to not return id
+    newSchema.virtuals = clonedeep(Schema.virtuals);
+    newSchema.methods = clonedeep(Schema.methods);
+    newSchema.statics = clonedeep(Schema.statics);
+    newSchema.query = clonedeep(Schema.query);
+    newSchema.aliases = clonedeep(Schema.aliases);
+    newSchema.plugins = clonedeep(Schema.plugins); //causing error for some users to not return id
 
     return newSchema;
 }

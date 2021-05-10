@@ -1,2 +1,2 @@
 const {createDevData} = require("./mockData");
-createDevData();
+createDevData().catch((err) => {throw err});
