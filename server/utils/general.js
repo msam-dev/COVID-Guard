@@ -3,6 +3,7 @@ const config = require('config');
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = config.get('JWT_SECRET');
 const $ = require('cheerio');
+const sgMail = require('@sendgrid/mail');
 
 function convertToNumber(str) {
     return Number(str.replace(/,/g, ''))
@@ -46,4 +47,11 @@ function matchText(selector, text){
     });
 }
 
-module.exports = {convertToNumber, generate5CharacterCode, encryptPassword, createAuthToken, dailySummary, matchText};
+class Emailer {
+    static async sendEmail(msg) {
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+        return await sgMail.send(msg);
+    }
+}
+
+module.exports = {Emailer, convertToNumber, generate5CharacterCode, encryptPassword, createAuthToken, dailySummary, matchText};

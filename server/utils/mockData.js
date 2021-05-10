@@ -309,13 +309,13 @@ function getRawUserData(users) {
 async function createDevData() {
     await db.connect();
     await mongoose.connection.db.dropDatabase();
-    let registeredGeneralPublicUsers = await createMockRegisteredGeneralPublicUsers(true, 10000);
+    let registeredGeneralPublicUsers = await createMockRegisteredGeneralPublicUsers(true, 1000);
     console.log("Registered General Public Users created");
     let registeredGeneralPublicUsersRaw = getRawUserData(registeredGeneralPublicUsers);
-    let healthProfessionalUsers = await createMockHealthProfessionalUsers(true, 500);
+    let healthProfessionalUsers = await createMockHealthProfessionalUsers(true, 100);
     console.log("Health Professional Users created");
     let healthProfessionalUsersRaw = getRawUserData(healthProfessionalUsers);
-    let businessUsers = await createMockBusinessUsers(true, 500);
+    let businessUsers = await createMockBusinessUsers(true, 100);
     console.log("Business Users created");
     let businessUsersRaw = getRawUserData(businessUsers);
 
@@ -332,7 +332,7 @@ async function createDevData() {
     }
     console.log("users file created");
 
-    let generalPublicUsers = await createMockGeneralPublicUsers(true, 10000);
+    let generalPublicUsers = await createMockGeneralPublicUsers(true, 1000);
     console.log("general public users created")
 
 
@@ -375,12 +375,13 @@ async function createDevData() {
         }) === 0) {
             vaccinationRecords.push(...await createMockVaccinationRecord(false, 1, rUser));
         }
-        await PositiveCase.insertMany(positiveCases);
-        console.log("positive cases created")
         await CheckIn.insertMany(checkins);
-        console.log("checkins created");
+        //console.log("checkins created");
+        await PositiveCase.insertMany(positiveCases);
+        //console.log(positiveCases);
+        //console.log("positive cases created")
         await VaccinationRecord.insertMany(vaccinationRecords);
-        console.log("vaccination records created");
+        //console.log("vaccination records created");
     }
 
     await createMockVaccinationCentres(true, 500);
