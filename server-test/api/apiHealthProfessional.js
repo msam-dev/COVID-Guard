@@ -8,6 +8,7 @@ const HealthProfessional = require("../../server/models/HealthProfessional");
 const PositiveCase = require("../../server/models/PositiveCase");
 const {createMockHealthProfessionalUsers} = require("../../server/utils/mockData");
 const {createMockRegisteredGeneralPublicUsers} = require("../../server/utils/mockData");
+const {createMockVaccinationCentres} = require("../../server/utils/mockData");
 const {createMockPositiveCases} = require("../../server/utils/mockData");
 const {createMockVaccinationRecord} = require("../../server/utils/mockData");
 
@@ -194,6 +195,50 @@ describe("Covid App Server Health Professional Endpoints", () => {
                     vaccinationType: "Novavax",
                     dateAdministered: '02-02-2021',
                     status: "Complete"
+                });
+            assert.equal(res.status, 200);
+            assert.propertyVal(res.body, 'success', true);
+        });
+    });
+    describe("POST /api/healthprofessional/addvaccinationcentreinformation", () => {
+        it("returns error message 'Please enter all fields'", (done) => {
+            createMockHealthProfessionalUsers(true).then((users) => {
+                let user = users[0];
+                chai.request(app)
+                    .post('/api/healthprofessional/addvaccinationcentreinformation')
+                    .set('x-auth-token', user.accessToken)
+                    .then((res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        assert.equal(res.status, 400);
+                        assert.propertyVal(res.body, 'errCode', 400);
+                        assert.propertyVal(res.body, 'success', false);
+                        assert.propertyVal(res.body, 'message', 'Please enter all fields');
+                        done();
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
+                done(err);
+            });
+        });
+        it("adds vaccination centre information", async () => {
+            let healthUsers = await createMockHealthProfessionalUsers(true);
+            let healthUser = healthUsers[0];
+
+            const res = await chai.request(app)
+                .post('/api/healthprofessional/addvaccinationcentreinformation')
+                .set('x-auth-token', healthUser.accessToken)
+                .send({
+                    clinicName: "Wollongong Clinic",
+                    addressLine1: "Wollongong Street",
+                    addressLine2: "2nd Wollongong Street",
+                    suburb: "Wollongong",
+                    city: "Sydney",
+                    state: "NSW",
+                    postcode: "2000",
+                    latitude: -32.6576,
+                    longitude: -176.6316,
+                    phone: "0412345678"
                 });
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);

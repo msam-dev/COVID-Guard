@@ -2,6 +2,7 @@ const express = require('express')
 const router = express.Router();
 const HealthProfessional = require('../../../models/HealthProfessional');
 const RegisteredGeneralPublic = require('../../../models/RegisteredGeneralPublic');
+const VaccinationCentre = require('../../../models/VaccinationCentre');
 const VaccinationRecord = require('../../../models/VaccinationRecord');
 const RegisteredUser = require('../../../models/RegisteredUser');
 const User = require('../../../models/User');
@@ -13,6 +14,9 @@ const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
 const mongoose = require("mongoose");
 const {ServerError} = require("../../../utils/errors");
+
+const Address = require('../../../models/Address');
+const Coordinates = require('../../../models/Coordinates');
 
 /*
 * @route   GET api/healthprofessional/profile
@@ -115,7 +119,7 @@ router.post('/markpatientpositive', authMiddleware(userType.HEALTH), asyncHandle
  * @desc    confirms patient vaccination information
  * @access  Private
  */
-//npm run server-test -- --grep "/api/healthprofessional/confirmpatientvaccinationinformation"
+//npm run server-test -- --grep "/api/healthprofessional/addvaccinationcentreinformation"
 router.post('/confirmpatientvaccinationinformation', authMiddleware(userType.HEALTH), asyncHandler(async (req, res) => {
     const { email, vaccinationType, dateAdministered, status } = req.body;
 
@@ -130,13 +134,49 @@ router.post('/confirmpatientvaccinationinformation', authMiddleware(userType.HEA
     if (!user) throw new BadRequest('Patient does not exist');
     console.log(user);
 
-    //const patient = await PositiveCase.findOne({ email: user.email });
+    res.status(200).json({
+        success: true
+    });
+}));
 
-    //console.log(patient);
+/**
+ * @route   POST api/healthprofessional/addvaccinationcentreinformation
+ * @desc    adds vaccination centre information
+ * @access  Private
+ */
+//npm run server-test -- --grep "/api/healthprofessional/confirmpatientvaccinationinformation"
+router.post('/addvaccinationcentreinformation', authMiddleware(userType.HEALTH), asyncHandler(async (req, res) => {
+    const { clinicName, addressLine1, addressLine2, suburb, city, state, postcode, latitude, longitude, phone } = req.body;
 
-    //const vaccineConfirmation = new VaccinationRecord({ vaccinationCode: "a", vaccinationType: vaccinationType, vaccinationStatus: "Partial", dateAdministered: dateAdministered, patient: patient });
-    //await vaccineConfirmation.save();
-    //console.log(vaccineConfirmation);
+    // Simple validation
+    if (!clinicName || !addressLine1 || !addressLine2 || !suburb || !city || !state || !postcode || !latitude || !longitude  || !phone) {
+        throw new BadRequest('Please enter all fields');
+    }
+
+    let coordinates = new Coordinates({
+        latitude: latitude,
+        longitude: longitude
+    })
+
+    let address = new Address({
+        addressLine1: addressLine1,
+        addressLine2: addressLine2,
+        suburb: suburb,
+        city: city,
+        state: state,
+        postcode: postcode,
+        coordinates: coordinates
+
+    });
+
+    let clinic = new VaccinationCentre
+    ({
+        clinicName: clinicName,
+        address: address,
+        phone: phone
+    });
+
+    await clinic.save();
 
     res.status(200).json({
         success: true
