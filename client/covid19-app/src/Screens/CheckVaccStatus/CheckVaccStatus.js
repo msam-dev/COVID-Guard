@@ -3,13 +3,17 @@ import { useState } from 'react';
 import { layout, tailLayout } from './layouts';
 import { VACCINE_STATE } from './VaccineStates';
 import { CheckOutlined, RiseOutlined, CloseOutlined } from '@ant-design/icons';
-//import { _checkVaccinationValid } from '../../_helpers/endPoints';
-
+import { _checkVaccinationValid } from '../../_helpers/endPoints';
+//608e05117e24ebe0e472d15c
 
 
 
 const CheckVaccStatus = () => {
     const [vaccinationRecord] = useState({});
+
+    _checkVaccinationValid({ vaccinationCode: "608e05117e24ebe0e472d15c" })
+    .then(res => console.log(res))
+    .catch(err => console.log(err));
 
     return (
         <div>

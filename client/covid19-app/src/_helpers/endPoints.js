@@ -52,7 +52,7 @@ export const _forgotPasswordGeneral = email => {
 }
 
 export const _checkVaccinationValid = vaccinationCode => {
-    return axios.post('api/generalpublic/checkvaccinationvalid', vaccinationCode);
+    return axios.post('/api/generalpublic/checkvaccinationvalid', vaccinationCode);
 }
 
 export const _getVaccinationStatus = token => {
