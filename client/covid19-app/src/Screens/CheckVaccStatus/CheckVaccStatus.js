@@ -4,16 +4,40 @@ import { layout, tailLayout } from './layouts';
 import { VACCINE_STATE } from './VaccineStates';
 import { CheckOutlined, RiseOutlined, CloseOutlined } from '@ant-design/icons';
 import { _checkVaccinationValid } from '../../_helpers/endPoints';
-//608e05117e24ebe0e472d15c
+import { formatDate } from '../../_helpers/sharedFunctions';
 
-
+//FOR TESTING
+//608e05117e24ebe0e472d15c complete 
+//608e05147e24ebe0e472d25c partial
 
 const CheckVaccStatus = () => {
-    const [vaccinationRecord] = useState({});
+    const [vaccinationRecord, setVaccinationRecord] = useState({dateAdministered:""});
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const date = formatDate(vaccinationRecord.dateAdministered);
 
-    _checkVaccinationValid({ vaccinationCode: "608e05117e24ebe0e472d15c" })
-    .then(res => console.log(res))
-    .catch(err => console.log(err));
+    const checkVaccinationValid = values => {
+        let unmounted = false;
+        setLoading(true);
+ 
+        _checkVaccinationValid(values)
+        .then(res => {
+            if(!unmounted){
+                setLoading(false);
+                setVaccinationRecord(res.data);
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            if(!unmounted){
+                setLoading(false);
+                if(err.response.status === 400) setVaccinationRecord({ vaccinationStatus: VACCINE_STATE.NoVaccination });
+                else setError(true);
+            }
+        });
+
+        return () => { unmounted = true };
+    }
 
     return (
         <div>
@@ -22,11 +46,11 @@ const CheckVaccStatus = () => {
 
             <Form
                 {...layout}
-                name="basic"
+                onFinish={checkVaccinationValid}
             >
                 <Form.Item
                         label="Code"
-                        name="code"
+                        name="vaccinationCode"
                         rules={[
                             {
                                 required: true,
@@ -40,7 +64,7 @@ const CheckVaccStatus = () => {
                     <Input placeholder="Enter vaccination code here" maxLength={50}/>
                 </Form.Item>
                 <Form.Item {...tailLayout}>
-                    <Button type="primary" htmlType="submit">Check Status</Button>
+                    <Button loading={loading} type="primary" htmlType="submit">Check Status</Button>
                 </Form.Item>
             </Form>
             
@@ -49,24 +73,34 @@ const CheckVaccStatus = () => {
                     vaccinationRecord.vaccinationStatus === VACCINE_STATE.Complete
                     ?
                     <div>
-                        <span style={{color: "#0E5F76"}}>Complete </span>
+                        <span style={{color: "#0E5F76"}}>
+                            {`${vaccinationRecord.patientFirstName} ${vaccinationRecord.patientLastName} 
+                            has had a complete vaccination with the ${vaccinationRecord.vaccinationType} vaccine on the ${date}`}
+                        </span>
                         <CheckOutlined style={{fontSize: '30px', color: 'green'}} />
                     </div>
                     :
                     vaccinationRecord.vaccinationStatus === VACCINE_STATE.Partial
                     ?
                     <div>
-                        <span style={{color: "#0E5F76"}}>Partial </span>
+                        <span style={{color: "#0E5F76"}}>
+                            {`${vaccinationRecord.patientFirstName} ${vaccinationRecord.patientLastName} 
+                            has had a partial vaccination with the ${vaccinationRecord.vaccinationType} vaccine on the ${date}`}
+                        </span>
                         <RiseOutlined style={{fontSize: '30px', color: '#FDC500'}} />
                     </div>
                     :
                     vaccinationRecord.vaccinationStatus === VACCINE_STATE.NoVaccination
                     ?
                     <div>
-                        <span style={{color: "#0E5F76"}}>Not Vaccinated </span>
+                        <span style={{color: "#0E5F76"}}>Code not found</span>
                         <CloseOutlined style={{fontSize: '30px', color: 'red'}} />
                     </div>
-                    : 
+                    :
+                    error
+                    ?
+                    <div style={{textAlign: 'center'}}>Error loading data. Please try refreshing page or contact support. </div>
+                    :
                     <></>
                 }
             </div>

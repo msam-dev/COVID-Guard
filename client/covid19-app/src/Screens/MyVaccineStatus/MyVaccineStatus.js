@@ -18,14 +18,15 @@ const MyVaccineStatus = () => {
     });
 
     const [vaccinationRecord, setVaccinationRecord] = useState({
-        vaccinationCode: "",
-        vaccinationType: "",
-        vaccinationStatus: "",
-        dateAdministered: ""
+        vaccinationCode: "d",
+        vaccinationType: "d",
+        vaccinationStatus: "d",
+        dateAdministered: "d"
     });
 
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
+    const [noRecord, setNoRecord] = useState(false);
 
     const dateAdministeredFormatted = formatDate(vaccinationRecord.dateAdministered);
     const lastName = nameEndingInS(user.lastName);
@@ -42,9 +43,14 @@ const MyVaccineStatus = () => {
         .then(resArr => {
             if(!unmounted){
                 const recordRes = resArr[0];
-                const recentRecord = recordRes.data.vaccinationRecords[recordRes.data.vaccinationRecords.length-1];
-                setVaccinationRecord(recentRecord);
-    
+                console.log(recordRes);
+                if(recordRes.data.vaccinationRecords.length > 0){
+                    const recentRecord = recordRes.data.vaccinationRecords[recordRes.data.vaccinationRecords.length-1];
+                    setVaccinationRecord(recentRecord);
+                }
+                else setNoRecord(true);
+                
+
                 const userRes = resArr[1];
                 setUser(userRes.data);
                 setLoading(false);
@@ -53,7 +59,7 @@ const MyVaccineStatus = () => {
         .catch(err => {
             console.log(err);
             if(err.response.status === 401) logout(updateAuth); 
-            else if(!unmounted){
+            if(!unmounted){
                 setError(true);
                 setLoading(false);
             }
@@ -81,6 +87,10 @@ const MyVaccineStatus = () => {
                 error
                 ? 
                 <div style={{textAlign: 'center'}}>Error loading data. Please try refreshing page or contact support. </div>
+                :
+                noRecord
+                ?
+                <div style={{textAlign: 'center'}}>No vaccination records found. </div>
                 :
                 <div style={{width:"380px", margin: "0 auto", color: '#0E5F76'}}>
                     <div>
