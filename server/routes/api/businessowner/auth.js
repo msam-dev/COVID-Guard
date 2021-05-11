@@ -13,7 +13,7 @@ const Address = require("../../../models/Address");
 const mongoose = require("mongoose");
 const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
-const sgMail = require('@sendgrid/mail');
+const {Emailer} = require("../../../utils/general");
 
 /**
  * @route   POST api/businessowner/auth/login
@@ -194,16 +194,14 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
 
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-
     const msg = {
-        to: 'mr664@uowmail.edu.au', // Change to your recipient
+        to: user.email, // Change to your recipient
         from: 'mr664@uowmail.edu.au', // Change to your verified sender
         subject: 'Reset Password',
-        html: `<strong>The following is your one-time temporary password to login. It expires in 1 hour.<br>You will be directed to chnage your password after you login: ${temporaryPassword}</strong>`,
+        html: `<strong>The following is your one-time temporary password to login for ${user.email}. It expires in 1 hour.<br>You will be directed to change your password after you login: ${temporaryPassword}</strong>`,
     }
 
-    const msgSent = await sgMail.send(msg)
+    const msgSent = await Emailer.sendEmail(msg);
 
     if(!msgSent || msgSent[0].statusCode !== 202){
         throw new ServerError("Error sending email");
