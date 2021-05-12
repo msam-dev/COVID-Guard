@@ -5,14 +5,10 @@ const chaiHttp = require("chai-http");
 const app = require("../../server");
 const assert = require('chai').assert
 const HealthProfessional = require("../../server/models/HealthProfessional");
-const PositiveCase = require("../../server/models/PositiveCase");
 const VaccinationRecord = require("../../server/models/VaccinationRecord");
 const VaccinationCentre = require("../../server/models/VaccinationCentre");
 const {createMockHealthProfessionalUsers} = require("../../server/utils/mockData");
 const {createMockRegisteredGeneralPublicUsers} = require("../../server/utils/mockData");
-const {createMockVaccinationCentres} = require("../../server/utils/mockData");
-const {createMockPositiveCases} = require("../../server/utils/mockData");
-const {createMockVaccinationRecord} = require("../../server/utils/mockData");
 
 // Configure chai
 chai.use(chaiHttp);
@@ -28,7 +24,6 @@ describe("Covid App Server Health Professional Endpoints", () => {
                 .set('x-auth-token', user.accessToken);
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
-            assert.propertyVal(res.body, "userId", user.id);
             assert.propertyVal(res.body, "firstName", user.firstName);
             assert.propertyVal(res.body, "lastName", user.lastName);
             assert.propertyVal(res.body, "phone", user.phone);
@@ -63,7 +58,6 @@ describe("Covid App Server Health Professional Endpoints", () => {
                 });
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
-            assert.propertyVal(res.body, 'userId', user.id);
             let changedUser = await HealthProfessional.findById(user.id);
             assert.propertyVal(changedUser, "id", user.id);
             assert.propertyVal(changedUser, "firstName", "Bob");

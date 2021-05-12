@@ -57,7 +57,6 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         if (res.status === 500) throw new Error(res.body.message);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
-                        assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
                         assert.propertyVal(res.body, 'isTemporary', false);
                         assert.property(res.body, 'token');
@@ -85,7 +84,6 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         RegisteredGeneralPublic.findById(savedUser.id).then((uUser) => {
                             assert.equal(res.status, 200);
                             assert.propertyVal(res.body, 'success', true);
-                            assert.propertyVal(res.body, 'userId', uUser.id);
                             assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
                             assert.propertyVal(res.body, 'isTemporary', true);
                             assert.propertyVal(uUser.passwordReset, 'expiry', undefined);
@@ -137,7 +135,6 @@ describe("Covid App Server API Registered General Public Auth", () => {
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'type', USER_TYPE.GENERAL);
                     RegisteredGeneralPublic.findOne({email: "test2@email.com"}).select("+password").then((user) => {
-                        assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(user, 'firstName', "Johnny");
                         assert.propertyVal(user, 'lastName', "Smithy");
                         assert.propertyVal(user, 'phone', "0478987653");
@@ -242,7 +239,6 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         RegisteredGeneralPublic.findById(user.id).select("+password").then((changedUser) => {
-                            assert.propertyVal(res.body, 'userId', user.id);
                             bcrypt.compare("newPassword", changedUser.password).then((v) => {
                                 assert.isTrue(v);
                                 done();
@@ -296,7 +292,6 @@ describe("Covid App Server API Registered General Public Auth", () => {
                         assert.isTrue(global.setApiKeyStub.called);
                         assert.isTrue(global.sendMailStub.called);
                         RegisteredGeneralPublic.findById(user.id).then((changedUser) => {
-                            assert.propertyVal(res.body, 'userId', changedUser.id);
                             assert.notEqual(global.sendMailStub.getCall(0).args[0]["html"].indexOf(mySpy.getCall(0).returnValue), -1);
                             assert.property(changedUser.passwordReset, 'temporaryPassword');
                             assert.property(changedUser.passwordReset, 'expiry');

@@ -5,8 +5,6 @@ const chaiHttp = require("chai-http");
 const app = require("../../server");
 const assert = require('chai').assert
 const RegisteredGeneralPublic = require("../../server/models/RegisteredGeneralPublic");
-const USER_TYPE = require("../../server/_constants/usertypes");
-const {createAuthToken} = require("../../server/utils/general");
 const {createMockRegisteredGeneralPublicUsers, createMockVaccinationRecord} = require("../../server/utils/mockData");
 const {createMockBusinesses} = require("../../server/utils/mockData");
 
@@ -58,7 +56,6 @@ describe("Covid App Server Registered General Public Endpoints", () => {
                     assert.equal(res.status, 200);
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'venueCode', business.code);
-                    assert.propertyVal(res.body, 'userId', user.id);
                 });
             });
         });
@@ -106,7 +103,6 @@ describe("Covid App Server Registered General Public Endpoints", () => {
                 });
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
-            assert.propertyVal(res.body, 'userId', user.id);
             let changedUser = await RegisteredGeneralPublic.findById(user.id);
             assert.propertyVal(changedUser, "id", user.id);
             assert.propertyVal(changedUser, "firstName", "Bob");

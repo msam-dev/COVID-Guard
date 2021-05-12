@@ -1,16 +1,14 @@
 const express = require('express')
 const router = express.Router();
 const BusinessUser = require('../../../models/BusinessUser')
-const jwt = require('jsonwebtoken');
 const config = require('config');
-const JWT_SECRET = config.get('JWT_SECRET');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes");
 const {BadRequest} = require('../../../utils/errors');
 const asyncHandler = require('express-async-handler');
 const Business = require("../../../models/Business");
 const Address = require("../../../models/Address");
-const mongoose = require("mongoose");
+const {createAuthToken} = require("../../../utils/general");
 const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
 const {Emailer} = require("../../../utils/general");
@@ -48,7 +46,7 @@ router.post('/login', asyncHandler(async (req, res) => {
 
     if (!isMatch) throw new BadRequest('Invalid credentials');
 
-    const token = jwt.sign({userId: user._id, userType: userType.BUSINESS}, JWT_SECRET, {expiresIn: 3600});
+    const token = createAuthToken(user._id, userType.BUSINESS);
     if (!token) throw new BadRequest('Couldn\'t sign the token');
 
     user.accessToken = token;
@@ -59,7 +57,6 @@ router.post('/login', asyncHandler(async (req, res) => {
     res.status(200).json({
         success: true,
         token,
-        userId: user._id,
         type: userType.BUSINESS,
         isTemporary
     });
@@ -113,9 +110,7 @@ router.post('/register', asyncHandler(async (req, res) => {
     const savedUser = await newUser.save();
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
-    const token = jwt.sign({userId: savedUser._id, userType: userType.BUSINESS}, JWT_SECRET, {
-        expiresIn: 60*60*24
-    });
+    const token = createAuthToken(savedUser.id, userType.BUSINESS);
 
     savedUser.accessToken = token;
 
@@ -125,7 +120,6 @@ router.post('/register', asyncHandler(async (req, res) => {
     res.status(200).json({
         success: true,
         token,
-        userId: savedUser._id,
         type: userType.BUSINESS
     });
 }));
@@ -149,9 +143,6 @@ router.post('/changepassword', authMiddleware(userType.BUSINESS), asyncHandler(a
         throw new BadRequest('Password and confirm password do not match');
     }
 
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
-
     // Check for existing user
     const user = await BusinessUser.findById(userId).select("+password");
     if (!user) throw new BadRequest('User does not exist');
@@ -166,7 +157,6 @@ router.post('/changepassword', authMiddleware(userType.BUSINESS), asyncHandler(a
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
     res.status(200).json({
         success: true,
-        userId: savedUser.id,
     });
 }));
 
@@ -209,7 +199,6 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
 
     res.status(200).json({
         success: true,
-        userId: savedUser.id,
     });
 }));
 
@@ -230,9 +219,6 @@ router.get('/user', authMiddleware(userType.BUSINESS), asyncHandler(async (req, 
  */
 
 router.get('/logout', authMiddleware(userType.BUSINESS), asyncHandler(async (req, res) => {
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(req.userId)) throw new BadRequest('UserId is invalid');
-
     const user = await BusinessUser.findById(req.userId);
     if (!user) throw new Unauthorized('User does not exist');
     user.accesssToken = undefined;

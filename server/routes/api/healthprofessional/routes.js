@@ -4,15 +4,11 @@ const HealthProfessional = require('../../../models/HealthProfessional');
 const RegisteredGeneralPublic = require('../../../models/RegisteredGeneralPublic');
 const VaccinationCentre = require('../../../models/VaccinationCentre');
 const VaccinationRecord = require('../../../models/VaccinationRecord');
-const RegisteredUser = require('../../../models/RegisteredUser');
-const User = require('../../../models/User');
 const PositiveCase = require('../../../models/PositiveCase');
-const moment = require('moment');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
 const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
-const mongoose = require("mongoose");
 const {ServerError} = require("../../../utils/errors");
 
 const Address = require('../../../models/Address');
@@ -32,16 +28,12 @@ router.get('/profile', authMiddleware(userType.HEALTH), asyncHandler(async (req,
         throw new BadRequest('Please enter all fields');
     }
 
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
-
     // Check for existing user
     const user = await HealthProfessional.findById(userId).select('-password');
     if (!user) throw new BadRequest('User does not exist');
 
     res.status(200).json({
         success: true,
-        userId: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
@@ -64,9 +56,6 @@ router.post('/profile', authMiddleware(userType.HEALTH), asyncHandler(async (req
         throw new BadRequest('Please enter all fields');
     }
 
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
-
     // Check for existing user
     const user = await HealthProfessional.findById(userId);
     if (!user) throw new BadRequest('User does not exist');
@@ -80,7 +69,6 @@ router.post('/profile', authMiddleware(userType.HEALTH), asyncHandler(async (req
 
     res.status(200).json({
         success: true,
-        userId: user.id
     });
 }));
 
