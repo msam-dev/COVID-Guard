@@ -1,7 +1,7 @@
 import { Form, Input, Button } from 'antd';
 import { useState } from 'react';
 import { layout, tailLayout } from './layouts';
-import { VACCINE_STATE } from './VaccineStates';
+import VACCINE_STATE from '../../_constants/vaccineStates';
 import { CheckOutlined, RiseOutlined, CloseOutlined } from '@ant-design/icons';
 import { _checkVaccinationValid } from '../../_helpers/endPoints';
 import { formatDate } from '../../_helpers/sharedFunctions';

@@ -116,7 +116,7 @@ const GeneralForm = props => {
                               },
                         ]}
                     >
-                    <Input onChange={e => {numberInputs(e, form, 'phone')}} maxLength={30}/>
+                    <Input onChange={e => {numberInputs(e, form, 'phone')}} maxLength={10}/>
                 </Form.Item>
 
                 <Form.Item

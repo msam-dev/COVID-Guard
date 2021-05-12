@@ -51,6 +51,14 @@ export const _forgotPasswordGeneral = email => {
     return axios.post('api/registeredgeneralpublic/auth/forgotpassword', email);
 }
 
+export const _forgotPasswordHealth = email => {
+    return axios.post('api/healthprofessional/auth/forgotpassword', email);
+}
+
+export const _forgotPasswordBusiness = email => {
+    return axios.post('api/businessowner/auth/forgotpassword', email);
+}
+
 export const _checkVaccinationValid = vaccinationCode => {
     return axios.post('api/generalpublic/checkvaccinationisvalid', vaccinationCode);
 }
@@ -63,4 +71,9 @@ export const _getVaccinationStatus = token => {
 export const _getGeneralProfile = token => {
     const config = { headers:{ "x-auth-token" : token }}
     return axios.get('api/registeredgeneralpublic/profile', config);
+}
+
+export const _confirmPatientVaccination = (confirmation, token) => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.post('api/healthprofessional/confirmpatientvaccinationinformation', confirmation, config);
 }

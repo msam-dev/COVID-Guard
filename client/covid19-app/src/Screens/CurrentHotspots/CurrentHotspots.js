@@ -11,6 +11,8 @@ const CurrentHotspots = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
 
+    console.log(hotspots);
+
     useEffect(() => {
         if(hotspots.length === 0 && hotspotsFilter.length === 0){
             const ac = new AbortController();

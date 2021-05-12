@@ -1,11 +1,59 @@
 import { layout, tailLayout } from './layouts';
 import {Form, Radio, DatePicker, Input, Button} from 'antd'; 
 import { VACCINE_TYPES } from './VaccineTypes';
+import { useState } from 'react';
+import { useAuth, useAuthUpdate } from '../../Components/AuthContext/AuthContext';
+import { _confirmPatientVaccination } from '../../_helpers/endPoints';
+import VACCINE_STATE from '../../_constants/vaccineStates';
+import { validateEmail } from '../../_helpers/sharedFunctions';
+import { logout } from '../../_helpers/sharedFunctions';
+import moment from 'moment';
+import {somethingWentWrongModal, confirmationSuccessModal} from './Modals';
 
 
 
 
-const ConfirmUserVaccination = () => {
+
+const ConfirmUserVaccination = (_) => {
+
+    const [loading, setLoading] = useState(false);
+    const [form] = Form.useForm();
+    const auth = useAuth();
+    const updateAuth = useAuthUpdate();
+
+
+
+
+
+    const confirmVaccination = (_, email) => {
+
+        if(!validateEmail(email)) return Promise.resolve();
+
+        let values = form.getFieldValue();
+        let newValues = {};
+
+        newValues.email = values.email;
+        newValues.dateAdministered = new Date(values.dateAdministered._d);
+        newValues.status = values.status;
+        newValues.vaccinationType = values.vaccinationType;
+    
+        setLoading(true);
+        return _confirmPatientVaccination(newValues, auth.token)
+        .then(res => {
+            setLoading(false);
+            console.log(res);
+            confirmationSuccessModal(email);
+        })
+        .catch(err => {
+            setLoading(false);
+            console.log(err);
+            if(err.response.status === 400) return Promise.reject(new Error('Patient email not found in our system!'));
+            else if(err.response.status === 401) logout(updateAuth);
+            else somethingWentWrongModal();
+        });
+    }
+
+
 
 
 
@@ -16,20 +64,25 @@ const ConfirmUserVaccination = () => {
 
             <div>
                 <Form
+                    form={form}
                     {...layout}
                 >
                     <Form.Item
                         label="Patient Email"
                         name="email"
                         style={{color: "#0E5F76"}}
+                        validateTrigger={['onBlur']}
                         rules={[
-                        {   
-                            type: 'email',
-                            required: true,
-                            message: 'Email does not appear to be valid!',
-                            whitespace: true,
-                            validateTrigger: 'onSubmit'
-                        },
+                            {   
+                                type: 'email',
+                                required: true,
+                                message: 'Email does not appear to be valid!',
+                                whitespace: true,
+                            },
+                            {
+                                validator: confirmVaccination,
+                                validateTrigger: "onSubmit"
+                            }
                         ]}
                     >
                         <Input maxLength={50}/>
@@ -38,7 +91,7 @@ const ConfirmUserVaccination = () => {
                     <Form.Item
                         {...layout}
                         label="Date of Vaccination"
-                        name="vaccinationDate"
+                        name="dateAdministered"
                         rules={[
                             {
                                 required: true,
@@ -46,12 +99,12 @@ const ConfirmUserVaccination = () => {
                             }
                         ]}
                     >
-                        <DatePicker/>
+                        <DatePicker disabledDate={current => { return current && current > moment().endOf('day')}}/>
                     </Form.Item>
 
                     <Form.Item 
                         {...layout} 
-                        name="vaccineType"
+                        name="vaccinationType"
                         label="Vaccine Type" 
                         rules={[
                             { 
@@ -67,8 +120,25 @@ const ConfirmUserVaccination = () => {
                         </Radio.Group>
                     </Form.Item>
 
+                    <Form.Item 
+                        {...layout} 
+                        name="status"
+                        label="Vaccine Status" 
+                        rules={[
+                            { 
+                                required: true,
+                                message: 'Please select the vaccine status!'
+                            }
+                        ]}
+                    >
+                        <Radio.Group>
+                            <Radio value={VACCINE_STATE.Partial}>{VACCINE_STATE.Partial}</Radio>
+                            <Radio value={VACCINE_STATE.Complete}>{VACCINE_STATE.Complete}</Radio>
+                        </Radio.Group>
+                    </Form.Item>
+
                     <Form.Item {...tailLayout}>
-                        <Button type="primary" htmlType="submit">Submit</Button>
+                        <Button loading={loading} type="primary" htmlType="submit">Submit</Button>
                     </Form.Item>
                 </Form>
             </div>
