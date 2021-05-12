@@ -178,11 +178,15 @@ async function createMockGeneralPublicUsers(save = false, numUsers = 1) {
     return Object.values(users);
 }
 
-async function createMockCheckIns(save = false, numCheckIns = 1, user = null, business = null, userType = USER_TYPE.UNREGISTERED) {
+async function createMockCheckIns(save = false, numCheckIns = 1, user = null, business = null, userType = USER_TYPE.UNREGISTERED, checkinDate=null) {
     let checkins = [];
     for (let i = 0; i < numCheckIns; i++) {
         let checkin = new CheckIn();
-        checkin.date = faker.date.recent(150);
+        if(checkinDate){
+            checkin.date = checkinDate;
+        } else {
+            checkin.date = faker.date.recent(150);
+        }
         if (user) {
             checkin.user = user;
             checkin.userModel = user.constructor.modelName;
@@ -210,11 +214,15 @@ async function createMockCheckIns(save = false, numCheckIns = 1, user = null, bu
     return checkins;
 }
 
-async function createMockPositiveCases(save = false, numCases = 1, user = null, userType = USER_TYPE.UNREGISTERED) {
+async function createMockPositiveCases(save = false, numCases = 1, user = null, userType = USER_TYPE.UNREGISTERED, testDate =null) {
     let pCases = [];
     for (let i = 0; i < numCases; i++) {
         let pCase = new PositiveCase();
-        pCase.testDate = faker.date.recent(150);
+        if(testDate){
+            pCase.testDate = testDate;
+        } else {
+            pCase.testDate = faker.date.recent(150);
+        }
         pCase.infectiousStartDate = moment(pCase.testDate).subtract(faker.datatype.number({
             'min': 1,
             'max': 10
@@ -309,13 +317,13 @@ function getRawUserData(users) {
 async function createDevData() {
     await db.connect();
     await mongoose.connection.db.dropDatabase();
-    let registeredGeneralPublicUsers = await createMockRegisteredGeneralPublicUsers(true, 1000);
+    let registeredGeneralPublicUsers = await createMockRegisteredGeneralPublicUsers(true, 10000);
     console.log("Registered General Public Users created");
     let registeredGeneralPublicUsersRaw = getRawUserData(registeredGeneralPublicUsers);
-    let healthProfessionalUsers = await createMockHealthProfessionalUsers(true, 100);
+    let healthProfessionalUsers = await createMockHealthProfessionalUsers(true, 500);
     console.log("Health Professional Users created");
     let healthProfessionalUsersRaw = getRawUserData(healthProfessionalUsers);
-    let businessUsers = await createMockBusinessUsers(true, 100);
+    let businessUsers = await createMockBusinessUsers(true, 500);
     console.log("Business Users created");
     let businessUsersRaw = getRawUserData(businessUsers);
 
@@ -332,7 +340,7 @@ async function createDevData() {
     }
     console.log("users file created");
 
-    let generalPublicUsers = await createMockGeneralPublicUsers(true, 1000);
+    let generalPublicUsers = await createMockGeneralPublicUsers(true, 10000);
     console.log("general public users created")
 
 
