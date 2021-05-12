@@ -134,6 +134,16 @@ router.post('/confirmpatientvaccinationinformation', authMiddleware(userType.HEA
     if (!user) throw new BadRequest('Patient does not exist');
     console.log(user);
 
+    const vaccinationRecord = new VaccinationRecord({
+        vaccinationType,
+        vaccinationStatus: status,
+        dateAdministered,
+        patient: user
+    });
+
+    const savedVaccinationRecord = await vaccinationRecord.save();
+    if(!savedVaccinationRecord) throw new BadRequest('Error saving vaccination record');
+
     res.status(200).json({
         success: true
     });
@@ -156,7 +166,10 @@ router.post('/addvaccinationcentreinformation', authMiddleware(userType.HEALTH),
     let coordinates = new Coordinates({
         latitude: latitude,
         longitude: longitude
-    })
+    });
+
+    let savedCoordinates = await coordinates.save();
+    if(!savedCoordinates) throw new BadRequest('Coordinates could not be saved');
 
     let address = new Address({
         addressLine1: addressLine1,
@@ -165,14 +178,16 @@ router.post('/addvaccinationcentreinformation', authMiddleware(userType.HEALTH),
         city: city,
         state: state,
         postcode: postcode,
-        coordinates: coordinates
-
+        coordinates: savedCoordinates
     });
+
+    let savedAddress = await address.save();
+    if(!savedAddress) throw new BadRequest('Address could not be saved');
 
     let clinic = new VaccinationCentre
     ({
         clinicName: clinicName,
-        address: address,
+        address: savedAddress,
         phone: phone
     });
 

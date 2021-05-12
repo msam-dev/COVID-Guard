@@ -6,6 +6,8 @@ const app = require("../../server");
 const assert = require('chai').assert
 const HealthProfessional = require("../../server/models/HealthProfessional");
 const PositiveCase = require("../../server/models/PositiveCase");
+const VaccinationRecord = require("../../server/models/VaccinationRecord");
+const VaccinationCentre = require("../../server/models/VaccinationCentre");
 const {createMockHealthProfessionalUsers} = require("../../server/utils/mockData");
 const {createMockRegisteredGeneralPublicUsers} = require("../../server/utils/mockData");
 const {createMockVaccinationCentres} = require("../../server/utils/mockData");
@@ -198,6 +200,12 @@ describe("Covid App Server Health Professional Endpoints", () => {
                 });
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
+            let savedVRecord = await VaccinationRecord.findOne({
+                patient: patient,
+                vaccinationType: "Novavax",
+                dateAdministered: new Date('02-02-2021'),
+                vaccinationStatus: "Complete"});
+            assert.isNotNull(savedVRecord);
         });
     });
     describe("POST /api/healthprofessional/addvaccinationcentreinformation", () => {
@@ -242,6 +250,9 @@ describe("Covid App Server Health Professional Endpoints", () => {
                 });
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
+            let savedVCentre = await VaccinationCentre.findOne({
+                clinicName: "Wollongong Clinic"});
+            assert.isNotNull(savedVCentre);
         });
     });
 });
