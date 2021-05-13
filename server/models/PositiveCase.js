@@ -1,3 +1,5 @@
+const dateShortcode = require('date-shortcode')
+
 const mongoose = require('mongoose')
 const CheckIn = require("./CheckIn");
 const {Emailer} = require("../utils/general");
@@ -30,9 +32,9 @@ const PositiveCaseSchema = new mongoose.Schema({
 
 autoPopulateField(PositiveCaseSchema, 'user');
 
-PositiveCaseSchema.statics.sendEmailsToAffectedUsers = function(positiveCase){
+PositiveCaseSchema.statics.sendEmailsToAffectedUsers = async function (positiveCase) {
     // Get positive checkin times
-   PositiveCase.aggregate()
+    let positiveCheckins = await PositiveCase.aggregate()
         .match({_id: positiveCase._id})
         .lookup({
             from: CheckIn.collection.name,
@@ -62,35 +64,49 @@ PositiveCaseSchema.statics.sendEmailsToAffectedUsers = function(positiveCase){
             ],
         }).project({
             _id: 0,
-       business: "$checkin.business",
-       dateVisited: { $dateToString: {date: "$checkin.date", format: "%Y-%m-%d"}}
-         }).then((positiveCheckins)=>{
-             for(let positiveCheckin of positiveCheckins){
-                 CheckIn
-                     .find({ $and: [
-                         {business: {$eq:positiveCheckin.business}},
-                        {$expr:
-                                {$eq: [positiveCheckin.dateVisited, { $dateToString: {date: "$date", format: "%Y-%m-%d"}}]}}]})
-                     .then((effectedCheckins)=>{
-                         for(let effectedCheckin of effectedCheckins){
-                             //Emailer.sendEmail
-                             //console.log(effectedCheckin);
-                         }
-                     });
-             }
-   });
-;}
+            business: "$checkin.business",
+            dateVisited: {$dateToString: {date: "$checkin.date", format: "%Y-%m-%d"}}
+        }).exec();
+    console.log(positiveCheckins);
+    for (let positiveCheckin of positiveCheckins) {
+        let affectedCheckins = await CheckIn
+            .find({
+                $and: [
+                    {
+                        $and: [
+                            {user: {$ne: positiveCase.user}},
+                            {userModel: {$ne: positiveCase.userModel}}
+                        ]
+                    },
+                    {business: {$eq: positiveCheckin.business}},
+                    {
+                        $expr:
+                            {$eq: [positiveCheckin.dateVisited, {$dateToString: {date: "$date", format: "%Y-%m-%d"}}]}
+                    }]
+            }).exec();
+        for (let affectedCheckin of affectedCheckins) {
+            let msg = {
+                to: affectedCheckin.user.email, // Change to your recipient
+                from: 'mr664@uowmail.edu.au', // Change to your verified sender
+                subject: 'Contact tracing',
+                html: `<strong>This message is to notify you that you visited a venue where a confirmed positive case visited on ${dateShortcode.parse('{YYYY-MM-DD}', affectedCheckin.date)}</strong>`,
+            }
+            await Emailer.sendEmail(msg);
+            affectedCheckin.userNotified = true;
+            let affectedCheckinSaved = await affectedCheckin.save();
+            //console.log(affectedCheckinSaved);
+        }
+    }
+}
 
-PositiveCaseSchema.post('insertMany', function(positiveCases, next ){
-    positiveCases.map((positiveCase) => {
-        PositiveCase.sendEmailsToAffectedUsers(positiveCase);
+PositiveCaseSchema.post('insertMany', async function (positiveCases) {
+    positiveCases.map(async (positiveCase) => {
+        await PositiveCase.sendEmailsToAffectedUsers(positiveCase);
     });
-    next();
 });
 
-PositiveCaseSchema.post('saved', function(positiveCase, next ){
-    PositiveCase.sendEmailsToAffectedUsers(positiveCase);
-    next();
+PositiveCaseSchema.post('save', async function (positiveCase) {
+    await PositiveCase.sendEmailsToAffectedUsers(positiveCase);
 });
 
 const PositiveCase = mongoose.model('PositiveCase', PositiveCaseSchema);

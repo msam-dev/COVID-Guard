@@ -5,11 +5,10 @@ const chaiHttp = require("chai-http");
 const app = require("../../server");
 const assert = require('chai').assert
 const HealthProfessional = require("../../server/models/HealthProfessional");
-const PositiveCase = require("../../server/models/PositiveCase");
+const VaccinationRecord = require("../../server/models/VaccinationRecord");
+const VaccinationCentre = require("../../server/models/VaccinationCentre");
 const {createMockHealthProfessionalUsers} = require("../../server/utils/mockData");
 const {createMockRegisteredGeneralPublicUsers} = require("../../server/utils/mockData");
-const {createMockPositiveCases} = require("../../server/utils/mockData");
-const {createMockVaccinationRecord} = require("../../server/utils/mockData");
 
 // Configure chai
 chai.use(chaiHttp);
@@ -25,7 +24,6 @@ describe("Covid App Server Health Professional Endpoints", () => {
                 .set('x-auth-token', user.accessToken);
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
-            assert.propertyVal(res.body, "userId", user.id);
             assert.propertyVal(res.body, "firstName", user.firstName);
             assert.propertyVal(res.body, "lastName", user.lastName);
             assert.propertyVal(res.body, "phone", user.phone);
@@ -60,7 +58,6 @@ describe("Covid App Server Health Professional Endpoints", () => {
                 });
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
-            assert.propertyVal(res.body, 'userId', user.id);
             let changedUser = await HealthProfessional.findById(user.id);
             assert.propertyVal(changedUser, "id", user.id);
             assert.propertyVal(changedUser, "firstName", "Bob");
@@ -197,6 +194,59 @@ describe("Covid App Server Health Professional Endpoints", () => {
                 });
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
+            let savedVRecord = await VaccinationRecord.findOne({
+                patient: patient,
+                vaccinationType: "Novavax",
+                dateAdministered: new Date('02-02-2021'),
+                vaccinationStatus: "Complete"});
+            assert.isNotNull(savedVRecord);
+        });
+    });
+    describe("POST /api/healthprofessional/addvaccinationcentreinformation", () => {
+        it("returns error message 'Please enter all fields'", (done) => {
+            createMockHealthProfessionalUsers(true).then((users) => {
+                let user = users[0];
+                chai.request(app)
+                    .post('/api/healthprofessional/addvaccinationcentreinformation')
+                    .set('x-auth-token', user.accessToken)
+                    .then((res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        assert.equal(res.status, 400);
+                        assert.propertyVal(res.body, 'errCode', 400);
+                        assert.propertyVal(res.body, 'success', false);
+                        assert.propertyVal(res.body, 'message', 'Please enter all fields');
+                        done();
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
+                done(err);
+            });
+        });
+        it("adds vaccination centre information", async () => {
+            let healthUsers = await createMockHealthProfessionalUsers(true);
+            let healthUser = healthUsers[0];
+
+            const res = await chai.request(app)
+                .post('/api/healthprofessional/addvaccinationcentreinformation')
+                .set('x-auth-token', healthUser.accessToken)
+                .send({
+                    clinicName: "Wollongong Clinic",
+                    addressLine1: "Wollongong Street",
+                    addressLine2: "2nd Wollongong Street",
+                    suburb: "Wollongong",
+                    city: "Sydney",
+                    state: "NSW",
+                    postcode: "2000",
+                    latitude: -32.6576,
+                    longitude: -176.6316,
+                    phone: "0412345678"
+                });
+            assert.equal(res.status, 200);
+            assert.propertyVal(res.body, 'success', true);
+            let savedVCentre = await VaccinationCentre.findOne({
+                clinicName: "Wollongong Clinic"});
+            assert.isNotNull(savedVCentre);
         });
     });
 });

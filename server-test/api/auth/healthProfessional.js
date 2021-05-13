@@ -57,7 +57,6 @@ describe("Covid App Server API Health Professional Auth", () => {
                         if (res.status === 500) throw new Error(res.body.message);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
-                        assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(res.body, 'type', USER_TYPE.HEALTH);
                         assert.property(res.body, 'token');
                         let decoded = jwt.verify(res.body.token, JWT_SECRET);
@@ -84,7 +83,6 @@ describe("Covid App Server API Health Professional Auth", () => {
                         HealthProfessionalUser.findById(savedUser.id).then((uUser) => {
                             assert.equal(res.status, 200);
                             assert.propertyVal(res.body, 'success', true);
-                            assert.propertyVal(res.body, 'userId', uUser.id);
                             assert.propertyVal(res.body, 'type', USER_TYPE.HEALTH);
                             assert.propertyVal(res.body, 'isTemporary', true);
                             assert.propertyVal(uUser.passwordReset, 'expiry', undefined);
@@ -137,7 +135,6 @@ describe("Covid App Server API Health Professional Auth", () => {
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'type', USER_TYPE.HEALTH);
                     HealthProfessionalUser.findOne({email: "test2@email.com"}).select("+password").then((user) => {
-                        assert.propertyVal(res.body, 'userId', user.id);
                         assert.property(res.body, 'token');
                         assert.property(res.body, 'token');
                         let decoded = jwt.verify(res.body.token, JWT_SECRET);
@@ -244,7 +241,6 @@ describe("Covid App Server API Health Professional Auth", () => {
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         HealthProfessionalUser.findById(user.id).select("+password").then((changedUser) => {
-                            assert.propertyVal(res.body, 'userId', user.id);
                             bcrypt.compare("newPassword", changedUser.password).then((v) => {
                                 assert.isTrue(v);
                                 done();
@@ -300,7 +296,6 @@ describe("Covid App Server API Health Professional Auth", () => {
                         assert.isTrue(global.setApiKeyStub.called);
                         assert.isTrue(global.sendMailStub.called);
                         HealthProfessionalUser.findById(user.id).then((changedUser) => {
-                            assert.propertyVal(res.body, 'userId', changedUser.id);
                             assert.notEqual(global.sendMailStub.getCall(0).args[0]["html"].indexOf(mySpy.getCall(0).returnValue), -1);
                             assert.property(changedUser.passwordReset, 'temporaryPassword');
                             assert.property(changedUser.passwordReset, 'expiry');
