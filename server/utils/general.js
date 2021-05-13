@@ -51,6 +51,7 @@ class Emailer {
     static async sendEmail(msg) {
         // override email at the moment because using test data
         msg["to"] = process.env.SENDGRID_TO_EMAIL;
+        console.log(`Message sent to: ${msg["to"]}`);
         sgMail.setApiKey(process.env.SENDGRID_API_KEY)
         return await sgMail.send(msg);
     }
