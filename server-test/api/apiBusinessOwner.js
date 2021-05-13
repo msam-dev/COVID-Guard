@@ -19,7 +19,6 @@ describe("Covid App Server Business Owner Endpoints", () => {
                 .set('x-auth-token', user.accessToken);
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
-            assert.propertyVal(res.body, "userId", user.id);
             assert.propertyVal(res.body, "firstName", user.firstName);
             assert.propertyVal(res.body, "lastName", user.lastName);
             assert.propertyVal(res.body, "phone", user.phone);
@@ -53,7 +52,6 @@ describe("Covid App Server Business Owner Endpoints", () => {
                 });
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
-            assert.propertyVal(res.body, 'userId', user.id);
             let changedUser = await BusinessOwner.findById(user.id);
             assert.propertyVal(changedUser, "id", user.id);
             assert.propertyVal(changedUser, "firstName", "Bob");
