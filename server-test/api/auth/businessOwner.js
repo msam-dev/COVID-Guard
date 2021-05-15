@@ -11,7 +11,6 @@ const BusinessUser = require("../../../server/models/BusinessUser");
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const sinon = require("sinon");
-const {createAuthToken} = require("../../../server/utils/general");
 const JWT_SECRET = config.get('JWT_SECRET');
 
 // Configure chai
@@ -58,7 +57,6 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         if (res.status === 500) throw new Error(res.body.message);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
-                        assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
                         assert.property(res.body, 'token');
                         let decoded = jwt.verify(res.body.token, JWT_SECRET);
@@ -85,7 +83,6 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         BusinessUser.findById(savedUser.id).then((uUser) => {
                             assert.equal(res.status, 200);
                             assert.propertyVal(res.body, 'success', true);
-                            assert.propertyVal(res.body, 'userId', uUser.id);
                             assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
                             assert.propertyVal(res.body, 'isTemporary', true);
                             assert.propertyVal(uUser.passwordReset, 'expiry', undefined);
@@ -146,7 +143,6 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'type', USER_TYPE.BUSINESS);
                     BusinessUser.findOne({email: userData.email}).select("+password").then((user) => {
-                        assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(user, 'firstName', userData.firstName);
                         assert.propertyVal(user, 'lastName', userData.lastName);
                         assert.propertyVal(user, 'phone', userData.phone);
@@ -174,38 +170,47 @@ describe("Covid App Server API BusinessOwner Auth", () => {
     });
     describe("POST /api/businessowner/auth/changepassword", () => {
         it("returns error message 'Please enter all fields'", (done) => {
-            chai.request(app)
-                .post('/api/businessowner/auth/changepassword')
-                .set('x-auth-token', createAuthToken(null, USER_TYPE.BUSINESS))
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
-                    done();
-                }).catch((err) => {
+            createMockBusinessUsers(true).then((users) => {
+                let user = users[0];
+                chai.request(app)
+                    .post('/api/businessowner/auth/changepassword')
+                    .set('x-auth-token', user.accessToken)
+                    .then((res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        assert.equal(res.status, 400);
+                        assert.propertyVal(res.body, 'errCode', 400);
+                        assert.propertyVal(res.body, 'success', false);
+                        assert.propertyVal(res.body, 'message', 'Please enter all fields');
+                        done();
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
                 done(err);
             });
         });
         it("returns error message 'Password and confirm password do not match'", (done) => {
-            chai.request(app)
-                .post('/api/businessowner/auth/changepassword')
-                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.BUSINESS))
-                .send({
-                    "userId": "41224d776a326fb40f000001",
-                    "currentPassword": "oldPassword",
-                    "newPassword": "newPassword",
-                    "confirmPassword": "newPasswordDifferent",
-                })
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'Password and confirm password do not match');
-                    done();
-                }).catch((err) => {
+            createMockBusinessUsers(true).then((users) => {
+                let user = users[0];
+                chai.request(app)
+                    .post('/api/businessowner/auth/changepassword')
+                    .set('x-auth-token', user.accessToken)
+                    .send({
+                        "currentPassword": "oldPassword",
+                        "newPassword": "newPassword",
+                        "confirmPassword": "newPasswordDifferent",
+                    })
+                    .then((res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        assert.equal(res.status, 400);
+                        assert.propertyVal(res.body, 'errCode', 400);
+                        assert.propertyVal(res.body, 'success', false);
+                        assert.propertyVal(res.body, 'message', 'Password and confirm password do not match');
+                        done();
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
                 done(err);
             });
         });
@@ -214,9 +219,8 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/businessowner/auth/changepassword')
-                    .set('x-auth-token', createAuthToken(user.id, USER_TYPE.BUSINESS))
+                    .set('x-auth-token', user.accessToken)
                     .send({
-                        "userId": user.id,
                         "currentPassword": "oldPassword",
                         "newPassword": "newPassword",
                         "confirmPassword": "newPassword"
@@ -238,9 +242,8 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/businessowner/auth/changepassword')
-                    .set('x-auth-token', createAuthToken(user.id, USER_TYPE.BUSINESS))
+                    .set('x-auth-token', user.accessToken)
                     .send({
-                        "userId": user.id,
                         "currentPassword": user.rawPassword,
                         "newPassword": "newPassword",
                         "confirmPassword": "newPassword"
@@ -250,7 +253,6 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         BusinessUser.findById(user.id).select("+password").then((changedUser) => {
-                            assert.propertyVal(res.body, 'userId', user.id);
                             bcrypt.compare("newPassword", changedUser.password).then((v) => {
                                 assert.isTrue(v);
                                 done();
@@ -302,7 +304,6 @@ describe("Covid App Server API BusinessOwner Auth", () => {
                         assert.isTrue(global.setApiKeyStub.called);
                         assert.isTrue(global.sendMailStub.called);
                         BusinessUser.findById(user.id).then((changedUser) => {
-                            assert.propertyVal(res.body, 'userId', changedUser.id);
                             assert.notEqual(global.sendMailStub.getCall(0).args[0]["html"].indexOf(mySpy.getCall(0).returnValue), -1);
                             assert.property(changedUser.passwordReset, 'temporaryPassword');
                             assert.property(changedUser.passwordReset, 'expiry');

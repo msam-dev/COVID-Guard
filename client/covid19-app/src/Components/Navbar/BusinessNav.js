@@ -1,8 +1,10 @@
 import { Menu } from 'antd';
 import logo from '../../Assets/Images/logo.png';
 import './Navbar.css';
-import { logout } from './Functions';
+import { logout } from '../../_helpers/sharedFunctions';
 import { useAuthUpdate } from '../AuthContext/AuthContext';
+import history from '../../_helpers/history';
+import PATH from '../../_constants/paths';
 
 const { Item } = Menu;
 
@@ -10,9 +12,9 @@ const BusinessNav = () => {
     const updateAuth = useAuthUpdate();
 
     return (
-        <div >
+        <div>
             <Menu style ={{backgroundColor: "#0E5F76"}} mode="horizontal" >
-                <Item>
+                <Item onClick={() => { history.push(PATH.home)}}>
                     <img width={200} src={logo} alt="Logo" />
                 </Item>
                 <Item  >

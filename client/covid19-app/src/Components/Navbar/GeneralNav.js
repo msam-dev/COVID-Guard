@@ -1,7 +1,7 @@
 import { Menu } from 'antd';
 import logo from '../../Assets/Images/logo.png';
 import './Navbar.css';
-import { logout } from './Functions';
+import { logout } from '../../_helpers/sharedFunctions';
 import { useAuthUpdate } from '../AuthContext/AuthContext';
 import history from '../../_helpers/history';
 import PATH from '../../_constants/paths';
@@ -12,9 +12,9 @@ const GeneralNav = () => {
     const updateAuth = useAuthUpdate();
 
     return (
-        <div >
+        <div>
             <Menu style ={{backgroundColor: "#0E5F76"}} mode="horizontal" >
-                <Item>
+                <Item onClick={() => { history.push(PATH.home)}}>
                     <img width={200} src={logo} alt="Logo" />
                 </Item>
                 <Item  >
@@ -29,7 +29,7 @@ const GeneralNav = () => {
                 <Item>
                     <div className='navbar-menuitem-text'>My Profile</div>
                 </Item>
-                <Item>
+                <Item onClick={() => {history.push(PATH.myVaccineStatus)}}>
                     <div className='navbar-menuitem-text'>My Status</div>
                 </Item>
                 <Item  onClick={() => {logout(updateAuth)}} style={{float: 'right', paddingTop: '3px'}}>

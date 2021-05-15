@@ -11,7 +11,6 @@ const HealthProfessionalUser = require("../../../server/models/HealthProfessiona
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const sinon = require("sinon");
-const {createAuthToken} = require("../../../server/utils/general");
 const JWT_SECRET = config.get('JWT_SECRET');
 
 // Configure chai
@@ -58,7 +57,6 @@ describe("Covid App Server API Health Professional Auth", () => {
                         if (res.status === 500) throw new Error(res.body.message);
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
-                        assert.propertyVal(res.body, 'userId', user.id);
                         assert.propertyVal(res.body, 'type', USER_TYPE.HEALTH);
                         assert.property(res.body, 'token');
                         let decoded = jwt.verify(res.body.token, JWT_SECRET);
@@ -85,7 +83,6 @@ describe("Covid App Server API Health Professional Auth", () => {
                         HealthProfessionalUser.findById(savedUser.id).then((uUser) => {
                             assert.equal(res.status, 200);
                             assert.propertyVal(res.body, 'success', true);
-                            assert.propertyVal(res.body, 'userId', uUser.id);
                             assert.propertyVal(res.body, 'type', USER_TYPE.HEALTH);
                             assert.propertyVal(res.body, 'isTemporary', true);
                             assert.propertyVal(uUser.passwordReset, 'expiry', undefined);
@@ -138,7 +135,6 @@ describe("Covid App Server API Health Professional Auth", () => {
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'type', USER_TYPE.HEALTH);
                     HealthProfessionalUser.findOne({email: "test2@email.com"}).select("+password").then((user) => {
-                        assert.propertyVal(res.body, 'userId', user.id);
                         assert.property(res.body, 'token');
                         assert.property(res.body, 'token');
                         let decoded = jwt.verify(res.body.token, JWT_SECRET);
@@ -160,38 +156,47 @@ describe("Covid App Server API Health Professional Auth", () => {
     });
     describe("POST /api/healthprofessional/auth/changepassword", () => {
         it("returns error message 'Please enter all fields'", (done) => {
-            chai.request(app)
-                .post('/api/healthprofessional/auth/changepassword')
-                .set('x-auth-token', createAuthToken(null, USER_TYPE.HEALTH))
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'Please enter all fields');
-                    done();
-                }).catch((err) => {
+            createMockHealthProfessionalUsers(true).then((users) => {
+                let user = users[0];
+                chai.request(app)
+                    .post('/api/healthprofessional/auth/changepassword')
+                    .set('x-auth-token', user.accessToken)
+                    .then((res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        assert.equal(res.status, 400);
+                        assert.propertyVal(res.body, 'errCode', 400);
+                        assert.propertyVal(res.body, 'success', false);
+                        assert.propertyVal(res.body, 'message', 'Please enter all fields');
+                        done();
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
                 done(err);
             });
         });
         it("returns error message 'Password and confirm password do not match'", (done) => {
-            chai.request(app)
-                .post('/api/healthprofessional/auth/changepassword')
-                .set('x-auth-token', createAuthToken("41224d776a326fb40f000001", USER_TYPE.HEALTH))
-                .send({
-                    "userId": "41224d776a326fb40f000001",
-                    "currentPassword": "oldPassword",
-                    "newPassword": "newPassword",
-                    "confirmPassword": "newPasswordDifferent",
-                })
-                .then((res) => {
-                    if (res.status === 500) throw new Error(res.body.message);
-                    assert.equal(res.status, 400);
-                    assert.propertyVal(res.body, 'errCode', 400);
-                    assert.propertyVal(res.body, 'success', false);
-                    assert.propertyVal(res.body, 'message', 'Password and confirm password do not match');
-                    done();
-                }).catch((err) => {
+            createMockHealthProfessionalUsers(true).then((users) => {
+                let user = users[0];
+                chai.request(app)
+                    .post('/api/healthprofessional/auth/changepassword')
+                    .set('x-auth-token', user.accessToken)
+                    .send({
+                        "currentPassword": "oldPassword",
+                        "newPassword": "newPassword",
+                        "confirmPassword": "newPasswordDifferent",
+                    })
+                    .then((res) => {
+                        if (res.status === 500) throw new Error(res.body.message);
+                        assert.equal(res.status, 400);
+                        assert.propertyVal(res.body, 'errCode', 400);
+                        assert.propertyVal(res.body, 'success', false);
+                        assert.propertyVal(res.body, 'message', 'Password and confirm password do not match');
+                        done();
+                    }).catch((err) => {
+                    done(err);
+                });
+            }).catch((err) => {
                 done(err);
             });
         });
@@ -200,9 +205,8 @@ describe("Covid App Server API Health Professional Auth", () => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/healthprofessional/auth/changepassword')
-                    .set('x-auth-token', createAuthToken(user.id, USER_TYPE.HEALTH))
+                    .set('x-auth-token', user.accessToken)
                     .send({
-                        "userId": user.id,
                         "currentPassword": "oldPassword",
                         "newPassword": "newPassword",
                         "confirmPassword": "newPassword"
@@ -226,9 +230,8 @@ describe("Covid App Server API Health Professional Auth", () => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/healthprofessional/auth/changepassword')
-                    .set('x-auth-token', createAuthToken(user.id, USER_TYPE.HEALTH))
+                    .set('x-auth-token', user.accessToken)
                     .send({
-                        "userId": user.id,
                         "currentPassword": user.rawPassword,
                         "newPassword": "newPassword",
                         "confirmPassword": "newPassword"
@@ -238,7 +241,6 @@ describe("Covid App Server API Health Professional Auth", () => {
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         HealthProfessionalUser.findById(user.id).select("+password").then((changedUser) => {
-                            assert.propertyVal(res.body, 'userId', user.id);
                             bcrypt.compare("newPassword", changedUser.password).then((v) => {
                                 assert.isTrue(v);
                                 done();
@@ -294,7 +296,6 @@ describe("Covid App Server API Health Professional Auth", () => {
                         assert.isTrue(global.setApiKeyStub.called);
                         assert.isTrue(global.sendMailStub.called);
                         HealthProfessionalUser.findById(user.id).then((changedUser) => {
-                            assert.propertyVal(res.body, 'userId', changedUser.id);
                             assert.notEqual(global.sendMailStub.getCall(0).args[0]["html"].indexOf(mySpy.getCall(0).returnValue), -1);
                             assert.property(changedUser.passwordReset, 'temporaryPassword');
                             assert.property(changedUser.passwordReset, 'expiry');

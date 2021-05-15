@@ -7,7 +7,7 @@ const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
 const Business = require("../../../models/Business");
 const CheckIn = require("../../../models/CheckIn");
-const mongoose = require("mongoose");
+const VaccinationRecord = require("../../../models/VaccinationRecord");
 const {ServerError} = require("../../../utils/errors");
 
 /*
@@ -27,8 +27,6 @@ router.post('/checkin', authMiddleware(userType.GENERAL), asyncHandler(async (re
     // Check for existing user
     const business = await Business.findOne({ code: venueCode });
     if (!business) throw new BadRequest('Business venue does not exist');
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
 
     // Check for existing user
     const user = await RegisteredGeneralPublicUser.findById(userId);
@@ -40,7 +38,6 @@ router.post('/checkin', authMiddleware(userType.GENERAL), asyncHandler(async (re
 
     res.status(200).json({
         success: true,
-        userId: user.id,
         venueCode
     });
 }));
@@ -58,9 +55,6 @@ router.get('/profile', authMiddleware(userType.GENERAL), asyncHandler(async (req
     if (!userId) {
         throw new BadRequest('Please enter all fields');
     }
-
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
 
     // Check for existing user
     const user = await RegisteredGeneralPublicUser.findById(userId).select('-password');
@@ -90,9 +84,6 @@ router.post('/profile', authMiddleware(userType.GENERAL), asyncHandler(async (re
         throw new BadRequest('Please enter all fields');
     }
 
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
-
     // Check for existing user
     const user = await RegisteredGeneralPublicUser.findById(userId);
     if (!user) throw new BadRequest('User does not exist');
@@ -106,7 +97,42 @@ router.post('/profile', authMiddleware(userType.GENERAL), asyncHandler(async (re
 
     res.status(200).json({
         success: true,
-        userId: user.id
+    });
+}));
+
+/*
+* @route   GET api/registeredgeneralpublic/vaccinationstatus
+* @desc    Returns a registered general public users vaccination info
+* @access  Private
+*/
+
+router.get('/vaccinationstatus', authMiddleware(userType.GENERAL), asyncHandler(async (req, res) => {
+    const { userId } = req.body;
+
+    // Simple validation
+    if (!userId) {
+        throw new BadRequest('Please enter all fields');
+    }
+
+    // Check for existing vaccination records
+    const vaccinationRecords = await VaccinationRecord.find({patient: userId}).sort({dateAdministered: -1});
+
+    const vaccinationRecordsCompiled = [];
+
+    vaccinationRecords.forEach(vaccinationRecord =>
+        vaccinationRecordsCompiled.push(
+            {
+                vaccinationCode:vaccinationRecord.vaccinationCode,
+                vaccinationType:vaccinationRecord.vaccinationType,
+                vaccinationStatus:vaccinationRecord.vaccinationStatus,
+                dateAdministered:vaccinationRecord.dateAdministered
+            }
+        )
+    );
+
+    res.status(200).json({
+        success: true,
+        vaccinationRecords: vaccinationRecordsCompiled
     });
 }));
 

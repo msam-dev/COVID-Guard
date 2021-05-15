@@ -1,21 +1,15 @@
-const moment = require("moment");
 const express = require('express')
 const router = express.Router();
 const RegisteredGeneralPublicUser = require('../../../models/RegisteredGeneralPublic')
-const jwt = require('jsonwebtoken');
 const config = require('config');
-const JWT_SECRET = config.get('JWT_SECRET');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
 const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
-const {encryptPassword} = require("../../../utils/general");
-const faker = require('faker');
-const mongoose = require("mongoose");
+const {createAuthToken} = require("../../../utils/general");
+const {Emailer} = require("../../../utils/general");
 const {Unauthorized} = require("../../../utils/errors");
 const {ServerError} = require("../../../utils/errors");
-const sgMail = require('@sendgrid/mail');
-const {generate5CharacterCode} = require("../../../utils/general");
 
 /*
 * @route   POST api/registeredgeneralpublic/auth/login
@@ -49,13 +43,17 @@ router.post('/login', asyncHandler(async (req, res) => {
 
     if (!isMatch) throw new BadRequest('Invalid credentials');
 
-    const token = jwt.sign({ userId: user._id, userType: userType.GENERAL }, JWT_SECRET, { expiresIn: 3600 });
+    const token = createAuthToken(user.id, userType.GENERAL);
     if (!token) throw new BadRequest('Couldn\'t sign the token');
+
+    user.accessToken = token;
+
+    const savedUser = await user.save();
+    if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
     res.status(200).json({
         success: true,
         token,
-        userId: user.id,
         type: userType.GENERAL,
         isTemporary
     });
@@ -89,14 +87,16 @@ router.post('/register', asyncHandler(async (req, res) => {
     const savedUser = await newUser.save();
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
-    const token = jwt.sign({ userId: savedUser._id, userType: userType.GENERAL }, JWT_SECRET, {
-        expiresIn: 3600
-    });
+    const token = createAuthToken(savedUser.id, userType.GENERAL);
+
+    savedUser.accessToken = token;
+
+    const savedUser2 = await savedUser.save();
+    if (!savedUser2) throw new ServerError('Something went wrong saving the user');
 
     res.status(200).json({
         success: true,
         token,
-        userId: savedUser._id,
         type: userType.GENERAL
     });
 }));
@@ -118,10 +118,6 @@ router.post('/changepassword', authMiddleware(userType.GENERAL), asyncHandler(as
     if (newPassword !== confirmPassword) {
         throw new BadRequest('Password and confirm password do not match');
     }
-
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
-
     // Check for existing user
     const user = await RegisteredGeneralPublicUser.findById(userId).select("+password");
     if (!user) throw new BadRequest('User does not exist');
@@ -136,7 +132,6 @@ router.post('/changepassword', authMiddleware(userType.GENERAL), asyncHandler(as
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
     res.status(200).json({
         success: true,
-        userId: savedUser.id,
     });
 }));
 
@@ -165,16 +160,14 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
 
     if (!savedUser) throw new ServerError('Something went wrong saving the user');
 
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY)
-
     const msg = {
-        to: 'mr664@uowmail.edu.au', // Change to your recipient
+        to: user.email, // Change to your recipient
         from: 'mr664@uowmail.edu.au', // Change to your verified sender
         subject: 'Reset Password',
-        html: `<strong>The following is your one-time temporary password to login. It expires in 1 hour.<br>You will be directed to chnage your password after you login: ${temporaryPassword}</strong>`,
+        html: `<strong>The following is your one-time temporary password to login for ${user.email}. It expires in 1 hour.<br>You will be directed to change your password after you login: ${temporaryPassword}</strong>`,
     }
 
-    const msgSent = await sgMail.send(msg)
+    const msgSent = await Emailer.sendEmail(msg);
 
     if(!msgSent || msgSent[0].statusCode !== 202){
         throw new ServerError("Error sending email");
@@ -182,23 +175,32 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
 
     res.status(200).json({
         success: true,
-        userId: savedUser.id,
     });
 }));
 
 /**
  * @route   GET api/registeredgeneralpublic/auth/user
- * @desc    Check user valid
+ * @desc    Check user logged in
  * @access  Private
  */
 
 router.get('/user', authMiddleware(userType.GENERAL), asyncHandler(async (req, res) => {
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(req.userId)) throw new BadRequest('UserId is invalid');
+    res.json({success: true});
+}));
 
+/**
+ * @route   GET api/registeredgeneralpublic/auth/logout
+ * @desc    Logout user
+ * @access  Private
+ */
+
+router.get('/logout', authMiddleware(userType.GENERAL), asyncHandler(async (req, res) => {
     const user = await RegisteredGeneralPublicUser.findById(req.userId);
     if (!user) throw new Unauthorized('User does not exist');
-    res.json({id: user.id, type: userType.GENERAL});
+    user.accesssToken = undefined;
+    const savedUser = await user.save();
+    if(!savedUser) throw new BadRequest('Error logging out user');
+    res.json({success: true});
 }));
 
 module.exports = router;

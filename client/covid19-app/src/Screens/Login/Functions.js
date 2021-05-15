@@ -8,7 +8,8 @@ export const loginGeneral = (setLoading, updateAuth, user) => {
         setLoading(false); 
         localStorage.setItem('USER', JSON.stringify(res.data));
         updateAuth(res.data);
-        history.push(PATH.home);
+        if(res.data.isTemporary) history.push(PATH.changePassword);
+        else history.push(PATH.home);
     })
     .catch(err => {
         console.log(err);
@@ -23,7 +24,8 @@ export const loginBusiness = (setLoading, updateAuth, user) => {
         setLoading(false); 
         localStorage.setItem('USER', JSON.stringify(res.data));
         updateAuth(res.data);
-        history.push(PATH.home);
+        if(res.data.isTemporary) history.push(PATH.changePassword);
+        else history.push(PATH.home);
     })
     .catch(err => {
         console.log(err);
@@ -38,7 +40,8 @@ export const loginHealth = (setLoading, updateAuth, user) => {
         setLoading(false); 
         localStorage.setItem('USER', JSON.stringify(res.data));
         updateAuth(res.data);
-        history.push(PATH.home);
+        if(res.data.isTemporary) history.push(PATH.changePassword);
+        else history.push(PATH.home);
     })
     .catch(err => {
         console.log(err);

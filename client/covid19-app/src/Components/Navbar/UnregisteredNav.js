@@ -11,7 +11,7 @@ const UnregisteredNav = () => {
     return (
         <div >
             <Menu style ={{backgroundColor: "#0E5F76"}} mode="horizontal" >
-                <Item>
+                <Item onClick={() => { history.push(PATH.home)}}>
                     <img width={200} src={logo} alt="Logo" />
                 </Item>
 
@@ -27,7 +27,7 @@ const UnregisteredNav = () => {
                     <div  className='navbar-menuitem-text'>Current Hotspots</div>
                 </Item>
 
-                <Item onClick={() => {history.push(PATH.checkvaccstatus)}}>
+                <Item onClick={() => {history.push(PATH.checkVaccineStatus)}}>
                     <div className='navbar-menuitem-text'>Check Status</div>
                 </Item>
 

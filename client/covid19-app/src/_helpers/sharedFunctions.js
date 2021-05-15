@@ -1,3 +1,13 @@
+import USER_TYPE from '../_constants/userTypes';
+import PATH from '../_constants/paths';
+import history from '../_helpers/history';
+
+export const logout = updateAuth => {
+    localStorage.setItem('USER', JSON.stringify({type: USER_TYPE.UNREGISTERED}));
+    updateAuth({type: USER_TYPE.UNREGISTERED});
+    history.push(PATH.login);
+}
+
 //Event handler that only allows numbers as input
 export const onlyNumbers = (e, form, field, index, subfield) => {
     const reg = /^[0-9]*$/;
@@ -49,4 +59,16 @@ export const nth = d => {
         case 3:  return "rd";
         default: return "th";
     }
+}
+
+export const formatDate = dateAdministered => {
+    if(dateAdministered==="") return "";
+    const date = new Date(dateAdministered);
+    return `${date.getDate()}/${date.getMonth()+1}/${date.getFullYear()}`;
+}
+
+export const nameEndingInS = lastName => {
+    if(lastName[lastName.length -1] === 's') return lastName += "'";
+    else if(lastName.length !== 0) return lastName += "s";
+    else return lastName;
 }

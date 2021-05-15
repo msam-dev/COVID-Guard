@@ -2,6 +2,7 @@
 import './MoreInfo.css';
 
 const MoreInfo = () => {
+
     return(
         <div>
             <div style={{backgroundColor: "#FDC500"}}>

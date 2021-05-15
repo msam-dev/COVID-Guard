@@ -1,70 +1,110 @@
 import { Form, Input, Button } from 'antd';
+import { useState } from 'react';
 import { layout, tailLayout } from './layouts';
+import VACCINE_STATE from '../../_constants/vaccineStates';
+import { CheckOutlined, RiseOutlined, CloseOutlined } from '@ant-design/icons';
+import { _checkVaccinationValid } from '../../_helpers/endPoints';
+import { formatDate } from '../../_helpers/sharedFunctions';
+
+//FOR TESTING
+//608e05117e24ebe0e472d15c complete 
+//608e05147e24ebe0e472d25c partial
 
 const CheckVaccStatus = () => {
+    const [vaccinationRecord, setVaccinationRecord] = useState({dateAdministered:""});
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const date = formatDate(vaccinationRecord.dateAdministered);
 
-    const dbSearchReturnData = {"name": "", "code": ""};
-    const testData = [  {"name": "big man a", "code": "123"}, 
-                        {"name": "big man b", "code": "456"}, 
-                        {"name": "big man c", "code": "789"}]
+    const checkVaccinationValid = values => {
+        let unmounted = false;
+        setLoading(true);
+ 
+        _checkVaccinationValid(values)
+        .then(res => {
+            if(!unmounted){
+                setLoading(false);
+                setVaccinationRecord(res.data);
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            if(!unmounted){
+                setLoading(false);
+                if(err.response.status === 400) setVaccinationRecord({ vaccinationStatus: VACCINE_STATE.NoVaccination });
+                else setError(true);
+            }
+        });
 
-    const showSuccessfulVac = value => {
-        console.log("Code:", value, " has been submitted.");
-        testData.forEach(dbSimCode => testForCodeEquivalence(dbSimCode.code, value))
-    };
-
-    const testForCodeEquivalence = (dbSimCode, formVal) => {
-        if (dbSimCode === formVal.code) {
-            console.log("A match has been found.");
-            dbSearchReturnData.name = dbSimCode.name;
-            dbSearchReturnData.code = dbSimCode.code;
-            console.log(dbSearchReturnData);
-            console.log(dbSimCode);
-            document.getElementById("vaccResultString").innerHTML = dbSearchReturnData.name + " has been vaccinated!"
-        }
+        return () => { unmounted = true };
     }
-    
-    const showFailedVac = errorInfo => {
-        console.log("Failed:", errorInfo);
-    };
 
     return (
-        <div style={{color: "#0E5F76"}}>
-
-
+        <div>
             <h1 style = {{color: "#0E5F76", textAlign: "left", backgroundColor: "#FDC500", paddingLeft: "1%"}}>Check Vaccination Status</h1>
-            <h1 style = {{color: "#0E5F76", padding: "2%", textAlign: "center"}}>Check Civilian Vaccination Status</h1>
+            <h1 style = {{color: "#0E5F76", padding: "2%", textAlign: "center"}}>Check Vaccination Status</h1>
 
             <Form
                 {...layout}
-                name="basic"
-                onFinish={showSuccessfulVac}
-                onFinishFailed={showFailedVac}
+                onFinish={checkVaccinationValid}
             >
                 <Form.Item
                         label="Code"
-                        name="code"
+                        name="vaccinationCode"
                         rules={[
-                        {
-                            required: true,
-                            message: 'Please input your vaccination code.',
-                        },
+                            {
+                                required: true,
+                                whitespace: true,
+                                message: 'Please input a valid vaccination code!',
+                                validateTrigger: 'onSubmit'
+                            },
                         ]}
                 
                 >   
-                <Input/>
-
+                    <Input placeholder="Enter vaccination code here" maxLength={50}/>
                 </Form.Item>
-            
                 <Form.Item {...tailLayout}>
-                    <Button type="primary" htmlType="submit">Search</Button>
+                    <Button loading={loading} type="primary" htmlType="submit">Check Status</Button>
                 </Form.Item>
             </Form>
-
-            <div id="vaccResultString"></div>
-
+            
+            <div style={{textAlign: 'center'}}>
+                {
+                    vaccinationRecord.vaccinationStatus === VACCINE_STATE.Complete
+                    ?
+                    <div>
+                        <span style={{color: "#0E5F76"}}>
+                            {`${vaccinationRecord.patientFirstName} ${vaccinationRecord.patientLastName} 
+                            has had a complete vaccination with the ${vaccinationRecord.vaccinationType} vaccine on the ${date}`}
+                        </span>
+                        <CheckOutlined style={{fontSize: '30px', color: 'green'}} />
+                    </div>
+                    :
+                    vaccinationRecord.vaccinationStatus === VACCINE_STATE.Partial
+                    ?
+                    <div>
+                        <span style={{color: "#0E5F76"}}>
+                            {`${vaccinationRecord.patientFirstName} ${vaccinationRecord.patientLastName} 
+                            has had a partial vaccination with the ${vaccinationRecord.vaccinationType} vaccine on the ${date}`}
+                        </span>
+                        <RiseOutlined style={{fontSize: '30px', color: '#FDC500'}} />
+                    </div>
+                    :
+                    vaccinationRecord.vaccinationStatus === VACCINE_STATE.NoVaccination
+                    ?
+                    <div>
+                        <span style={{color: "#0E5F76"}}>Code not found</span>
+                        <CloseOutlined style={{fontSize: '30px', color: 'red'}} />
+                    </div>
+                    :
+                    error
+                    ?
+                    <div style={{textAlign: 'center'}}>Error loading data. Please try refreshing page or contact support. </div>
+                    :
+                    <></>
+                }
+            </div>
         </div>
-
     );
 };
 

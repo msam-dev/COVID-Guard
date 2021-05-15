@@ -14,6 +14,8 @@ const VaccineCenters = () => {
 
     useEffect(() => {
         if(centers.length === 0 && centerFilter.length === 0){
+            const ac = new AbortController();
+
             setLoading(true);
             _getVaccineCenters()
             .then(res => {
@@ -26,6 +28,8 @@ const VaccineCenters = () => {
                 setError(true);
                 console.log(err);
             });
+            
+            return () => ac.abort();
         }
         
     }, [centers.length, centerFilter.length]);

@@ -5,7 +5,6 @@ const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
 const {BadRequest} = require('../../../utils/errors')
 const asyncHandler = require('express-async-handler')
-const mongoose = require("mongoose");
 const {ServerError} = require("../../../utils/errors");
 
 /*
@@ -22,16 +21,12 @@ router.get('/profile', authMiddleware(userType.BUSINESS), asyncHandler(async (re
         throw new BadRequest('Please enter all fields');
     }
 
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
-
     // Check for existing user
     const user = await BusinessOwner.findById(userId).select('-password');
     if (!user) throw new BadRequest('User does not exist');
 
     res.status(200).json({
         success: true,
-        userId: user.id,
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
@@ -55,9 +50,6 @@ router.post('/profile', authMiddleware(userType.BUSINESS), asyncHandler(async (r
         throw new BadRequest('Please enter all fields');
     }
 
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
-
     // Check for existing user
     const user = await BusinessOwner.findById(userId);
     if (!user) throw new BadRequest('User does not exist');
@@ -71,27 +63,22 @@ router.post('/profile', authMiddleware(userType.BUSINESS), asyncHandler(async (r
 
     res.status(200).json({
         success: true,
-        userId: user.id
     });
 }));
 
 /*
-* @route   POST api/businessowner/venueinfo
+* @route   GET api/businessowner/venueinfo
 * @desc    Returns business name and code
 * @access  Private
 */
 
-router.post('/venueinfo', authMiddleware(userType.BUSINESS), asyncHandler(async (req, res) => {
+router.get('/venueinfo', authMiddleware(userType.BUSINESS), asyncHandler(async (req, res) => {
     const { userId } = req.body;
 
     // Simple validation
     if (!userId) {
         throw new BadRequest('Please enter all fields');
     }
-
-    // check id is valid
-    if(!mongoose.Types.ObjectId.isValid(userId)) throw new BadRequest('UserId is invalid');
-
     // Check for existing user
     const user = await BusinessOwner.findById(userId);
     if (!user) throw new BadRequest('User does not exist');

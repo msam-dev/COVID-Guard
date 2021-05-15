@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const config = require('config');
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = config.get('JWT_SECRET');
+const $ = require('cheerio');
+const sgMail = require('@sendgrid/mail');
 
 function convertToNumber(str) {
     return Number(str.replace(/,/g, ''))
@@ -28,6 +30,31 @@ function encryptPassword(password)
 }
 
 function createAuthToken(userId, userType){
-    return jwt.sign({ userId, userType }, JWT_SECRET, { expiresIn: 3600 });
+    return jwt.sign({ userId, userType }, JWT_SECRET, { expiresIn: 60*60*24 });
 }
-module.exports = {convertToNumber, generate5CharacterCode, encryptPassword, createAuthToken};
+
+function dailySummary(html, category){
+    let cat = matchText($(html).find('table.DAILY-SUMMARY td.CATEGORY a'), category).parent().parent();
+    return {
+        total: () => {return convertToNumber(cat.find("td.TOTAL").text())},
+        net: () => {return convertToNumber(cat.find("td.NET").text())}
+    };
+}
+
+function matchText(selector, text){
+    return selector.filter(function() {
+        return $(this).text().trim() === text;
+    });
+}
+
+class Emailer {
+    static async sendEmail(msg) {
+        // override email at the moment because using test data
+        msg["to"] = process.env.SENDGRID_TO_EMAIL;
+        console.log(`Message sent to: ${msg["to"]}`);
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY)
+        return await sgMail.send(msg);
+    }
+}
+
+module.exports = {Emailer, convertToNumber, generate5CharacterCode, encryptPassword, createAuthToken, dailySummary, matchText};

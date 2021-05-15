@@ -14,10 +14,11 @@ const Center = props => {
     const clinicName = props.clinicName;
     const addressLine1 = props.addressLine1;
     const phone = props.phone;
+    const coordinates = props.coordinates;
 
     const googleMapProps = {
-        lat: -33.8688,
-        lng: 151.2093,
+        lat: coordinates.latitude,
+        lng: coordinates.longitude,
         size: '300px',
         userLetter: clinicName[0],
         markerColour: "#0E5F76"
