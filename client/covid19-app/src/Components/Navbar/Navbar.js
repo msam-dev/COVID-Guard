@@ -28,7 +28,7 @@ const Navbar = () => {
     
     return(
         <div>
-            <button onClick={checkTok}>check tok</button>
+                {/*<button onClick={checkTok}>check tok</button>*/}
             {
                 auth.type === USER_TYPE.UNREGISTERED
                 ? <UnregisteredNav />

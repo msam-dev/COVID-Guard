@@ -5,6 +5,7 @@ import './TermsAndConditions.css'
 
 const TermsAndConditions = () => {
     return (
+        <div className='Terms_container'>
         <div style = {{color: "#0E5F76", maxWidth: '100%'}}>
 
             <h1 style = {{color: "#0E5F76", textAlign: "left", backgroundColor: "#FDC500", paddingLeft: "1%",width:"100%"}}>Terms & Conditions</h1>
@@ -35,6 +36,7 @@ const TermsAndConditions = () => {
              
     </text>
             </div>
+          </div>
           </div>
     );
 }
