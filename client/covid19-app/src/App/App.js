@@ -2,7 +2,7 @@ import './App.less';
 import { Router, Route, Switch } from 'react-router-dom';
 import history from '../_helpers/history';
 import PATH from '../_constants/paths';
-import AuthProvider from '../Components/AuthContext/AuthContext';
+import AuthProvider, { useAuth } from '../Components/AuthContext/AuthContext';
 import Navbar from '../Components/Navbar/Navbar';
 import Footer from '../Components/Footer/Footer';
 import Register from '../Screens/Register/Register';
@@ -20,7 +20,33 @@ import VenueCode from '../Screens/VenueCode/VenueCode';
 import ForgotPassword from '../Screens/ForgotPassword/ForgotPassword';
 import MyVaccineStatus from '../Screens/MyVaccineStatus/MyVaccineStatus';
 import ConfirmUserVaccination from '../Screens/ConfirmUserVaccination/ConfirmUserVaccination';
+import {_loginGeneral} from '../_helpers/endPoints';
 
+
+const TestCom = () =>{
+    const auth = useAuth();
+
+    const submit = () =>{
+        const user ={
+            email: "Sienna_Hayes85@hotmail.com",
+            password: "TqIEJuENlnSNVFx"
+        }
+    
+        _loginGeneral(user)
+        .then(res =>{
+            console.log(res);
+        })
+
+        .catch(err =>{
+            console.log(err);
+        });
+    }
+    return(
+        <div>
+            <botton style ={{groundcolor:"black"}}onclick={submit}> Send</botton>
+        </div>
+    );
+}
 
 function App() {
   return (
@@ -28,6 +54,7 @@ function App() {
         <AuthProvider>
             <div id="navbar-wrapper">
                 <Navbar />
+                <TestCom />
             </div>
             
             <div id="body-wrapper">

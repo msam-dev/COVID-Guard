@@ -77,3 +77,4 @@ export const _confirmPatientVaccination = (confirmation, token) => {
     const config = { headers:{ "x-auth-token" : token }}
     return axios.post('api/healthprofessional/confirmpatientvaccinationinformation', confirmation, config);
 }
+
