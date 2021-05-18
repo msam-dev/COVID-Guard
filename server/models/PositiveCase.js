@@ -67,7 +67,7 @@ PositiveCaseSchema.statics.sendEmailsToAffectedUsers = async function (positiveC
             business: "$checkin.business",
             dateVisited: {$dateToString: {date: "$checkin.date", format: "%Y-%m-%d"}}
         }).exec();
-    console.log(positiveCheckins);
+
     for (let positiveCheckin of positiveCheckins) {
         let affectedCheckins = await CheckIn
             .find({
