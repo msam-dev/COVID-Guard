@@ -19,34 +19,37 @@ const errorHandler = require('./middleware/errorHandler');
 const sanitizer = require("./middleware/sanitizer");
 const Statistics = require("./models/Statistics");
 
-db.connect();
+db.connect().then(r => {
+    // CORS Middleware
+    app.use(cors());
 
-// CORS Middleware
-app.use(cors());
+    // parse json body content
+    app.use(express.json());
+    app.use(sanitizer);
+    // Priority serve any static files.
+    app.use(express.static(path.resolve(__dirname, '..', 'client', 'covid19-app', 'build')));
 
-// parse json body content
-app.use(express.json());
-app.use(sanitizer);
-// Priority serve any static files.
-app.use(express.static(path.resolve(__dirname, '..', 'client', 'covid19-app', 'build')));
+    // Answer API requests.
+    app.use(ROUTES.REGISTERED_GENERAL_PUBLIC_AUTH, registeredGeneralPublicAuthRoutes);
+    app.use(ROUTES.BUSINESS_OWNER_AUTH, businessOwnerAuthRoutes);
+    app.use(ROUTES.HEALTH_PROFESSIONAL_AUTH, healthProfessionalAuthRoutes);
+    app.use(ROUTES.REGISTERED_GENERAL_PUBLIC, registeredGeneralPublicRoutes);
+    app.use(ROUTES.GENERAL_PUBLIC, generalPublicRoutes);
+    app.use(ROUTES.BUSINESS_OWNER, businessOwnerRoutes);
+    app.use(ROUTES.HEALTH_PROFESSIONAL, healthProfessionalRoutes);
 
-// Answer API requests.
-app.use(ROUTES.REGISTERED_GENERAL_PUBLIC_AUTH, registeredGeneralPublicAuthRoutes);
-app.use(ROUTES.BUSINESS_OWNER_AUTH, businessOwnerAuthRoutes);
-app.use(ROUTES.HEALTH_PROFESSIONAL_AUTH, healthProfessionalAuthRoutes);
-app.use(ROUTES.REGISTERED_GENERAL_PUBLIC, registeredGeneralPublicRoutes);
-app.use(ROUTES.GENERAL_PUBLIC, generalPublicRoutes);
-app.use(ROUTES.BUSINESS_OWNER, businessOwnerRoutes);
-app.use(ROUTES.HEALTH_PROFESSIONAL, healthProfessionalRoutes);
+    // All remaining requests return the React app, so it can handle routing.
+    app.get('*', (request, response) => {
+        response.sendFile(path.resolve(__dirname, '..', 'client', 'covid19-app', 'build', 'index.html'));
+    });
 
-// All remaining requests return the React app, so it can handle routing.
-app.get('*', (request, response) => {
-    response.sendFile(path.resolve(__dirname, '..', 'client', 'covid19-app', 'build', 'index.html'));
+    app.use(errorHandler);
+
+    app.listen(PORT, () => console.log(`Server started on PORT ${PORT}`));
+}).catch((e) => {
+    console.error(e);
 });
 
-app.use(errorHandler);
-
-app.listen(PORT, () => console.log(`Server started on PORT ${PORT}`));
 // Statistics.getVaccinationsByMonth().then((v)=>console.log(v));
 // Statistics.getCheckinByMonth().then((v)=>console.log(v));
 // Statistics.getPositiveCasesByMonth().then((v)=>console.log(v));
