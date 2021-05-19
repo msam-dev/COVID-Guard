@@ -91,10 +91,10 @@ PositiveCaseSchema.statics.sendEmailsToAffectedUsers = async function (positiveC
                 subject: 'Contact tracing',
                 html: `<strong>This message is to notify you that you visited a venue where a confirmed positive case visited on ${dateShortcode.parse('{YYYY-MM-DD}', affectedCheckin.date)}</strong>`,
             }
-            await Emailer.sendEmail(msg);
+            await Emailer.sendEmail(msg, true);
             affectedCheckin.userNotified = true;
             let affectedCheckinSaved = await affectedCheckin.save();
-            //console.log(affectedCheckinSaved);
+            console.log(affectedCheckinSaved);
         }
     }
 }
