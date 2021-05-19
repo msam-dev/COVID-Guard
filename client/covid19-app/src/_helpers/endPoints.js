@@ -78,3 +78,15 @@ export const _confirmPatientVaccination = (confirmation, token) => {
     return axios.post('api/healthprofessional/confirmpatientvaccinationinformation', confirmation, config);
 }
 
+export const _changePasswordGeneral = (user) => {
+    return axios.post('/api/registeredgeneralpublic/auth/changepassword', user);
+}
+
+export const _changePasswordHealth = (user) => {
+    return axios.post('/api/healthprofessional/auth/changepassword', user);
+}
+
+export const _changePasswordBusiness = (user) => {
+    return axios.post('/api/businessowner/auth/changepassword', user);
+}
+

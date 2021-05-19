@@ -1,3 +1,4 @@
+import {  Button } from 'antd';
 import './App.less';
 import { Router, Route, Switch } from 'react-router-dom';
 import history from '../_helpers/history';
@@ -43,7 +44,7 @@ const TestCom = () =>{
     }
     return(
         <div>
-            <botton style ={{groundcolor:"black"}}onclick={submit}> Send</botton>
+            <Button style ={{groundcolor:"black"}}onClick={submit}> Send</Button>
         </div>
     );
 }
