@@ -37,18 +37,10 @@ describe('PositiveCase', () => {
             }
             let positiveCases = await createMockPositiveCases(false, 1, registeredGeneralPublicUsers[0], null, positiveTestDate);
             let positiveCase = await positiveCases[0].save();
-            console.log(`Positive user: ${positiveCase.user}`);
-            console.log(`Positive test date: ${positiveCase.testDate}`);
-            console.log(`Positive infectious start date: ${positiveCase.infectiousStartDate}`);
             let positiveCheckIn = checkins[0];
-            console.log(`Positive checkin user: ${positiveCheckIn.user}`);
-            console.log(`Positive checkin date: ${positiveCheckIn.date}`);
             for(let checkin of checkins){
                 if((positiveCase.user.id !== checkin.user.id && positiveCase.userModel !== checkin.userModel) && checkin.date >= positiveCase.infectiousStartDate && checkin.date <= positiveCase.testDate && datesAreOnSameDay(checkin.date, positiveCheckIn.date) && checkin.business === positiveCheckIn.business){
                     let updatedCheckin = await CheckIn.findOne({_id: checkin._id}).exec();
-                    console.log(datesAreOnSameDay(checkin.date, positiveCheckIn.date));
-                    console.log(`Checkin user: ${updatedCheckin.user}`);
-                    console.log(`Checkin date: ${updatedCheckin.date}`);
                     assert.isTrue(updatedCheckin.userNotified);
                     sinon.assert.calledWithMatch(emailerStub, sinon.match({
                         to: updatedCheckin.user.email, // Change to your recipient

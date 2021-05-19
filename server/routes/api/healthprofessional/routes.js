@@ -88,14 +88,11 @@ router.post('/markpatientpositive', authMiddleware(userType.HEALTH), asyncHandle
 
     // Check for existing user
     const user = await RegisteredGeneralPublic.findOne( { email: email } );
-    console.log(user);
     if (!user) throw new BadRequest('User does not exist');
-    console.log(user);
 
     // Marks user as positive case
     const positiveCase = new PositiveCase({ testDate: testDate, user: user, userModel: "RegisteredGeneralPublic", infectiousStartDate: infectiousStartDate });
     await positiveCase.save();
-    console.log(positiveCase);
 
     res.status(200).json({
         success: true
@@ -118,9 +115,7 @@ router.post('/confirmpatientvaccinationinformation', authMiddleware(userType.HEA
 
     // Check for existing patient
     const user = await RegisteredGeneralPublic.findOne( { email: email } );
-    console.log(user);
     if (!user) throw new BadRequest('Patient does not exist');
-    console.log(user);
 
     const vaccinationRecord = new VaccinationRecord({
         vaccinationType,
