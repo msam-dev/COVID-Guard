@@ -21,13 +21,14 @@ function App() {
             <div id="body-wrapper">
                 <Router history={history}>
                     <Switch>
-                        <Route exact path={PATH.home}> <Homepage/> </Route>
+                        <Route exact path={PATH.home}> <Homepage /> </Route>
                         {
                             config.routes.map(({component, url, roles}) => roles === null 
                                 ? <Route key={url} path={url} component={component}/> 
                                 : <PrivateRoute key={url} path={url} component={component} roles={roles} /> 
                             )
                         }
+                        <Route path="*"> <Homepage /> </Route>
                     </Switch>
                 </Router> 
             </div>
