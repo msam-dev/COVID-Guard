@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router();
 const RegisteredGeneralPublicUser = require('../../../models/RegisteredGeneralPublic')
-const config = require('config');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
 const {BadRequest} = require('../../../utils/errors')
@@ -195,7 +194,7 @@ router.get('/user', authMiddleware(userType.GENERAL), asyncHandler(async (req, r
  */
 
 router.get('/logout', authMiddleware(userType.GENERAL), asyncHandler(async (req, res) => {
-    const user = await RegisteredGeneralPublicUser.findById(req.userId);
+    const user = await RegisteredGeneralPublicUser.findById(req.body.userId);
     if (!user) throw new Unauthorized('User does not exist');
     user.accesssToken = undefined;
     const savedUser = await user.save();
