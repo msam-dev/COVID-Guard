@@ -7,36 +7,13 @@ import AuthProvider, { useAuth } from '../Components/AuthContext/AuthContext';
 import Navbar from '../Components/Navbar/Navbar';
 import Footer from '../Components/Footer/Footer';
 import Homepage from '../Screens/Homepage/Homepage';
-
 import config from '../Components/PrivateRoutes/config';
 import PrivateRoute from '../Components/PrivateRoutes/PrivateRoutes';
 
 
 
-const TestCom = () =>{
-    const auth = useAuth();
 
-    const submit = () =>{
-        const user ={
-            email: "Sienna_Hayes85@hotmail.com",
-            password: "TqIEJuENlnSNVFx"
-        }
-    
-        _loginGeneral(user)
-        .then(res =>{
-            console.log(res);
-        })
-
-        .catch(err =>{
-            console.log(err);
-        });
-    }
-    return(
-        <div>
-            <Button style ={{groundcolor:"black"}}onClick={submit}> Send</Button>
-        </div>
-    );
-}
+   
 
 function App() {
   return (
@@ -44,7 +21,7 @@ function App() {
         <AuthProvider>
             <div id="navbar-wrapper">
                 <Navbar />
-                <TestCom />
+               
             </div>
             
             <div id="body-wrapper">
