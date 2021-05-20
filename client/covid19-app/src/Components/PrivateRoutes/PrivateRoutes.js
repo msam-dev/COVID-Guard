@@ -1,37 +1,18 @@
 import { Route, Redirect } from 'react-router';
 import { useAuth } from '../AuthContext/AuthContext'; 
-import USER_TYPE  from '../../_constants/userTypes';
 import PATH from '../../_constants/paths';
 
-export const GeneralPrivateRoute = ({component: Component, ...rest}) => {
+const PrivateRoute = ({component: Component, roles = [], ...rest}) => {
     const user = useAuth();
+   // const user = {type: "BUSINESS"};
+    const hasRole = roles.some(role => user.type.includes(role));
+
     return (
         <Route {...rest} render={props => (
-            user.type === USER_TYPE.GENERAL ?
-                <Component {...props} />
-            : <Redirect to={PATH.login} />
+            hasRole ? <Component {...props} /> : <Redirect to={PATH.home} />
         )} />
     );
 };
 
-export const HealthPrivateRoute = ({component: Component, ...rest}) => {
-    const auth = useAuth();
-    return (
-        <Route {...rest} render={props => (
-            auth === USER_TYPE.HEALTH ?
-                <Component {...props} />
-            : <Redirect to="/" />
-        )} />
-    );
-};
+export default PrivateRoute;
 
-export const BusinessPrivateRoute = ({component: Component, ...rest}) => {
-    const auth = useAuth();
-    return (
-        <Route {...rest} render={props => (
-            auth === USER_TYPE.BUSINESS ?
-                <Component {...props} />
-            : <Redirect to="/" />
-        )} />
-    );
-};

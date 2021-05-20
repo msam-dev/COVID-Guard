@@ -1,8 +1,11 @@
 .container {
-   padding-bottom: 40px;
+   margin-left: auto;
+   margin-right: auto;
+   padding-bottom: 500px;
+   width:auto;
+   
+
 }
-
-
 
 .homepage_text_one{
     padding-left: 350px;
@@ -153,6 +156,101 @@
     border:2px black solid;
     float:left;
 }
+
+@media only screen and (min-width:1670px){
+    .homepage_text_one{
+        padding-left: 1000px;
+        padding-top: 20px;
+        font-weight: bolder;
+        font-size: 18px;
+    }
+    .homepage_text_two{
+        padding-left: 1000px;
+        padding-top: 230px;
+        font-weight: bolder;
+        font-size: 18px;
+    }
+    .box_one{
+        margin-left: 1000px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+
+    .box_five{
+        margin-top: 20px;
+        margin-left: 1000px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+    .box_nine{
+        margin-left: 1000px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left; 
+    }
+
+    .box_thirteen{
+        margin-top: 20px;
+        margin-left: 1000px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+}
+
+@media only screen and (max-width:1670px) and (min-width:1500px){
+    .homepage_text_one{
+        padding-left: 500px;
+        padding-top: 20px;
+        font-weight: bolder;
+        font-size: 18px;
+    }
+    .homepage_text_two{
+        padding-left: 500px;
+        padding-top: 230px;
+        font-weight: bolder;
+        font-size: 18px;
+    }
+    .box_one{
+        margin-left: 500px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+
+    .box_five{
+        margin-top: 20px;
+        margin-left: 500px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+    .box_nine{
+        margin-left: 500px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left; 
+    }
+
+    .box_thirteen{
+        margin-top: 20px;
+        margin-left: 500px;
+        width:130px;
+        height:80px;
+        border:2px black solid;
+        float:left;
+    }
+}
+
 
 @media only screen and (max-width: 1020px) and (min-width: 762px){
     .box_one{

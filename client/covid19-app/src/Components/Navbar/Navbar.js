@@ -13,6 +13,7 @@ const Navbar = () => {
 
     return(
         <div>
+
             {
                 auth.type === USER_TYPE.UNREGISTERED
                 ? <UnregisteredNav />
