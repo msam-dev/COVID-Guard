@@ -20,7 +20,7 @@ const BusinessNav = () => {
                 <Item  >
                     <div className='navbar-menuitem-text'>My Profile</div>
                 </Item>
-                <Item>
+                <Item onClick={() => { history.push(PATH.venueCode) }}>
                     <div className='navbar-menuitem-text'>My Venue Code</div>
                 </Item>
                 <Item onClick={() => {logout(updateAuth)}} style={{float: 'right', paddingTop: '3px'}}>

@@ -317,7 +317,7 @@ function getRawUserData(users) {
 async function createDevData() {
     await db.connect();
     await mongoose.connection.db.dropDatabase();
-    let registeredGeneralPublicUsers = await createMockRegisteredGeneralPublicUsers(true, 10000);
+    let registeredGeneralPublicUsers = await createMockRegisteredGeneralPublicUsers(true, 5000);
     console.log("Registered General Public Users created");
     let registeredGeneralPublicUsersRaw = getRawUserData(registeredGeneralPublicUsers);
     let healthProfessionalUsers = await createMockHealthProfessionalUsers(true, 500);
@@ -340,7 +340,7 @@ async function createDevData() {
     }
     console.log("users file created");
 
-    let generalPublicUsers = await createMockGeneralPublicUsers(true, 10000);
+    let generalPublicUsers = await createMockGeneralPublicUsers(true, 5000);
     console.log("general public users created")
 
 

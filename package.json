@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server",
-    "dev-server": "nodemon server",
+    "dev-server": "nodemon server --ignore client/ --ignore server-test/",
     "client-install": "cd client/covid19-app && npm install",
     "server-install": "npm install",
     "all-install": "npm run client-install && npm run server-install",
