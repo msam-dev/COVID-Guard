@@ -48,7 +48,7 @@ const ConfirmUserVaccination = (_) => {
             setLoading(false);
             console.log(err);
             if(err.response.status === 400) return Promise.reject(new Error('Patient email not found in our system!'));
-            else if(err.response.status === 401) logout(updateAuth);
+            else if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
             else somethingWentWrongModal();
         });
     }
