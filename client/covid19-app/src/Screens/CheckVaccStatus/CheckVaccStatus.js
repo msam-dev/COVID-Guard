@@ -6,10 +6,6 @@ import { CheckOutlined, RiseOutlined, CloseOutlined } from '@ant-design/icons';
 import { _checkVaccinationValid } from '../../_helpers/endPoints';
 import { formatDate } from '../../_helpers/sharedFunctions';
 
-//FOR TESTING
-//608e05117e24ebe0e472d15c complete 
-//608e05147e24ebe0e472d25c partial
-
 const CheckVaccStatus = () => {
     const [vaccinationRecord, setVaccinationRecord] = useState({dateAdministered:""});
     const [loading, setLoading] = useState(false);
@@ -75,7 +71,7 @@ const CheckVaccStatus = () => {
                     <div>
                         <span style={{color: "#0E5F76"}}>
                             {`${vaccinationRecord.patientFirstName} ${vaccinationRecord.patientLastName} 
-                            has had a complete vaccination with the ${vaccinationRecord.vaccinationType} vaccine on the ${date}`}
+                            has had a complete vaccination with the ${vaccinationRecord.vaccinationType} vaccine on ${date}`}
                         </span>
                         <CheckOutlined style={{fontSize: '30px', color: 'green'}} />
                     </div>
@@ -85,7 +81,7 @@ const CheckVaccStatus = () => {
                     <div>
                         <span style={{color: "#0E5F76"}}>
                             {`${vaccinationRecord.patientFirstName} ${vaccinationRecord.patientLastName} 
-                            has had a partial vaccination with the ${vaccinationRecord.vaccinationType} vaccine on the ${date}`}
+                            has had a partial vaccination with the ${vaccinationRecord.vaccinationType} vaccine on ${date}`}
                         </span>
                         <RiseOutlined style={{fontSize: '30px', color: '#FDC500'}} />
                     </div>

@@ -18,8 +18,8 @@ const Hotspot = props => {
     const dataFormatted = `${date.getDate()}${nth(date.getDate())} ${monthNames[date.getMonth()]} ${date.getFullYear()}`;
 
     const googleMapProps = {
-        lat: -33.8688,
-        lng: 151.2093,
+        lat: props.coordinates.latitude,
+        lng: props.coordinates.longitude,
         size: '300px',
         userLetter: venueName[0],
         markerColour: "#0E5F76"

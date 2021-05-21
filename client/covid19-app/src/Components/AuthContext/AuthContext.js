@@ -13,9 +13,18 @@ export function useAuthUpdate(){
 }
 
 const initialAuth = () => {
-    const user = JSON.parse(localStorage.getItem('USER'));
-    if(user === null) return {type: USER_TYPE.UNREGISTERED};
-    return user;
+    try{
+        const user = JSON.parse(localStorage.getItem('USER'));
+        if(user === null) return {type: USER_TYPE.UNREGISTERED};
+        return user;
+    }
+    catch(err){
+        console.log(err);
+        localStorage.clear();
+        return {type: USER_TYPE.UNREGISTERED};
+    }
+    
+    
 }
 
 const AuthProvider = ({children}) => {

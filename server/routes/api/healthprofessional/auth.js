@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router();
 const HealthProfessionalUser = require('../../../models/HealthProfessional')
-const config = require('config');
 const authMiddleware = require('../../../middleware/auth');
 const userType = require("../../../_constants/usertypes")
 const {BadRequest} = require('../../../utils/errors')
@@ -197,7 +196,7 @@ router.get('/user', authMiddleware(userType.HEALTH), asyncHandler(async (req, re
  */
 
 router.get('/logout', authMiddleware(userType.HEALTH), asyncHandler(async (req, res) => {
-    const user = await HealthProfessionalUser.findById(req.userId);
+    const user = await HealthProfessionalUser.findById(req.body.userId);
     if (!user) throw new Unauthorized('User does not exist');
     user.accesssToken = undefined;
     const savedUser = await user.save();

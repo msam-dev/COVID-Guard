@@ -1,11 +1,34 @@
 import USER_TYPE from '../_constants/userTypes';
 import PATH from '../_constants/paths';
 import history from '../_helpers/history';
+import { _logoutGeneral, _logoutBusiness, _logoutHealth } from './endPoints';
 
-export const logout = updateAuth => {
+export const logout = (updateAuth, token, type) => {
     localStorage.setItem('USER', JSON.stringify({type: USER_TYPE.UNREGISTERED}));
     updateAuth({type: USER_TYPE.UNREGISTERED});
     history.push(PATH.login);
+    
+    switch(type){
+        case USER_TYPE.GENERAL: {
+            _logoutGeneral(token)
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
+            break;
+        }
+        case USER_TYPE.BUSINESS: {
+            _logoutBusiness(token)
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
+            break;
+        }
+        case USER_TYPE.HEALTH: {
+            console.log("in switch statement", token);
+            _logoutHealth(token)
+            .then(res => console.log(res))
+            .catch(err => console.log(err));
+            break;
+        }
+    }
 }
 
 //Event handler that only allows numbers as input

@@ -11,12 +11,10 @@ const CurrentHotspots = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
 
-    console.log(hotspots);
-
     useEffect(() => {
-        if(hotspots.length === 0 && hotspotsFilter.length === 0){
-            const ac = new AbortController();
-    
+        let unmounted = false;
+
+        if(hotspots.length === 0 && hotspotsFilter.length === 0 && !unmounted){
             setLoading(true);
             _getCurrentHotspots()
             .then(res => {
@@ -29,8 +27,8 @@ const CurrentHotspots = () => {
                 setLoading(false);
                 setError(true);
             });
-            return () => ac.abort();
         }
+        return () => { unmounted = true };
         
     }, [hotspots.length, hotspotsFilter.length]);
 

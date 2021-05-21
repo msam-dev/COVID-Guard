@@ -23,7 +23,7 @@ const VenueCode = () => {
         .catch(err => {
             console.log(err);
             setLoading(false);
-            if(err.response.status === 401) logout(updateAuth);
+            if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
             else setError(true);
         })
     }, [auth.token, updateAuth]);

@@ -42,15 +42,15 @@ const MyVaccineStatus = () => {
         Promise.all([_getVaccinationStatus(auth.token), _getGeneralProfile(auth.token)])
         .then(resArr => {
             if(!unmounted){
-                const recordRes = resArr[0];
-                console.log(recordRes);
-                if(recordRes.data.vaccinationRecords.length > 0){
-                    const recentRecord = recordRes.data.vaccinationRecords[recordRes.data.vaccinationRecords.length-1];
+                const recordRes = resArr[0].data.vaccinationRecords;
+                if(recordRes.length > 0){
+                    const recentRecord = recordRes.reduce((a, b) => {
+                        return new Date(a.dateAdministered) > new Date(b.dateAdministered) ? a : b;
+                    });
                     setVaccinationRecord(recentRecord);
                 }
                 else setNoRecord(true);
                 
-
                 const userRes = resArr[1];
                 setUser(userRes.data);
                 setLoading(false);
@@ -58,7 +58,7 @@ const MyVaccineStatus = () => {
         })
         .catch(err => {
             console.log(err);
-            if(err.response.status === 401) logout(updateAuth); 
+            if(err.response.status === 401) logout(updateAuth, auth.token, auth.type); 
             if(!unmounted){
                 setError(true);
                 setLoading(false);
