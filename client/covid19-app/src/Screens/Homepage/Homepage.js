@@ -1,24 +1,57 @@
 import './homepage.css';
+import { useEffect, useState } from 'react';
+import { _homepageStatas } from '../../_helpers/endPoints';
+import { useAuth, useAuthUpdate } from '../../Components/AuthContext/AuthContext';
+import { logout } from '../../_helpers/sharedFunctions';
+import { Spin } from 'antd';
 
-const data = {
-    total_case :23273,
-    total_death :909,
-    active_cases :151,
-    local_quired_7_days :3,
-    test_last_24_hours :23273,
-    local_quired_24_hours :0,
-    foreign_quired_24_hours :66,
-    total_hospitalized : 234,
-    total_vaccinations :1526,
-    nsw_vaccinations :164,
-    vic_vaccinations :341,
-    qld_vaccinations :795,
-    wa_vaccinations :225,
-    act_vaccinations :696,
-    sa_vaccinations :769,
-    nt_vaccinations :225,
-};
 const Homepage =() => {
+
+    const [HomeInfo, setHomeInfo] = useState({});
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+
+    const auth = useAuth();
+    const updateAuth = useAuthUpdate();
+
+    useEffect(() => {
+        setLoading(true);
+
+        _homepageStatas(auth.token)
+        .then(res => {
+            setLoading(false);
+            setHomeInfo(res.data);
+            console.log(res.data)
+        })
+        .catch(err => {
+            console.log(err);
+            setLoading(false);
+            if(err.response.status === 401) logout(updateAuth);
+            else setError(true);
+        })
+    }, [auth.token, updateAuth]);
+
+    const data = {
+        total_case : HomeInfo.totalDeaths,
+        total_death :909,
+        active_cases :151,
+        local_quired_7_days :3,
+        test_last_24_hours :23273,
+        local_quired_24_hours :0,
+        foreign_quired_24_hours :66,
+        total_hospitalized : 234,
+        total_vaccinations :1526,
+        nsw_vaccinations :164,
+        vic_vaccinations :341,
+        qld_vaccinations :795,
+        wa_vaccinations :225,
+        act_vaccinations :696,
+        sa_vaccinations :769,
+        nt_vaccinations :225,
+    };
+
+
+
     return(
         <div className='container'>
             <div style =  {{backgroundColor: '#FDC500'}}> 
@@ -33,6 +66,7 @@ const Homepage =() => {
                 
                 <text >Total case </text>
                 <div style= {{width:'100%',height:'20px'}}> </div>
+                <Spin spinning={loading} size="large"/>
                 <text style = {{fontSize:'25px',fontWeight:'400'}}>{data.total_case}</text>
             </div>
             
@@ -105,6 +139,7 @@ const Homepage =() => {
                 <text style = {{fontSize:'25px',fontWeight:'400'}}>{data.vic_vaccinations}</text>
             </div>
 
+            {/*
             <div className='box_twelve'> 
                 
                 <text >QLD vaccinations </text>
@@ -138,7 +173,8 @@ const Homepage =() => {
                 <text >NT vaccinations </text>
                 <div style= {{width:'100%',height:'20px'}}> </div>
                 <text style = {{fontSize:'25px',fontWeight:'400'}}>{data.nt_vaccinations}</text>
-            </div>
+            </div> 
+            */}
           </div>
 
         </div>

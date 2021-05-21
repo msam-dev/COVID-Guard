@@ -2,7 +2,7 @@ import { Menu } from 'antd';
 import logo from '../../Assets/Images/logo.png';
 import './Navbar.css';
 import { logout } from '../../_helpers/sharedFunctions';
-import { useAuthUpdate } from '../AuthContext/AuthContext';
+import { useAuth, useAuthUpdate } from '../AuthContext/AuthContext';
 import history from '../../_helpers/history';
 import PATH from '../../_constants/paths';
 
@@ -10,6 +10,7 @@ const { Item } = Menu;
 
 const GeneralNav = () => {
     const updateAuth = useAuthUpdate();
+    const auth = useAuth();
 
     return (
         <div>
@@ -32,7 +33,7 @@ const GeneralNav = () => {
                 <Item onClick={() => {history.push(PATH.myVaccineStatus)}}>
                     <div className='navbar-menuitem-text'>My Status</div>
                 </Item>
-                <Item  onClick={() => {logout(updateAuth)}} style={{float: 'right', paddingTop: '3px'}}>
+                <Item  onClick={() => {logout(updateAuth, auth.token, auth.type)}} style={{float: 'right', paddingTop: '3px'}}>
                     <div className='navbar-menuitem-text'>Logout</div>
                 </Item>
             </Menu>

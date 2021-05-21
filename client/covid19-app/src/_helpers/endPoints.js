@@ -78,9 +78,31 @@ export const _confirmPatientVaccination = (confirmation, token) => {
     return axios.post('api/healthprofessional/confirmpatientvaccinationinformation', confirmation, config);
 }
 
-
 export const _getVenueInfo = token => {
     const config = { headers:{ "x-auth-token" : token }}
     return axios.get('api/businessowner/venueinfo', config);
 }
 
+export const _homepageStatas = token => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.get('/api/generalpublic/homepagestats', config);
+}
+
+export const _markUserPositive = (confirmation, token) => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.post('/api/healthprofessional/markpatientpositive', confirmation, config);
+}
+export const _logoutBusiness = token => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.get('api/businessowner/auth/logout', config);
+}
+
+export const _logoutGeneral = token => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.get('api/registeredgeneralpublic/auth/logout', config);
+}
+
+export const _logoutHealth = token => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.get('api/healthprofessional/auth/logout', config);
+}

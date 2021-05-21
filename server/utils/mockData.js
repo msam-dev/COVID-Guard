@@ -29,6 +29,7 @@ const fs = require("fs");
 const VaccinationCentre = require("../models/VaccinationCentre");
 const Coordinates = require("../models/Coordinates");
 const USER_TYPE = require("../_constants/usertypes");
+const {random_coordinate} = require("./general");
 faker.seed(0);
 
 async function createMockRegisteredGeneralPublicUsers(save = false, numUsers = 1) {
@@ -69,7 +70,7 @@ async function createMockAddresses(save = false, numAddresses = 1, addCoordinate
             if (coordinates) {
                 address.coordinates = coordinates;
             } else {
-                address.coordinates = (await createMockCoordinates(save))[0];
+                address.coordinates = (await createMockCoordinates(save, 1, address.state))[0];
             }
         }
 
@@ -290,12 +291,13 @@ async function createMockVaccinationCentres(save = false, numCentres = 1, addres
     return vaccinationCentres;
 }
 
-async function createMockCoordinates(save = false, numCoordinates = 1) {
+async function createMockCoordinates(save = false, numCoordinates = 1, state="NSW") {
     let coordinates = [];
     for (let i = 0; i < numCoordinates; i++) {
         let coordinate = new Coordinates();
-        coordinate.latitude = faker.address.latitude();
-        coordinate.longitude = faker.address.longitude();
+        let coords = random_coordinate(state);
+        coordinate.latitude = coords[1];
+        coordinate.longitude = coords[0];
 
         coordinates.push(coordinate);
     }
