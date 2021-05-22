@@ -11,6 +11,7 @@ const Business = require("./Business");
 const VaccinationCentre = require("./VaccinationCentre");
 const rp = require('request-promise');
 const $ = require('cheerio');
+const {Emailer} = require("../utils/general");
 const {dailySummary} = require("../utils/general");
 
 // Create Schema
@@ -507,6 +508,17 @@ StatisticsSchema.statics.getSingleton = async function () {
             return stats;
         }
 };
+
+StatisticsSchema.statics.sendGovernmentMessage = async function(date){
+    let msg = {
+        to: process.env.GOVERMENT_EMAIL,
+        from: "mr664.uowmail.edu.au",
+        subject: `Statistics for ${date}`,
+        html: "This is the statistics"
+    }
+    let stats = Statistics.getSingleton();
+    await Emailer.sendEmail(msg)
+}
 
 const Statistics = mongoose.model('Statistics', StatisticsSchema);
 

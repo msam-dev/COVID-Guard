@@ -87,7 +87,7 @@ PositiveCaseSchema.statics.sendEmailsToAffectedUsers = async function (positiveC
         for (let affectedCheckin of affectedCheckins) {
             let msg = {
                 to: affectedCheckin.user.email, // Change to your recipient
-                from: 'mr664@uowmail.edu.au', // Change to your verified sender
+                from: process.env.SENDGRID_FROM_EMAIL, // Change to your verified sender
                 subject: 'Contact tracing',
                 html: `<strong>This message is to notify you that you visited a venue where a confirmed positive case visited on ${dateShortcode.parse('{YYYY-MM-DD}', affectedCheckin.date)}</strong>`,
             }
