@@ -83,9 +83,8 @@ export const _getVenueInfo = token => {
     return axios.get('api/businessowner/venueinfo', config);
 }
 
-export const _homepageStatas = token => {
-    const config = { headers:{ "x-auth-token" : token }}
-    return axios.get('/api/generalpublic/homepagestats', config);
+export const _homepageStatas = () => {
+    return axios.get('/api/generalpublic/homepagestats');
 }
 
 export const _markUserPositive = (confirmation, token) => {

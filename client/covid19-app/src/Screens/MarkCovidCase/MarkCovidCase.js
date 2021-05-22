@@ -15,8 +15,7 @@ const MarkCovidCase =(_) => {
     const auth = useAuth();
     const updateAuth = useAuthUpdate();
 
-    fetch('/api/healthprofessional/markpatientpositive')
-        .then(res => console.log(res))
+    
 
     const markCovidCase = (_, email) => {
 
@@ -26,9 +25,9 @@ const MarkCovidCase =(_) => {
         let newValues = {};
 
         newValues.email = values.email;
-        newValues.dateAdministered = new Date(values.dateAdministered._i);
-        newValues.status = values.status;
-        newValues.vaccinationType = values.vaccinationType;
+        newValues.testDate = new Date(values.testDate);
+        newValues.infectiousStartDate = new Date(values.infectiousStartDate);
+        
         
        
 
@@ -93,7 +92,7 @@ const MarkCovidCase =(_) => {
                 <Form.Item
                         {...layout}
                         label="positive test date"
-                        name="dateAdministered"
+                        name="testDate"
                         rules={[
                             {
                                 required: true,
@@ -104,10 +103,10 @@ const MarkCovidCase =(_) => {
                         <DatePicker disabledDate={current => { return current && current > moment().endOf('day')}}/>
                     </Form.Item>
 
-                   {/*} <Form.Item
+                   } <Form.Item
                         {...layout}
                         label=" infectious start date"
-                        name="dateAdministered2"
+                        name="infectiousStartDate"
                         rules={[
                             {
                                 required: true,
@@ -116,7 +115,7 @@ const MarkCovidCase =(_) => {
                         ]}
                     >
                         <DatePicker disabledDate={current => { return current && current > moment().endOf('day')}}/>
-                    </Form.Item>*/}
+                    </Form.Item>
 
                 <Form.Item {...tailLayout}>
                     <Button loading={loading} type="primary" htmlType="submit">Mark individual as positive</Button>
