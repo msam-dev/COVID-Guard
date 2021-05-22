@@ -19,6 +19,7 @@ const VenueCode = () => {
         .then(res => {
             setLoading(false);
             setVenueInfo(res.data);
+            console.log(res.data)
         })
         .catch(err => {
             console.log(err);
