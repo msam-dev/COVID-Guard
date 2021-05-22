@@ -1,9 +1,8 @@
-import {  Button } from 'antd';
 import './App.less';
 import { Router, Route, Switch } from 'react-router-dom';
 import history from '../_helpers/history';
 import PATH from '../_constants/paths';
-import AuthProvider, { useAuth } from '../Components/AuthContext/AuthContext';
+import AuthProvider from '../Components/AuthContext/AuthContext';
 import Navbar from '../Components/Navbar/Navbar';
 import Footer from '../Components/Footer/Footer';
 import Homepage from '../Screens/Homepage/Homepage';

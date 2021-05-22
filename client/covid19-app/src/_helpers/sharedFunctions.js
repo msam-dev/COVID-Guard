@@ -22,12 +22,12 @@ export const logout = (updateAuth, token, type) => {
             break;
         }
         case USER_TYPE.HEALTH: {
-            console.log("in switch statement", token);
             _logoutHealth(token)
             .then(res => console.log(res))
             .catch(err => console.log(err));
             break;
         }
+        default: {}
     }
 }
 

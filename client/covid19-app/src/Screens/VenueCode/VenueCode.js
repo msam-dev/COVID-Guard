@@ -26,7 +26,7 @@ const VenueCode = () => {
             if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
             else setError(true);
         })
-    }, [auth.token, updateAuth]);
+    }, [auth.token, updateAuth, auth.type]);
 
     return(
         <div>

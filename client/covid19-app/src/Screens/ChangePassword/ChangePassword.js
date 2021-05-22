@@ -1,49 +1,87 @@
-import { Form, Input, Button,Radio } from 'antd';
+import { Form, Input, Button } from 'antd';
 import { layout, tailLayout } from './layouts';
 import USER_TYPE from '../../_constants/userTypes';
-import { changePasswordGeneral, changePasswordBusiness, changePasswordHealth } from './Functions';
-import { validateEmail } from '../../_helpers/sharedFunctions'; 
 import { useState } from 'react';
+import { isWhiteSpace } from '../../_helpers/sharedFunctions';
+import { _changePasswordBusiness, _changePasswordGeneral, _changePasswordHealth} from '../../_helpers/endPoints';
+import { useAuth, useAuthUpdate } from '../../Components/AuthContext/AuthContext';
+import { logout } from '../../_helpers/sharedFunctions';
 import { useForm } from 'antd/lib/form/Form';
-import { useAuthUpdate } from '../../Components/AuthContext/AuthContext';
+import { changePasswordSuccessModal, somethingWentWrongModal } from './Modals';
 
 const ChangePassword =() => {
-    
     const [loading, setLoading] = useState(false);
-    const [form] = useForm();
+    const auth = useAuth();
     const updateAuth = useAuthUpdate();
+    const [form] = useForm();
 
- 
-
-    const changePassword = (password) => {
-        const current_password = form.getFieldValue('current_password');
-        const new_password = form.getFieldValue('new_password');
-        const confirm_new_password = form.getFieldValue('confirm_new_password')
-        const type = form.getFieldValue('type');
-
-        /*if(!password ||  !validateEmail(email)) return Promise.resolve();*/
-
-        const user = {
-            currnet_password: current_password,
-            new_password: new_password,
-            confirm_new_password: confirm_new_password
-        }
-
+    const changePassword = values => {
         setLoading(true);
-
-        switch(type){
-            case USER_TYPE.GENERAL: return changePasswordGeneral(setLoading, updateAuth, user);
-            case USER_TYPE.HEALTH: return changePasswordHealth(setLoading, updateAuth, user);
-            case USER_TYPE.BUSINESS: return changePasswordBusiness(setLoading, updateAuth, user);
-            default : {
-                setLoading(false);
-                return Promise.reject(new Error('Something went wrong'));
+        switch(auth.type){
+            case USER_TYPE.GENERAL: {
+                _changePasswordGeneral(auth.token, values)
+                .then(() => {
+                    setLoading(false);
+                    changePasswordSuccessModal();
+                })
+                .catch(err => {
+                    setLoading(false);
+                    console.log(err);
+                    if(err.response.status === 400){ 
+                        form.setFields([{
+                            name: 'currentPassword',
+                            errors: ['Current password incorrect!'],
+                        }]);
+                    }
+                    else if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
+                    else somethingWentWrongModal();
+                })
+                break;
             }
+            case USER_TYPE.BUSINESS: {
+                _changePasswordBusiness(auth.token, values)
+                .then(() => {
+                    setLoading(false);
+                    changePasswordSuccessModal();
+                })
+                .catch(err => {
+                    setLoading(false);
+                    console.log(err);
+                    if(err.response.status === 400){ 
+                        form.setFields([{
+                            name: 'currentPassword',
+                            errors: ['Current password incorrect!'],
+                        }]);
+                    }
+                    else if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
+                    else somethingWentWrongModal();
+                })
+                break;
+            }
+            case USER_TYPE.HEALTH: {
+                _changePasswordHealth(auth.token, values)
+                .then(() => {
+                    setLoading(false);
+                    changePasswordSuccessModal();
+                })
+                .catch(err => {
+                    setLoading(false);
+                    console.log(err);
+                    if(err.response.status === 400){ 
+                        form.setFields([{
+                            name: 'currentPassword',
+                            errors: ['Current password incorrect!'],
+                        }]);
+                    }
+                    else if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
+                    else somethingWentWrongModal();
+                })
+                break;
+            }
+            default: logout(updateAuth, auth.token, auth.type);
         }
     }
-    
 
-    
     return(
         <div>
             <div style={{backgroundColor: "#FDC500"}}>
@@ -56,81 +94,63 @@ const ChangePassword =() => {
                 </h1>
             </div>
 
-            <Form {...layout}>
+            <Form {...layout} onFinish={changePassword} form={form}>
             <Form.Item
                     label="Current Password :"
-                    name="current_password"
+                    name="currentPassword"
                     style={{color: "#0E5F76"}}
                     rules={[
-                    {   
-                        type: 'password',
-                        required: true,
-                        message: 'Please input correct password!',
-                        whitespace: true,
-                        validateTrigger: 'onSubmit'
-                    },
+                        {   
+                            required: true,
+                            message: 'Please input your current password!',
+                            whitespace: true,
+                        }
                     ]}
                 >
-                    <Input maxLength={30}/>
+                    <Input.Password maxLength={30}/>
                 </Form.Item>
 
                 <Form.Item
                     label="New Password :"
-                    name="new_password"
+                    name="newPassword"
                     style={{color: "#0E5F76"}}
                     rules={[
-                    {   
-                        type: 'password',
-                        required: true,
-                        message: 'Please input valid date!',
-                        whitespace: true,
-                        validateTrigger: 'onSubmit'
-                    },
+                        {   
+                            required: true,
+                            message: 'Please input your new password!',
+                            whitespace: true,
+                        }
                     ]}
                 >
-                    <Input maxLength={30}/>
+                    <Input.Password maxLength={30}/>
                 </Form.Item>
 
                 <Form.Item
-                    label="Confirmm New Password :"
-                    name="confirm_new_password"
+                    label="Confirm New Password :"
+                    name="confirmPassword"
                     style={{color: "#0E5F76"}}
                     rules={[
-                    {   
-                        type: 'password',
-                        required: true,
-                        message: 'Please input same password!',
-                        whitespace: true,
-                        validateTrigger: 'onSubmit'
-                    },
+                        {   
+                            required: true,
+                            message: 'Please confirm your new password password!',
+                            whitespace: true,
+                        },
+                        ({ getFieldValue }) => ({
+                            validator(_, value) {
+                                if(getFieldValue('newPassword') === value || value === undefined) return Promise.resolve();
+                                if(isWhiteSpace(value)) return Promise.resolve();
+                                return Promise.reject(new Error('The two passwords that you entered do not match!'));
+                            },
+                            validateTrigger: 'onSubmit'
+                        })
                     ]}
                 >
-                    <Input maxLength={30}/>
+                    <Input.Password maxLength={30}/>
                 </Form.Item>
-
-                <Form.Item 
-                        {...layout} 
-                        name="type" 
-                        label="Who are you?"
-                        rules={[
-                            { 
-                                required: true,
-                                message: "Please tell us who you are!"
-                            }
-                        ]}
-                    >
-                        <Radio.Group>
-                            <Radio value={USER_TYPE.GENERAL}>General Public</Radio>
-                            <Radio value={USER_TYPE.HEALTH}>Health Professional</Radio>
-                            <Radio value={USER_TYPE.BUSINESS}>Venue Owner</Radio>
-                        </Radio.Group>
-                    </Form.Item>
 
                 <Form.Item {...tailLayout}>
                     <Button loading={loading} type="primary" htmlType="submit">Change Password</Button>
-                    
                 </Form.Item>
-
             </Form>
 
         </div>

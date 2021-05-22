@@ -66,7 +66,7 @@ const MyVaccineStatus = () => {
         });
 
         return () => { unmounted = true };
-    }, [auth.token, updateAuth]);
+    }, [auth.token, updateAuth, auth.type]);
 
 
 

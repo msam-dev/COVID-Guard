@@ -97,3 +97,19 @@ export const _logoutHealth = token => {
     const config = { headers:{ "x-auth-token" : token }}
     return axios.get('api/healthprofessional/auth/logout', config);
 }
+
+export const _changePasswordGeneral = (token, values) => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.post('api/registeredgeneralpublic/auth/changepassword', values, config);
+}
+
+export const _changePasswordHealth = (token, values) => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.post('api/healthprofessional/auth/changepassword', values, config);
+    
+}
+
+export const _changePasswordBusiness = (token, values) => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.post('api/businessowner/auth/changepassword', values, config);
+}

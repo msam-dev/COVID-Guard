@@ -3,7 +3,7 @@ export const layout = {
         span: 9,
     },
     wrapperCol: {
-      span: 6,
+      span: 7,
     }
 };
   
