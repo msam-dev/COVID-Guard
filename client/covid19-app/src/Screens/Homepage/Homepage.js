@@ -1,13 +1,35 @@
 import './homepage.css';
 import { useEffect, useState } from 'react';
 import { _homepageStatas } from '../../_helpers/endPoints';
-import { useAuth, useAuthUpdate } from '../../Components/AuthContext/AuthContext';
-import { logout } from '../../_helpers/sharedFunctions';
-import { Spin } from 'antd';
+
 
 const Homepage =() => {
 
-    const [HomeInfo, setHomeInfo] = useState({});
+    const [HomeInfo, setHomeInfo] = useState({covidSummary:{
+        totalHospitalised:47, // scraped
+        totalDeaths:910, // scraped
+        totalTests:17094636, // scraped
+        totalTestsLast24Hours:13815, // scraped
+        totalOverseasCasesLast24Hours:7, // scraped
+        totalCurrentHotspotVenues:2,
+        totalPositiveCasesLast24Hours:0,
+        totalPositiveCases:192
+     },
+     checkinsSummary:{
+        totalCheckins:590085,
+        checkinsLast24Hours:0
+     },
+     businessesSummary:{
+        totalBusinessesRegistered:501
+     },
+     vaccinationsSummary:{
+        vaccinationsYesterday:0,
+        totalVaccinations:1619
+     },
+     usersSummary:{
+   totalRegisteredGeneralPublicUsers:9884
+     }
+});
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(false);
 
@@ -27,12 +49,11 @@ const Homepage =() => {
             setLoading(false);
             
         })
-    }, );
+    } );
 
-    console.log(HomeInfo)
-
+    
     const data = {
-        total_case : HomeInfo.covidSummary.totalPositiveCases,
+        total_case :32 ,
         total_death :909,
         active_cases :151,
         local_quired_7_days :3,
@@ -66,8 +87,14 @@ const Homepage =() => {
                 
                 <text >Total case </text>
                 <div style= {{width:'100%',height:'20px'}}> </div>
-               
-                <text style = {{fontSize:'25px',fontWeight:'400'}}>{data.total_case}</text>
+               { loading 
+               ?
+               <div>
+               </div>
+               :
+               <text style = {{fontSize:'25px',fontWeight:'400'}}>{HomeInfo.covidSummary.totalPositiveCases}</text>
+                }
+                
             </div>
             
             <div className='box_two'>
