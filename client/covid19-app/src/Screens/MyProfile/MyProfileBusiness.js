@@ -102,8 +102,8 @@ import PATH from '../../_constants/paths';
                 </Form.Item>
 
                 <Form.Item 
-                        label="VenueName" 
-                        name="venueName" 
+                        label="Business Name" 
+                        name="businessName" 
                         style={{color: "#0E5F76"}}
                         validateTrigger={['onBlur']}
                         rules={[{whitespace: true}]}
