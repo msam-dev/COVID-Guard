@@ -27,7 +27,7 @@ const HealthNav = () => {
                 <Item onClick={() => { history.push(PATH.confirmUserVaccination) }}>
                     <div className='navbar-menuitem-text'>Vaccinate Patient</div>
                 </Item>
-                <Item>
+                <Item onClick={() => { history.push(PATH.markCovidCase)}}>
                     <div className='navbar-menuitem-text'>Positive Patient</div>
                 </Item>
                 <Item onClick={() => {logout(updateAuth, auth.token, auth.type)}} style={{float: 'right', paddingTop: '3px'}}>

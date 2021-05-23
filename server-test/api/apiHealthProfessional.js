@@ -27,6 +27,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
             assert.propertyVal(res.body, "firstName", user.firstName);
             assert.propertyVal(res.body, "lastName", user.lastName);
             assert.propertyVal(res.body, "phone", user.phone);
+            assert.propertyVal(res.body, "healthId", user.healthID);
         });
     });
     describe("POST /api/healthprofessional/profile", () => {

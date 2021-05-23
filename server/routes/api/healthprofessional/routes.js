@@ -38,7 +38,7 @@ router.get('/profile', authMiddleware(userType.HEALTH), asyncHandler(async (req,
         lastName: user.lastName,
         email: user.email,
         phone: user.phone,
-        healthId: user.healthId
+        healthId: user.healthID
     });
 }));
 
