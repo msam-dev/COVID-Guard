@@ -72,17 +72,7 @@ import PATH from '../../_constants/paths';
                     rules={[{whitespace: true}]}
                 >
                     <Input  placeholder= {userData.lastName} disabled/>
-                </Form.Item>
-
-                <Form.Item
-                    label="Email"
-                    name="email"
-                    style={{color: "#0E5F76"}}
-                    validateTrigger={['onBlur']}
-                    rules={[{whitespace: true}]}
-                >
-                    <Input  placeholder= {userData.email} disabled/>
-                </Form.Item>    
+                </Form.Item>  
 
                 <Form.Item 
                         label="Phone" 
@@ -104,6 +94,16 @@ import PATH from '../../_constants/paths';
                     <Input  placeholder= {userData.healthId} disabled/>
                 </Form.Item>
 
+                <Form.Item
+                    label="Email"
+                    name="email"
+                    style={{color: "#0E5F76"}}
+                    validateTrigger={['onBlur']}
+                    rules={[{whitespace: true}]}
+                >
+                    <Input  placeholder= {userData.email} disabled/>
+                </Form.Item>  
+                
                 <Form.Item
                     label="Password"
                     name="password"

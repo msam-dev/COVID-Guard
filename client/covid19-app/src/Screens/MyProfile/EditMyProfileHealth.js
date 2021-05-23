@@ -34,7 +34,7 @@ const data = {
                 const userRes = resArr[0];
                 
                 setUserData(userRes.data);
-                form.setFieldsValue({firstName: userRes.data.firstName, lastName: userRes.data.lastName, email: userRes.data.email, phone: userRes.data.phone, healthID: userRes.data.healthID  })
+                form.setFieldsValue({firstName: userRes.data.firstName, lastName: userRes.data.lastName, email: userRes.data.email, phone: userRes.data.phone, healthID: userRes.data.healthId  })
                 
             }
         })
