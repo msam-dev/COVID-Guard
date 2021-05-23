@@ -14,6 +14,12 @@ const PATH = {
     forgotPassword: "/forgotPassword",
     myVaccineStatus: "/myVaccineStatus",
     confirmUserVaccination: "/confirmUserVaccination",
+    myProfile: "/myProfile",
+    editMyProfile: "/editMyProfile",
+    myProfileHealth: "/myProfileHealth",
+    editMyProfileHealth: "/editMyProfileHealth",
+    myProfileBusiness: "/myProfileBusiness",
+    editMyProfileBusiness: "/editMyProfileBusiness",
 }
 
 export default PATH;

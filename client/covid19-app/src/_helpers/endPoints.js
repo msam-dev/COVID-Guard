@@ -73,6 +73,16 @@ export const _getGeneralProfile = token => {
     return axios.get('api/registeredgeneralpublic/profile', config);
 }
 
+export const _getHealthProfile = token => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.get('api/healthprofessional/profile', config);
+}
+
+export const _getBusinessProfile = token => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.get('api/businessowner/profile', config);
+}
+
 export const _confirmPatientVaccination = (confirmation, token) => {
     const config = { headers:{ "x-auth-token" : token }}
     return axios.post('api/healthprofessional/confirmpatientvaccinationinformation', confirmation, config);
@@ -112,4 +122,19 @@ export const _changePasswordHealth = (token, values) => {
 export const _changePasswordBusiness = (token, values) => {
     const config = { headers:{ "x-auth-token" : token }}
     return axios.post('api/businessowner/auth/changepassword', values, config);
+}
+
+export const _editProfileGeneral = (token, values) => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.post('api/registeredgeneralpublic/profile', values, config);
+}
+
+export const _editProfileHealth = (token, values) => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.post('api/healthprofessional/profile', values, config);
+}
+
+export const _editProfileBusiness = (token, values) => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.post('api/businessowner/profile', values, config);
 }
