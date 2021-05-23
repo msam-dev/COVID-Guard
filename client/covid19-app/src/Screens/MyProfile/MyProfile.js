@@ -14,16 +14,11 @@ import PATH from '../../_constants/paths';
     const auth = useAuth();
     const updateAuth = useAuthUpdate();
 
-
     const data = {
         password: "***************"
-        
     }
 
-
     const [userData, setUserData] = useState({});
-
-    
     
     useEffect(() =>{
         let unmounted = false;
@@ -45,8 +40,6 @@ import PATH from '../../_constants/paths';
     }, [auth.token, updateAuth, auth.type]);
 
     
-
-
     return (
         <div style = {{textAlign: "center", color: "#0E5F76"}}>
 
@@ -104,7 +97,6 @@ import PATH from '../../_constants/paths';
                     <Input  placeholder= {data.password} disabled/>
                 </Form.Item>
     
-                
                 <div style={{textAlign: 'center'}}>
                     <span onClick={() => {history.push(PATH.editMyProfile)}} style={{color: "#0E5F76"}}><u style={{cursor: "pointer"}} >Edit details</u></span>
                 </div>

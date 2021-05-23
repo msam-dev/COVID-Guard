@@ -1,6 +1,5 @@
 
 
-
 import { Form, Input, Button} from 'antd';
 import { layout2 } from '../Register/Helpers/Layouts';
 import { useAuth,useAuthUpdate } from '../../Components/AuthContext/AuthContext';
@@ -14,7 +13,6 @@ import PATH from '../../_constants/paths';
 
 const data = {
     password: "***************",
-    
 }
 
  const EditMyProfileBusiness = () => {
@@ -51,9 +49,9 @@ const data = {
         });
 
         return () => { unmounted = true };
-    }, [auth.token, updateAuth, auth.type]);
+    }, [auth.token, updateAuth, auth.type, form]);
 
-
+    console.log(userData);
 
     const updateInfo = values => {
         setLoading(true);
@@ -69,7 +67,6 @@ const data = {
             setLoading(false);
         });
     }
-
 
 
     return (

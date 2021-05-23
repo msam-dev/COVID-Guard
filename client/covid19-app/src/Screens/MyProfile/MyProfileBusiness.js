@@ -9,37 +9,16 @@ import { logout } from '../../_helpers/sharedFunctions';
 import history from '../../_helpers/history';
 import PATH from '../../_constants/paths';
 
-/* const data = {
-    
-    firstName: "Samuel",
-    lastName: "Micallef",
-    emailAddress: "samuel@gmail.com",
-    phoneNumber: "0400123456",
-    venueName: "Samuel's Bakery",
-    addressLine1:"100 Fake street",
-    addressLine2:"",
-    suburb:"Bulli",
-    city:"Wollongong",
-    state:"NSW",
-    postCode:"2500",
-    ABN: "A1B2C3D4E5",
-    password: "*********",
-
-}; */
 
  const MyProfileBusiness = () => {
     const auth = useAuth();
     const updateAuth = useAuthUpdate();
 
-
     const data = {
         password: "***************"
-        
     }
 
-
     const [userData, setUserData] = useState({});
-
 
     useEffect(() =>{
         let unmounted = false;
@@ -59,8 +38,6 @@ import PATH from '../../_constants/paths';
 
         return () => { unmounted = true };
     }, [auth.token, updateAuth, auth.type]);
-
-
 
 
     return (
@@ -111,8 +88,6 @@ import PATH from '../../_constants/paths';
                     <Input  placeholder= {userData.businessName} disabled/>
                 </Form.Item>
 
-                
-
                 <Form.Item 
                         label="ABN" 
                         name="abn" 
@@ -133,7 +108,6 @@ import PATH from '../../_constants/paths';
                     <Input  placeholder= {userData.email} disabled/>
                 </Form.Item>  
 
-
                 <Form.Item
                     label="Password"
                     name="password"
@@ -143,7 +117,6 @@ import PATH from '../../_constants/paths';
                     <Input  placeholder= {data.password} disabled/>
                 </Form.Item>
     
-                
                 <div style={{textAlign: 'center'}}>
                     <span onClick={() => {history.push(PATH.editMyProfileBusiness)}} style={{color: "#0E5F76"}}><u style={{cursor: "pointer"}} >Edit details</u></span>
                 </div><br/><br/><br/><br/><br/>

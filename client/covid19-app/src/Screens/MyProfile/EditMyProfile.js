@@ -14,9 +14,7 @@ import PATH from '../../_constants/paths';
 
 const data = {
     password: "***************",
-    
 }
-
 
  const EditMyProfile = () => {
     const auth = useAuth();
@@ -32,22 +30,17 @@ const data = {
         .then( resArr=> {
             if(!unmounted){
                 const userRes = resArr[0];
-                
                 setUserData(userRes.data);
-                form.setFieldsValue({firstName: userRes.data.firstName, lastName: userRes.data.lastName, email: userRes.data.email, phone: userRes.data.phone   })
-                
+                form.setFieldsValue({firstName: userRes.data.firstName, lastName: userRes.data.lastName, email: userRes.data.email, phone: userRes.data.phone   });
             }
         })
         .catch( err => {
-            
             console.log(err);
             if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
         });
 
         return () => { unmounted = true };
-    }, [auth.token, updateAuth, auth.type]);
-
-
+    }, [auth.token, updateAuth, auth.type, form]);
 
     const updateInfo = values => {
         setLoading(true);
@@ -80,9 +73,7 @@ const data = {
                 <Form.Item
                     label="First Name"
                     name="firstName"
-                    style={{color: "#0E5F76"}}
-                    
-                    
+                    style={{color: "#0E5F76"}}                    
                 >
                     <Input maxLength={30}/>
                 </Form.Item>
@@ -97,11 +88,10 @@ const data = {
                 </Form.Item> 
 
                 <Form.Item 
-                        label="Phone" 
-                        name="phone" 
-                        style={{color: "#0E5F76"}}
-
-                        rules={[{whitespace: true}]}
+                    label="Phone" 
+                    name="phone" 
+                    style={{color: "#0E5F76"}}
+                    rules={[{whitespace: true}]}
                     >
                     <Input  />
                 </Form.Item>
@@ -128,8 +118,8 @@ const data = {
                 <div style={{textAlign: 'center'}}>
                     <Button loading={loading} type="primary" htmlType="submit"  >Save Changes</Button> &nbsp;&nbsp;
                     <Button  onClick={() => {history.push(PATH.myProfile)}} type="primary" >Discard Changes</Button>
-                </div> <br/
-                >
+                </div> <br/>
+
                 <Form.Item {...theTailLayout}>
                     <span onClick={() => {history.push(PATH.changePassword)}} style={{color: "#0E5F76"}}><u style={{cursor: "pointer"}} >Change Password</u></span>
                 </Form.Item>

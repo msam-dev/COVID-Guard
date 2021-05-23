@@ -11,13 +11,12 @@ import { useForm } from 'antd/lib/form/Form';
 import history from '../../_helpers/history';
 import PATH from '../../_constants/paths';
 
+
 const data = {
     password: "***************",
-    
 }
 
  const EditMyProfileHealth = () => {
-
 
     const auth = useAuth();
     const updateAuth = useAuthUpdate();
@@ -32,26 +31,20 @@ const data = {
         .then( resArr=> {
             if(!unmounted){
                 const userRes = resArr[0];
-                
                 setUserData(userRes.data);
-                form.setFieldsValue({firstName: userRes.data.firstName, lastName: userRes.data.lastName, email: userRes.data.email, phone: userRes.data.phone, healthID: userRes.data.healthId  })
-                
+                form.setFieldsValue({firstName: userRes.data.firstName, lastName: userRes.data.lastName, email: userRes.data.email, phone: userRes.data.phone, healthID: userRes.data.healthId  });
             }
         })
         .catch( err => {
-            
             console.log(err);
             if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
         });
 
         return () => { unmounted = true };
-    }, [auth.token, updateAuth, auth.type]);
-
-
+    }, [auth.token, updateAuth, auth.type, form]);
 
     const updateInfo = values => {
         setLoading(true);
-        
         _editProfileHealth(auth.token, values)
         .then(() => {
             setLoading(false);
@@ -63,10 +56,7 @@ const data = {
             setLoading(false);
         });
     }
-
-
-
-
+    console.log(userData);
 
     return (
         <div style = {{textAlign: "center", color: "#0E5F76"}}>
@@ -85,7 +75,6 @@ const data = {
                     label="First Name"
                     name="firstName"
                     style={{color: "#0E5F76"}}
-                    
                     rules={[{whitespace: true}]}
                 >
                     <Input  maxLength={30}/>
@@ -99,7 +88,6 @@ const data = {
                 >
                     <Input  maxLength={30} />
                 </Form.Item>
- 
 
                 <Form.Item 
                         label="Phone" 
@@ -120,7 +108,6 @@ const data = {
                     >
                     <Input  maxLength={30} disabled/>
                 </Form.Item>
-
 
                 <Form.Item
                     label="Email"
