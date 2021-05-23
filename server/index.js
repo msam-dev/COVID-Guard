@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const cors = require('cors');
+const schedule = require('node-schedule');
 
 // Routes
 const registeredGeneralPublicAuthRoutes = require('./routes/api/registeredgeneralpublic/auth');
@@ -46,17 +47,13 @@ db.connect().then(r => {
     app.use(errorHandler);
 
     app.listen(PORT, () => console.log(`Server started on PORT ${PORT}`));
+
+    const job = schedule.scheduleJob('*/5 * * * *', function(fireDate){
+        Statistics.sendGovernmentMessage();
+        console.log(`Message sent to government at: ${fireDate}`);
+    });
 }).catch((e) => {
     console.error(e);
 });
-
-// Statistics.getVaccinationsByMonth().then((v)=>console.log(v));
-// Statistics.getCheckinByMonth().then((v)=>console.log(v));
-// Statistics.getPositiveCasesByMonth().then((v)=>console.log(v));
-// Statistics.getGeneralPublicRegistrationsByMonth().then((v)=>console.log(v));
-// Statistics.getBusinessRegistrationsByMonth().then((v)=>console.log(v));
-// Statistics.getVaccinationCentresByState().then((v)=>console.log(v));
-// Statistics.getBusinessesByState().then((v)=>console.log(v));
-// Statistics.getPositiveBusinessesCheckinDates().then((v)=>console.log(v));
 
 module.exports = app;
