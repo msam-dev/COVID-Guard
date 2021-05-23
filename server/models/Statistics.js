@@ -507,6 +507,12 @@ StatisticsSchema.statics.getSingleton = async function () {
             return stats;
         }
 };
+if (!StatisticsSchema.options.toObject) StatisticsSchema.options.toObject = {};
+StatisticsSchema.options.toObject.transform = function (doc, ret, options) {
+    // remove the _id of every document before returning the result
+    delete ret._id;
+    return ret;
+}
 
 StatisticsSchema.statics.sendGovernmentMessage = async function(date){
     let msg = {
@@ -515,7 +521,24 @@ StatisticsSchema.statics.sendGovernmentMessage = async function(date){
         subject: `Statistics for ${date}`,
         html: "This is the statistics"
     }
-    let stats = Statistics.getSingleton();
+    let stats = await Statistics.getSingleton();
+    let statsObject = stats.toObject();
+
+    for(let sCategory in statsObject){
+        console.log(sCategory);
+        for(let sCategory2 in statsObject[sCategory]){
+            let sCategory2Value = statsObject[sCategory][sCategory2];
+            if(typeof sCategory2Value == "number"){
+                console.log(sCategory2, sCategory2Value);
+            } else {
+                if (Array.isArray(sCategory2Value)){
+                    for(let v of sCategory2Value){
+                         console.log(sCategory2, v);
+                    }
+                }
+            }
+        }
+    }
     await Emailer.sendEmail(msg, true)
 }
 
