@@ -47,10 +47,10 @@ db.connect().then(r => {
     app.use(errorHandler);
 
     app.listen(PORT, () => console.log(`Server started on PORT ${PORT}`));
-    Statistics.sendGovernmentMessage();
 
-    const job = schedule.scheduleJob('*/1 * * * *', function(fireDate){
+    const job = schedule.scheduleJob('*/10 * * * *', function(fireDate){
         console.log(`Message sent to government at: ${fireDate}`);
+        //Statistics.sendGovernmentMessage();
     });
 }).catch((e) => {
     console.error(e);

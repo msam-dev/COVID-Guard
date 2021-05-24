@@ -162,12 +162,12 @@ StatisticsSchema.statics.getTotalPositiveCasesByMonth = async function () {
         })
         .group({
             _id: { month: "$month", year: "$year" },
-            numberOfVaccinations: { $sum: 1 }
+            positiveCases: { $sum: 1 }
         })
         .project({
             year: "$_id.year",
             month: "$_id.month",
-            numberOfPositiveCases: 1,
+            positiveCases: 1,
             _id: 0
         })
         .exec();
@@ -232,7 +232,7 @@ StatisticsSchema.statics.getVaccinationsByStatus = async function () {
         })
         .project({
             numberOfVaccinations: 1,
-            vaccinationStatus: "$_id",
+            status: "$_id",
             _id: 0
         })
         .exec();
@@ -308,12 +308,12 @@ StatisticsSchema.statics.getBusinessRegistrationsByMonth = async function () {
         })
         .group({
             _id: { month: "$month", year: "$year" },
-            numberOfRegistrations: { $sum: 1 }
+            numberOfBusinesses: { $sum: 1 }
         })
         .project({
             year: "$_id.year",
             month: "$_id.month",
-            numberOfRegistrations: 1,
+            numberOfBusinesses: 1,
             _id: 0
         })
         .exec();
@@ -329,8 +329,8 @@ StatisticsSchema.statics.getVaccinationCentresByState = async function () {
             as: "address"
          })
         .unwind("$address")
-        .group({_id: "$address.state", count: { $sum: 1 }})
-        .project({state: "$_id", count: 1, _id: 0})
+        .group({_id: "$address.state", numberOfVaccinationCentres: { $sum: 1 }})
+        .project({state: "$_id", numberOfVaccinationCentres: 1, _id: 0})
         .exec();
     return docs;
 };
@@ -344,8 +344,8 @@ StatisticsSchema.statics.getBusinessesByState = async function () {
             as: "address"
         })
         .unwind("$address")
-        .group({_id: "$address.state", count: { $sum: 1 }})
-        .project({state: "$_id", count: 1, _id: 0})
+        .group({_id: "$address.state", numberOfBusinesses: { $sum: 1 }})
+        .project({state: "$_id", numberOfBusinesses: 1, _id: 0})
         .exec();
     return docs;
 };
@@ -490,6 +490,51 @@ StatisticsSchema.methods.updateData = async function(){
     }
 };
 
+StatisticsSchema.methods.setData = async function(){
+    // do update data
+    const covidSummaryUrl = 'https://covidlive.com.au/australia';
+
+    const covidSummaryHtml = await rp(covidSummaryUrl);
+
+    this.covidSummary.totalHospitalised = dailySummary(covidSummaryHtml, "Hospitalised").total();
+    this.covidSummary.totalDeaths = dailySummary(covidSummaryHtml, "Deaths").total();
+    this.covidSummary.totalTests = dailySummary(covidSummaryHtml, "Tests").total();
+    this.covidSummary.totalTestsLast24Hours = dailySummary(covidSummaryHtml, "Tests").net();
+    this.covidSummary.totalOverseasCasesLast24Hours = dailySummary(covidSummaryHtml, "Overseas").net();
+    this.covidSummary.totalCases = dailySummary(covidSummaryHtml, "Cases").total();
+    this.covidSummary.totalCurrentHotspotVenues = (await Statistics.getPositiveBusinessesCheckinDates()).length;
+    this.covidSummary.totalPositiveCasesLast24Hours = await Statistics.getPositiveCasesLast24Hours();
+    this.covidSummary.totalPositiveCases = await PositiveCase.countDocuments();
+    this.covidSummary.totalPositiveCasesByMonth = await Statistics.getTotalPositiveCasesByMonth();
+
+    this.checkinsSummary.totalCheckins = await CheckIn.countDocuments();
+    this.checkinsSummary.checkinsLast24Hours = await Statistics.getCheckinsLast24Hours();
+    this.checkinsSummary.checkinsByMonth = await Statistics.getCheckinByMonth();
+    this.checkinsSummary.checkinsByUserType = await Statistics.getCheckinsByUserType();
+    this.usersSummary.totalRegisteredGeneralPublicUsers = await RegisteredGeneralPublic.countDocuments();
+    this.usersSummary.generalPublicUserRegistrationsByMonth = await Statistics.getGeneralPublicUserRegistrationsByMonth();
+
+    this.businessesSummary.totalBusinesses = await Business.countDocuments();
+    this.vaccinationsSummary.totalVaccinationCentres = await VaccinationCentre.countDocuments();
+    this.vaccinationsSummary.vaccinationsYesterday = await Statistics.getVaccinationsYesterday();
+    this.vaccinationsSummary.totalVaccinations = await VaccinationRecord.countDocuments();
+    this.vaccinationsSummary.vaccinationsByType = await Statistics.getVaccinationsByType();
+    this.vaccinationsSummary.vaccinationCentresByState = await Statistics.getVaccinationCentresByState();
+    this.vaccinationsSummary.vaccinationsByStatus = await Statistics.getVaccinationsByStatus();
+    this.vaccinationsSummary.totalVaccinationCentres = await VaccinationCentre.countDocuments();
+
+    this.businessesSummary.totalBusinessesRegistered = await Business.countDocuments();
+    this.businessesSummary.businessesByState = await Statistics.getBusinessesByState();
+    this.businessesSummary.businessRegistrationsByMonth = await Statistics.getBusinessRegistrationsByMonth();
+    this.businessesSummary.businessesDeemedHotspot24Hours = await Statistics.getBusinessesDeemedHotspot24Hours();
+
+    try {
+        await this.save();
+    } catch (e){
+        console.log(e);
+    }
+};
+
 StatisticsSchema.pre('save', function(next) {
     this.dateUpdated = Date.now();
     next();
@@ -503,15 +548,39 @@ StatisticsSchema.statics.getSingleton = async function () {
             return result;
         } else {
             let stats = new Statistics();
-            await stats.updateData();
+            await stats.setData();
             return stats;
         }
 };
+
+const removeKey = (obj, key) => obj !== Object(obj)
+    ? obj
+    : Array.isArray(obj)
+        ? obj.map(item => removeKey(item, key))
+        : Object.keys(obj)
+            .filter(k => k !== key)
+            .reduce((acc, x) => Object.assign(acc, { [x]: removeKey(obj[x], key) }), {});
+
 if (!StatisticsSchema.options.toObject) StatisticsSchema.options.toObject = {};
 StatisticsSchema.options.toObject.transform = function (doc, ret, options) {
     // remove the _id of every document before returning the result
     delete ret._id;
+    ret = removeKey(ret, "_id");
+    ret = removeKey(ret, "__v");
     return ret;
+}
+
+function camel2title(camelCase) {
+    // no side-effects
+    return camelCase
+        // inject space before the upper case letters
+        .replace(/([A-Z])/g, function(match) {
+            return " " + match;
+        })
+        // replace first char with upper case
+        .replace(/^./, function(match) {
+            return match.toUpperCase();
+        });
 }
 
 StatisticsSchema.statics.sendGovernmentMessage = async function(date){
@@ -519,27 +588,38 @@ StatisticsSchema.statics.sendGovernmentMessage = async function(date){
         to: process.env.GOVERMENT_EMAIL,
         from: process.env.SENDGRID_FROM_EMAIL,
         subject: `Statistics for ${date}`,
-        html: "This is the statistics"
     }
     let stats = await Statistics.getSingleton();
     let statsObject = stats.toObject();
-
+    let html = "<html><body>";
     for(let sCategory in statsObject){
-        console.log(sCategory);
+        html += `<h2>${camel2title(sCategory)}</h2>`;
         for(let sCategory2 in statsObject[sCategory]){
+            html += `<h3>${camel2title(sCategory2)}</h3>`;
             let sCategory2Value = statsObject[sCategory][sCategory2];
-            if(typeof sCategory2Value == "number"){
-                console.log(sCategory2, sCategory2Value);
+            if(typeof sCategory2Value == "number") {
+                html += sCategory2Value;
             } else {
                 if (Array.isArray(sCategory2Value)){
-                    for(let v of sCategory2Value){
-                         console.log(sCategory2, v);
+                    html += `<ul>`
+                    for(let v of sCategory2Value) {
+                        html += '<li>';
+                        for (let sV in v) {
+                            html += `${camel2title(sV)}:${v[sV]}, `;
+                        }
+                        html += '</li>';
+                        html = html.replace(', </li>', '</li>')
                     }
+                    html += `</ul>`;
+                } else {
+                    html += sCategory2Value;
                 }
             }
         }
     }
-    await Emailer.sendEmail(msg, true)
+    html += '</body></html>'
+    msg['html'] = html
+    await Emailer.sendEmail(msg)
 }
 
 const Statistics = mongoose.model('Statistics', StatisticsSchema);
