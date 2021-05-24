@@ -18,7 +18,7 @@ const HealthNav = () => {
                 <Item onClick={() => { history.push(PATH.home)}}>
                     <img width={200} src={logo} alt="Logo" />
                 </Item>
-                <Item  >
+                <Item onClick={() => { history.push(PATH.myProfileHealth)}}>
                     <div className='navbar-menuitem-text'>My Profile</div>
                 </Item>
                 <Item>

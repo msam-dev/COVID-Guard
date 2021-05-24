@@ -27,7 +27,7 @@ const GeneralNav = () => {
                 <Item onClick={() => {history.push(PATH.currentHotspots)}}>
                     <div className='navbar-menuitem-text'>Current Hotspots</div>
                 </Item>
-                <Item>
+                <Item onClick={() => {history.push(PATH.myProfile)}}>
                     <div className='navbar-menuitem-text'>My Profile</div>
                 </Item>
                 <Item onClick={() => {history.push(PATH.myVaccineStatus)}}>

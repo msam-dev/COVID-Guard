@@ -185,7 +185,7 @@ router.post('/forgotpassword', asyncHandler(async (req, res) => {
 
     const msg = {
         to: user.email, // Change to your recipient
-        from: 'mr664@uowmail.edu.au', // Change to your verified sender
+        from: process.env.SENDGRID_FROM_EMAIL, // Change to your verified sender
         subject: 'Reset Password',
         html: `<strong>The following is your one-time temporary password to login for ${user.email}. It expires in 1 hour.<br>You will be directed to change your password after you login: ${temporaryPassword}</strong>`,
     }

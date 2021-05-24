@@ -10,7 +10,7 @@ const BusinessUser = require("./BusinessUser");
 const Business = require("./Business");
 const VaccinationCentre = require("./VaccinationCentre");
 const rp = require('request-promise');
-const $ = require('cheerio');
+const {Emailer} = require("../utils/general");
 const {dailySummary} = require("../utils/general");
 
 // Create Schema
@@ -484,7 +484,7 @@ StatisticsSchema.methods.updateData = async function(){
     this.businessesSummary.businessesDeemedHotspot24Hours = await Statistics.getBusinessesDeemedHotspot24Hours();
 
     try {
-        await this.save();
+        await this.update();
     } catch (e){
         console.log(e);
     }
@@ -507,6 +507,17 @@ StatisticsSchema.statics.getSingleton = async function () {
             return stats;
         }
 };
+
+StatisticsSchema.statics.sendGovernmentMessage = async function(date){
+    let msg = {
+        to: process.env.GOVERMENT_EMAIL,
+        from: process.env.SENDGRID_FROM_EMAIL,
+        subject: `Statistics for ${date}`,
+        html: "This is the statistics"
+    }
+    let stats = Statistics.getSingleton();
+    await Emailer.sendEmail(msg, true)
+}
 
 const Statistics = mongoose.model('Statistics', StatisticsSchema);
 

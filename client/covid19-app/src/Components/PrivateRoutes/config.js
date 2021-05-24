@@ -12,6 +12,12 @@ import ChangePassword from '../../Screens/ChangePassword/ChangePassword';
 import VenueCode from '../../Screens/VenueCode/VenueCode';
 import MyVaccineStatus from '../../Screens/MyVaccineStatus/MyVaccineStatus';
 import ConfirmUserVaccination from '../../Screens/ConfirmUserVaccination/ConfirmUserVaccination';
+import MyProfile from '../../Screens/MyProfile/MyProfile';
+import EditMyProfile from '../../Screens/MyProfile/EditMyProfile';
+import MyProfileHealth from '../../Screens/MyProfile/MyProfileHealth';
+import EditMyProfileHealth from '../../Screens/MyProfile/EditMyProfileHealth';
+import MyProfileBusiness from '../../Screens/MyProfile/MyProfileBusiness';
+import EditMyProfileBusiness from '../../Screens/MyProfile/EditMyProfileBusiness';
 
 import PATH from '../../_constants/paths';
 import USER_TYPE from '../../_constants/userTypes'; 
@@ -92,6 +98,36 @@ const config =  {
             component: ConfirmUserVaccination,
             url: PATH.confirmUserVaccination,
             roles: [USER_TYPE.HEALTH]
+        },
+        {
+            component: MyProfile,
+            url: PATH.myProfile,
+            roles: [USER_TYPE.GENERAL]
+        },
+        {
+            component: EditMyProfile,
+            url: PATH.editMyProfile,
+            roles: [USER_TYPE.GENERAL]
+        },
+        {
+            component: MyProfileHealth,
+            url: PATH.myProfileHealth,
+            roles: [USER_TYPE.HEALTH]
+        },
+        {
+            component: EditMyProfileHealth,
+            url: PATH.editMyProfileHealth,
+            roles: [USER_TYPE.HEALTH]
+        },
+        {
+            component: MyProfileBusiness,
+            url: PATH.myProfileBusiness,
+            roles: [USER_TYPE.BUSINESS]
+        },
+        {
+            component: EditMyProfileBusiness,
+            url: PATH.editMyProfileBusiness,
+            roles: [USER_TYPE.BUSINESS]
         },
     ]
 };
