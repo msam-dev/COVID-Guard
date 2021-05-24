@@ -155,6 +155,8 @@ describe("Covid App Server General Public Endpoints", () => {
                         assert.equal(res.status, 200);
                         assert.propertyVal(res.body, 'success', true);
                         assert.propertyVal(res.body, 'venueCode', business.code);
+                        assert.propertyVal(res.body, 'businessName', business.name);
+                        assert.property(res.body, 'checkinDate');
                         done();
                     }).catch((err) => {
                     done(err);

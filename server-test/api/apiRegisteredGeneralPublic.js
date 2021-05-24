@@ -56,6 +56,8 @@ describe("Covid App Server Registered General Public Endpoints", () => {
                     assert.equal(res.status, 200);
                     assert.propertyVal(res.body, 'success', true);
                     assert.propertyVal(res.body, 'venueCode', business.code);
+                    assert.propertyVal(res.body, 'businessName', business.name);
+                    assert.property(res.body, 'checkinDate');
                 });
             });
         });
