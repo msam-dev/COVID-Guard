@@ -18,7 +18,7 @@ const GeneralNav = () => {
                 <Item onClick={() => { history.push(PATH.home)}}>
                     <img width={200} src={logo} alt="Logo" />
                 </Item>
-                <Item  >
+                <Item onClick={() => {history.push(PATH.checkInCode)}} >
                     <div className='navbar-menuitem-text'>Location Sign In</div>
                 </Item>
                 <Item onClick={() => {history.push(PATH.vaccineCenters)}}>

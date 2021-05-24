@@ -146,3 +146,13 @@ export const _editProfileBusiness = (token, values) => {
     const config = { headers:{ "x-auth-token" : token }}
     return axios.post('api/businessowner/profile', values, config);
 }
+
+export const _checkIn = (token, values ) => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.post('api/registeredgeneralpublic/checkin', values, config);
+}
+
+export const _checkInUnregistered = (values) => {
+    
+    return axios.post('api/generalpublic/checkin', values);
+}

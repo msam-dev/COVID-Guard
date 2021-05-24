@@ -15,7 +15,7 @@ const UnregisteredNav = () => {
                     <img width={200} src={logo} alt="Logo" />
                 </Item>
 
-                <Item  >
+                <Item onClick={() => {history.push(PATH.checkInCodeUnregistered)}} >
                     <div className='navbar-menuitem-text'>Location Sign In</div>
                 </Item>
 

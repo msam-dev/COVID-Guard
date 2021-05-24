@@ -20,6 +20,10 @@ const PATH = {
     editMyProfileHealth: "/editMyProfileHealth",
     myProfileBusiness: "/myProfileBusiness",
     editMyProfileBusiness: "/editMyProfileBusiness",
+    checkInCode: "/checkInCode",
+    checkedIn: "/checkedIn",
+    checkInCodeUnregistered: "/checkInCodeUnregistered",
+    genericCheckedIn: "/genericCheckedIn",
 }
 
 export default PATH;
