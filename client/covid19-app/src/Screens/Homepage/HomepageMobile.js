@@ -14,7 +14,7 @@ import {
     BranchesOutlined,
     InsertRowLeftOutlined
 } from '@ant-design/icons';
-import './Homepage.css';
+import './homepage.css';
 
 const HomepageMobile = props => {
     const businessSummary = props.businessesSummary;
