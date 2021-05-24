@@ -1,95 +1,115 @@
-import { Carousel, Row, Col, Card, Divider } from 'antd';
+import { useEffect, useState } from 'react';
+import { useViewport } from '../../_helpers/viewPort'; 
+import HomepageDesktop from './HomepageDesktop';
+import HomepageMobile from './HomepageMobile';
+import { _getHomepageStats } from '../../_helpers/endPoints';
 import SydneyImage from '../../Assets/Images/Sydney.jpg';
 import BrisbaneImage from '../../Assets/Images/Brisbane.jpg';
 import MelbourneImage from '../../Assets/Images/Melbourne.jpg';
-import { FireOutlined, FileDoneOutlined } from '@ant-design/icons';
-import './Homepage.css';
-
-const contentStyle = {
-    height: '200px'
-};
-const style = { background: '#0092ff', padding: '10px 0' };
-
+import ImageNotFound from '../../Assets/Images/image-not-found.jpg';
+import { Carousel, Spin } from 'antd'; 
+import { contentStyle } from './InlineStyles';
+import { initStats } from './InitialStats';
+import Printable from './Printable';
+import { formatDate } from '../../_helpers/sharedFunctions';
 
 const Homepage = () => {
+    const breakpoint = 900;
+    const { width } = useViewport();
+    const [statistics, setStatistics] = useState(initStats);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
+    const [printable, setPrintable] = useState(false);
+    const date = new Date();
+    const formattedDate = formatDate(date);
+
+    useEffect(() => {
+        setLoading(true);
+
+        _getHomepageStats()
+        .then(res => {
+            setLoading(false);
+            setStatistics(res.data.stats);
+        })
+        .catch(err => {
+            console.log(err);
+            setLoading(false);
+            setError(true);
+        });
+    }, []);
 
     return(
         <div>
             <div style={{backgroundColor: "#FDC500"}}>
-                <h1 style={{color: "#0E5F76", paddingLeft: "1%", marginBottom: '0px'}}>Home</h1>
+                <h1 className="homepage-main-banner">Home</h1>
             </div>
-            <Carousel autoplay dotPosition="left" effect="fade">
-                <div >
-                    <div style={contentStyle}>
-                        <img style={{width: '100%', height: '200px', minWidth: "1280px"}} src={SydneyImage} />
-                    </div>
+
+            {
+                printable
+                ?
+                <div style={{textAlign: 'center'}}>
+                    <h1>Australian COVID-19 Statistics: {formattedDate}</h1>
                 </div>
+                :
                 <div>
-                    <div style={contentStyle}>
-                        <img style={{width: '100%', height: '200px',minWidth: "1280px"}} src={BrisbaneImage} />
-                    </div>
+                    <Carousel autoplay dotPosition="left">
+                        <div >
+                            <div style={contentStyle}>
+                                <img className="homepage-banner-image" src={SydneyImage} alt={ImageNotFound}/>
+                            </div>
+                        </div>
+                        <div>
+                            <div style={contentStyle}>
+                                <img className="homepage-banner-image" src={BrisbaneImage} alt={ImageNotFound}/>
+                            </div>
+                        </div>
+                        <div>
+                            <div style={contentStyle}>
+                                <img className="homepage-banner-image" src={MelbourneImage} alt={ImageNotFound}/>
+                            </div>
+
+                        </div>
+                    </Carousel>
+
+                    <div style={{backgroundColor: "#0E5F76", height: '10px'}}/>
                 </div>
-                <div>
-                    <div style={contentStyle}>
-                        <img style={{width: '100%', height: '200px', minWidth: "1280px"}} src={MelbourneImage} />
-                    </div>
+            }
 
+            
+
+            {
+                loading
+                ?
+                <div style={{textAlign: 'center'}}>
+                    <Spin size='large'/>
                 </div>
-            </Carousel>
-            <div style={{backgroundColor: "#0E5F76", height: '10px'}}/>
-       
+                :
+                error
+                ?
+                <div style={{textAlign: 'center'}}>Error loading data. Please try refreshing page or contact support. </div>
+                :
+                printable
+                ?
+                <Printable {...statistics}/>
+                :
+                width > breakpoint
+                ?
+                <HomepageDesktop {...statistics}/>
+                :
+                <HomepageMobile {...statistics}/>
+            }
 
-            <div className="homepage-section-banner" style={{marginBottom: '1%'}}>
-                <h1 style={{color: "#0E5F76", paddingLeft: "5%", marginBottom: '0px'}}>Business Summary</h1>
+            <div style={{marginTop: '3%'}}/>
+
+            <div style={{textAlign: 'center'}} className="homepage-section-banner">
+                {
+                    printable
+                    ?
+                    <h3 className="homepage-section-banner-h1">Change view to normal version <u style={{cursor: 'pointer'}} onClick={() => {setPrintable(false)}}>here</u></h3>
+                    :
+                    <h3 className="homepage-section-banner-h1">Change view to printable version <u style={{cursor: 'pointer'}} onClick={() => {setPrintable(true)}}>here</u></h3>
+                }
             </div>
-
-            <Row  gutter={16}>
-                <Col className="gutter-row" span={5} offset={1}>
-                    <Card className="card-shadow-hoverable" title="0"  extra={<FireOutlined style={{fontSize: '20px', color: 'white'}}/>}  headStyle={{backgroundColor: '#0E5F76', color: 'white'}}>
-                        <p>Businesses deemed a hotspot in the past 24 hours</p>
-                        <div style={{backgroundColor: "#0E5F76", height: '5px', bottom: '0'}}/>
-                    </Card>
-                </Col>
-                <Col  className="gutter-row" span={5}>
-                    <Card className="card-shadow-hoverable" title="0"  extra={<FileDoneOutlined style={{fontSize: '20px', color: 'white'}}/>}  headStyle={{backgroundColor: '#0E5F76', color: 'white'}}>
-                        <p>Total number of businesses registered</p>
-                        <div style={{backgroundColor: "#0E5F76", height: '5px', bottom: '0'}}/>
-                    </Card>
-                </Col>
-            </Row>
-            <div className="homepage-section-banner" style={{marginBottom: '1%', marginTop: '1%'}}>
-                <h1 style={{color: "#0E5F76", paddingLeft: "5%", marginBottom: '0px'}}>Check-in Summary</h1>
-            </div>
-            <Row  gutter={16}>
-                <Col className="gutter-row" span={5} offset={1}>
-                    <Card className="card-shadow-hoverable" title="0"  extra={<FireOutlined style={{fontSize: '20px', color: 'white'}}/>}  headStyle={{backgroundColor: '#0E5F76', color: 'white'}}>
-                        <p>Businesses deemed a hotspot in the past 24 hours</p>
-                        <div style={{backgroundColor: "#0E5F76", height: '5px', bottom: '0'}}/>
-                    </Card>
-                </Col>
-                <Col  className="gutter-row" span={5}>
-                    <Card className="card-shadow-hoverable" title="0"  extra={<FileDoneOutlined style={{fontSize: '20px', color: 'white'}}/>}  headStyle={{backgroundColor: '#0E5F76', color: 'white'}}>
-                        <p>Total number of businesses registered</p>
-                        <div style={{backgroundColor: "#0E5F76", height: '5px', bottom: '0'}}/>
-                    </Card>
-                </Col>
-
-                <Col className="gutter-row" span={5}>
-                    <Card className="card-shadow-hoverable" title="0"  extra={<FireOutlined style={{fontSize: '20px', color: 'white'}}/>}  headStyle={{backgroundColor: '#0E5F76', color: 'white'}}>
-                        <p>Businesses deemed a hotspot in the past 24 hours</p>
-                        <div style={{backgroundColor: "#0E5F76", height: '5px', bottom: '0'}}/>
-                    </Card>
-                </Col>
-                <Col  className="gutter-row" span={5}>
-                    <Card className="card-shadow-hoverable" title="0"  extra={<FileDoneOutlined style={{fontSize: '20px', color: 'white'}}/>}  headStyle={{backgroundColor: '#0E5F76', color: 'white'}}>
-                        <p>Total number of businesses registered</p>
-                        <div style={{backgroundColor: "#0E5F76", height: '5px', bottom: '0'}}/>
-                    </Card>
-                </Col>
-            </Row>
-
-  
-
         </div>
     );
 }
