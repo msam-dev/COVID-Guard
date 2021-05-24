@@ -38,7 +38,9 @@ router.post('/checkin', authMiddleware(userType.GENERAL), asyncHandler(async (re
 
     res.status(200).json({
         success: true,
-        venueCode
+        venueCode,
+        checkinDate: savedCheckin.date,
+        businessName: business.name
     });
 }));
 

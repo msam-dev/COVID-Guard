@@ -72,7 +72,9 @@ router.post('/checkin', asyncHandler(async (req, res) => {
 
     res.status(200).json({
         success: true,
-        venueCode: savedCheckIn.business.code
+        venueCode: business.code,
+        checkinDate: savedCheckIn.date,
+        businessName: business.name
     });
 }));
 
