@@ -105,9 +105,9 @@ const Homepage = () => {
                 {
                     printable
                     ?
-                    <h3 className="homepage-section-banner-h1">Change view to normal version <u style={{cursor: 'pointer'}} onClick={() => {setPrintable(false)}}>here</u></h3>
+                    <h3 className="homepage-section-banner-h1">Change view to normal version <u style={{cursor: 'pointer'}} onClick={() => {setPrintable(false); window.scrollTo(0, 0)}}>here</u></h3>
                     :
-                    <h3 className="homepage-section-banner-h1">Change view to printable version <u style={{cursor: 'pointer'}} onClick={() => {setPrintable(true)}}>here</u></h3>
+                    <h3 className="homepage-section-banner-h1">Change view to printable version <u style={{cursor: 'pointer'}} onClick={() => {setPrintable(true); window.scrollTo(0, 0)}}>here</u></h3>
                 }
             </div>
         </div>
