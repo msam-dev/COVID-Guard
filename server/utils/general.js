@@ -53,6 +53,7 @@ function matchText(selector, text){
 class Emailer {
     static async sendEmail(msg, dont_send=false) {
         if(dont_send){
+            console.log(msg);
             return [{statusCode: 202}];
         }
         // override email at the moment because using test data
