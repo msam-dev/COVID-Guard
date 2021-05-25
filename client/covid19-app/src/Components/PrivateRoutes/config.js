@@ -19,6 +19,7 @@ import EditMyProfileHealth from '../../Screens/MyProfile/EditMyProfileHealth';
 import MyProfileBusiness from '../../Screens/MyProfile/MyProfileBusiness';
 import EditMyProfileBusiness from '../../Screens/MyProfile/EditMyProfileBusiness';
 import CheckIn from '../../Screens/CheckIn/CheckIn';
+import AddClinic from '../../Screens/AddClinic/AddClinic';
 
 import PATH from '../../_constants/paths';
 import USER_TYPE from '../../_constants/userTypes'; 
@@ -134,8 +135,12 @@ const config =  {
             component: CheckIn,
             url: PATH.checkIn,
             roles: [USER_TYPE.UNREGISTERED, USER_TYPE.GENERAL]
+        },
+        {
+            component: AddClinic,
+            url: PATH.addClinic,
+            roles: [USER_TYPE.HEALTH]
         }
-        
     ]
 };
 

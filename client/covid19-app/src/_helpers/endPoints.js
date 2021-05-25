@@ -147,11 +147,16 @@ export const _editProfileBusiness = (token, values) => {
     return axios.post('/api/businessowner/profile', values, config);
 }
 
-export const _checkIn = (token, values ) => {
+export const _checkIn = (token, values) => {
     const config = { headers:{ "x-auth-token" : token }}
-    return axios.post('api/registeredgeneralpublic/checkin', values, config);
+    return axios.post('/api/registeredgeneralpublic/checkin', values, config);
 }
 
 export const _checkInUnregistered = (values) => {
-    return axios.post('api/generalpublic/checkin', values);
+    return axios.post('/api/generalpublic/checkin', values);
+}
+
+export const _addClinic = (token, values) => {
+    const config = { headers:{ "x-auth-token" : token }}
+    return axios.post('/api/healthprofessional/addvaccinationcentreinformation', values, config);
 }
