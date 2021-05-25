@@ -18,7 +18,7 @@ import MyProfileHealth from '../../Screens/MyProfile/MyProfileHealth';
 import EditMyProfileHealth from '../../Screens/MyProfile/EditMyProfileHealth';
 import MyProfileBusiness from '../../Screens/MyProfile/MyProfileBusiness';
 import EditMyProfileBusiness from '../../Screens/MyProfile/EditMyProfileBusiness';
-import CheckInV2 from '../../Screens/CheckInV2/CheckInV2';
+import CheckIn from '../../Screens/CheckIn/CheckIn';
 
 import PATH from '../../_constants/paths';
 import USER_TYPE from '../../_constants/userTypes'; 
@@ -131,7 +131,7 @@ const config =  {
             roles: [USER_TYPE.BUSINESS]
         },
         {
-            component: CheckInV2,
+            component: CheckIn,
             url: PATH.checkIn,
             roles: [USER_TYPE.UNREGISTERED, USER_TYPE.GENERAL]
         }
