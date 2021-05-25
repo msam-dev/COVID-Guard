@@ -21,7 +21,7 @@ const {convertToNumber} = require("../../../utils/general");
  * @access  Public
  */
 
-router.get('/currenthotspots', cache(10), asyncHandler(async (req, res) => {
+router.get('/currenthotspots', asyncHandler(async (req, res) => {
     // do it the easiest way first then try aggregate
     let positiveBusinesses = await Statistics.getPositiveBusinessesCheckinDates();
     let hotspots = [];
@@ -119,7 +119,7 @@ router.post('/checkvaccinationisvalid', asyncHandler(async (req, res) => {
  * @access  Public
  */
 
-router.get('/vaccinationcentres', cache(10), asyncHandler(async (req, res) => {
+router.get('/vaccinationcentres', asyncHandler(async (req, res) => {
     const vaccinationCentre = await VaccinationCentre.find().sort({ clinicName: 1 });
     const vaccinationCentres = [];
 
@@ -152,7 +152,7 @@ router.get('/vaccinationcentres', cache(10), asyncHandler(async (req, res) => {
  * @access  Public
  */
 
-router.get('/homepagestats', cache(10), asyncHandler(async (req, res) => {
+router.get('/homepagestats', asyncHandler(async (req, res) => {
     let statistics = await Statistics.getSingleton();
     let stats = {
         covidSummary:

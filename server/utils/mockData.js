@@ -319,13 +319,13 @@ function getRawUserData(users) {
 async function createDevData() {
     await db.connect();
     await mongoose.connection.db.dropDatabase();
-    let registeredGeneralPublicUsers = await createMockRegisteredGeneralPublicUsers(true, 5000);
+    let registeredGeneralPublicUsers = await createMockRegisteredGeneralPublicUsers(true, 10000);
     console.log("Registered General Public Users created");
     let registeredGeneralPublicUsersRaw = getRawUserData(registeredGeneralPublicUsers);
-    let healthProfessionalUsers = await createMockHealthProfessionalUsers(true, 500);
+    let healthProfessionalUsers = await createMockHealthProfessionalUsers(true, 1500);
     console.log("Health Professional Users created");
     let healthProfessionalUsersRaw = getRawUserData(healthProfessionalUsers);
-    let businessUsers = await createMockBusinessUsers(true, 500);
+    let businessUsers = await createMockBusinessUsers(true, 1500);
     console.log("Business Users created");
     let businessUsersRaw = getRawUserData(businessUsers);
 
@@ -342,7 +342,7 @@ async function createDevData() {
     }
     console.log("users file created");
 
-    let generalPublicUsers = await createMockGeneralPublicUsers(true, 5000);
+    let generalPublicUsers = await createMockGeneralPublicUsers(true, 10000);
     console.log("general public users created")
 
 
@@ -394,7 +394,7 @@ async function createDevData() {
         //console.log("vaccination records created");
     }
 
-    await createMockVaccinationCentres(true, 500);
+    await createMockVaccinationCentres(true, 1000);
     console.log("dev data created");
 }
 
