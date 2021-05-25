@@ -1,6 +1,6 @@
 import { Form, Input, Button } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import { layout2, tailLayout } from '../Helpers/Layouts';
+import { layout2 } from '../Helpers/Layouts';
 import USER_TYPE from '../../../_constants/userTypes';
 import { onlyNumbers } from '../../../_helpers/sharedFunctions';
 import { useState } from 'react';

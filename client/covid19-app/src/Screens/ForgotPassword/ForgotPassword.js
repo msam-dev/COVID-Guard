@@ -1,4 +1,4 @@
-import { layout, tailLayout } from './Layouts';
+import { layout } from './Layouts';
 import { Form, Button, Input, Radio } from 'antd';
 import USER_TYPE from '../../_constants/userTypes';
 import { useForm } from 'antd/lib/form/Form';

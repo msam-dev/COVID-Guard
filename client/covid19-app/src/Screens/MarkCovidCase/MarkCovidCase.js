@@ -92,7 +92,7 @@ const MarkCovidCase =(_) => {
 
                 <Form.Item
                         {...layout}
-                        label="Positive test date"
+                        label="Date of Examination"
                         name="testDate"
                         rules={[
                             {
@@ -106,13 +106,23 @@ const MarkCovidCase =(_) => {
 
                     <Form.Item
                         {...layout}
-                        label="Infectious start date"
+                        label="Date of Infection"
                         name="infectiousStartDate"
                         rules={[
                             {
                                 required: true,
                                 message: "Please select date infectious start!"
-                            }
+                            },
+                            ({ getFieldValue }) => ({
+                                validator(_, value) {
+                                    const testDate = getFieldValue('testDate');
+                                    if(testDate === undefined || value === undefined || testDate === null || value === null) return Promise.resolve();
+                                    if(value.isSameOrAfter(getFieldValue('testDate'))){
+                                        return Promise.reject(new Error('Date of infection must come before test date!'));
+                                    }
+                                },
+                                validateTrigger: 'onSubmit'
+                            })
                         ]}
                     >
                         <DatePicker disabledDate={current => { return current && current > moment().endOf('day')}}/>

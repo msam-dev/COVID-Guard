@@ -1,4 +1,4 @@
-import { layout, tailLayout } from './layouts';
+import { layout } from './layouts';
 import {Form, Radio, DatePicker, Input, Button} from 'antd'; 
 import { VACCINE_TYPES } from './VaccineTypes';
 import { useState } from 'react';

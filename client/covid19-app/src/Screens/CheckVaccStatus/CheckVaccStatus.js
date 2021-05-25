@@ -1,4 +1,4 @@
-import { Form, Input, Button, Layout } from 'antd';
+import { Form, Input, Button } from 'antd';
 import { useState } from 'react';
 import { layout } from './layouts';
 import VACCINE_STATE from '../../_constants/vaccineStates';

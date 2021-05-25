@@ -27,13 +27,8 @@ const ChangePassword =() => {
                 .catch(err => {
                     setLoading(false);
                     console.log(err);
-                    if(err.response.status === 400){ 
-                        form.setFields([{
-                            name: 'currentPassword',
-                            errors: ['Current password incorrect!'],
-                        }]);
-                    }
-                    else if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
+
+                    if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
                     else somethingWentWrongModal();
                 })
                 break;
@@ -47,13 +42,7 @@ const ChangePassword =() => {
                 .catch(err => {
                     setLoading(false);
                     console.log(err);
-                    if(err.response.status === 400){ 
-                        form.setFields([{
-                            name: 'currentPassword',
-                            errors: ['Current password incorrect!'],
-                        }]);
-                    }
-                    else if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
+                    if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
                     else somethingWentWrongModal();
                 })
                 break;
@@ -67,13 +56,7 @@ const ChangePassword =() => {
                 .catch(err => {
                     setLoading(false);
                     console.log(err);
-                    if(err.response.status === 400){ 
-                        form.setFields([{
-                            name: 'currentPassword',
-                            errors: ['Current password incorrect!'],
-                        }]);
-                    }
-                    else if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
+                    if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
                     else somethingWentWrongModal();
                 })
                 break;
@@ -95,21 +78,6 @@ const ChangePassword =() => {
             </div>
 
             <Form {...layout} onFinish={changePassword} form={form}>
-            <Form.Item
-                    label="Current Password :"
-                    name="currentPassword"
-                    style={{color: "#0E5F76"}}
-                    rules={[
-                        {   
-                            required: true,
-                            message: 'Please input your current password!',
-                            whitespace: true,
-                        }
-                    ]}
-                >
-                    <Input.Password maxLength={30}/>
-                </Form.Item>
-
                 <Form.Item
                     label="New Password :"
                     name="newPassword"

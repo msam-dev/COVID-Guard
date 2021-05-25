@@ -6,7 +6,6 @@ import { useAuth,useAuthUpdate } from '../../Components/AuthContext/AuthContext'
 import { _editProfileGeneral, _getGeneralProfile } from '../../_helpers/endPoints';
 import { useState, useEffect } from 'react';
 import { logout, onlyNumbers } from '../../_helpers/sharedFunctions';
-import { theTailLayout } from './MyProfileLayout';
 import { useForm } from 'antd/lib/form/Form';
 import history from '../../_helpers/history';
 import PATH from '../../_constants/paths';
