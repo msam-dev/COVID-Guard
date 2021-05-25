@@ -153,6 +153,5 @@ export const _checkIn = (token, values ) => {
 }
 
 export const _checkInUnregistered = (values) => {
-    
     return axios.post('api/generalpublic/checkin', values);
 }

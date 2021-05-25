@@ -18,10 +18,7 @@ import MyProfileHealth from '../../Screens/MyProfile/MyProfileHealth';
 import EditMyProfileHealth from '../../Screens/MyProfile/EditMyProfileHealth';
 import MyProfileBusiness from '../../Screens/MyProfile/MyProfileBusiness';
 import EditMyProfileBusiness from '../../Screens/MyProfile/EditMyProfileBusiness';
-import CheckInCode from '../../Screens/CheckIn/CheckInCode';
-import CheckedIn from '../../Screens/CheckIn/CheckedIn';
-import CheckInCodeUnregistered from '../../Screens/CheckIn/CheckInCodeUnregistered';
-import GenericCheckedIn from '../../Screens/CheckIn/GenericCheckedIn';
+import CheckInV2 from '../../Screens/CheckInV2/CheckInV2';
 
 import PATH from '../../_constants/paths';
 import USER_TYPE from '../../_constants/userTypes'; 
@@ -134,26 +131,10 @@ const config =  {
             roles: [USER_TYPE.BUSINESS]
         },
         {
-            component: CheckInCode,
-            url: PATH.checkInCode,
-            roles: [USER_TYPE.GENERAL]
-        },
-        
-        {
-            component: CheckedIn,
-            url: PATH.checkedIn,
+            component: CheckInV2,
+            url: PATH.checkIn,
             roles: [USER_TYPE.UNREGISTERED, USER_TYPE.GENERAL]
-        },
-        {
-            component: CheckInCodeUnregistered,
-            url: PATH.checkInCodeUnregistered,
-            roles: [USER_TYPE.UNREGISTERED]
-        },
-        {
-            component: GenericCheckedIn,
-            url: PATH.genericCheckedIn,
-            roles: [USER_TYPE.UNREGISTERED, USER_TYPE.GENERAL]
-        },
+        }
         
     ]
 };

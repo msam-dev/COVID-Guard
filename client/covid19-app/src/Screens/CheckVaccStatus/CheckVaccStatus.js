@@ -1,10 +1,11 @@
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Layout } from 'antd';
 import { useState } from 'react';
-import { layout, tailLayout } from './layouts';
+import { layout } from './layouts';
 import VACCINE_STATE from '../../_constants/vaccineStates';
 import { CheckOutlined, RiseOutlined, CloseOutlined } from '@ant-design/icons';
 import { _checkVaccinationValid } from '../../_helpers/endPoints';
 import { formatDate } from '../../_helpers/sharedFunctions';
+
 
 const CheckVaccStatus = () => {
     const [vaccinationRecord, setVaccinationRecord] = useState({dateAdministered:""});
@@ -59,7 +60,7 @@ const CheckVaccStatus = () => {
                 >   
                     <Input placeholder="Enter vaccination code here" maxLength={50}/>
                 </Form.Item>
-                <Form.Item {...tailLayout}>
+                <Form.Item style={{paddingLeft: "37.5%"}}>
                     <Button loading={loading} type="primary" htmlType="submit">Check Status</Button>
                 </Form.Item>
             </Form>

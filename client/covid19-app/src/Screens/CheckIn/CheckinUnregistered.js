@@ -1,68 +1,45 @@
-
-
 import { Form, Input, Button } from 'antd';
-import { useAuth,useAuthUpdate } from '../../Components/AuthContext/AuthContext';
 import { _checkInUnregistered } from '../../_helpers/endPoints';
 import { useState } from 'react';
-import { logout } from '../../_helpers/sharedFunctions';
 import { useForm } from 'antd/lib/form/Form';
-import { layout2, tailLayout } from '../Register/Helpers/Layouts';
+import { onlyNumbers } from '../../_helpers/sharedFunctions';
+import { somethingWentWrongModal } from './Modals';
+import { layout } from './Layouts';
 
-
-
-import history from '../../_helpers/history';
-import PATH from '../../_constants/paths';
-
-const CheckInCodeUnregistered = () => {
-    const auth = useAuth();
-    const updateAuth = useAuthUpdate();
+const CheckinUnregistered = props => {
     const [form] = useForm();
     const [loading, setLoading] = useState(false);
-    console.log(loading);
+    const setCheckinData = props.setCheckinData;
 
-    const checkInUser = (values) => {
+    const checkInUser = values => {
         setLoading(true);
-        console.log(values);
-
+   
         _checkInUnregistered(values)
-        .then( resArr => {
-            
-            const res = resArr;
-            console.log(res);
+        .then(res => {
             setLoading(false);
-            history.push(PATH.genericCheckedIn);
-            
+            const date = new Date();
+            const businessName = res.data.businessName;
+            setCheckinData({date: date, businessName: businessName});
         })
         .catch(err => {
             console.log(err);
-            if(err.response.status === 401) logout(updateAuth, auth.token, auth.type);
             setLoading(false);
+            if(err.response.status === 400) form.setFields([{ name: 'venueCode', errors: ['That venue code does not exist in our system!'] }])
+            else somethingWentWrongModal();
         });
     }
 
-
-
-
-
     return(
         <div className = 'checkInMainContent' style={{maxWidth: '100%', color: '#0E5F76'}}>    
-            <div style={{backgroundColor: "#FDC500"}}>
-                <h1 style={{color: "#0E5F76", paddingLeft: "1%"}}>Location Sign In</h1>
-            </div> 
-
-            <div style = {{textAlign: 'center'}}> <br/>
+            <div style = {{textAlign: 'center'}}><br/>
                 <h1 style = {{fontSize: '1.8rem', color: '#0E5F76'}}>COVID Guard Check-in</h1>
-                <div style = {{fontSize: '1.2rem'}}>Please enter your personal details to Check-In </div> <br/>
+                <div style = {{fontSize: '1.2rem'}}>Please enter your personal details and venue code to check-in</div> <br/>
             </div>
 
-            
-
-            <Form {...layout2} form={form}  onFinish={checkInUser} >
-                
+            <Form {...layout} form={form} onFinish={checkInUser}>
                 <Form.Item
                     label="First Name"
                     name="firstName"
-                    style={{color: "#0E5F76"}}
                     rules={[
                         {
                             required: true,
@@ -71,13 +48,12 @@ const CheckInCodeUnregistered = () => {
                         }
                     ]}
                 >
-                    <Input maxLength={30}/>
+                    <Input maxLength={50}/>
                 </Form.Item>
         
                 <Form.Item
                     label="Last Name"
                     name="lastName"
-                    style={{color: "#0E5F76"}}
                     rules={[
                         {
                             required: true,
@@ -86,13 +62,13 @@ const CheckInCodeUnregistered = () => {
                         }
                     ]}
                 >
-                    <Input maxLength={30}/>
+                    <Input maxLength={50}/>
                 </Form.Item>
 
                 <Form.Item
                     label="Email"
                     name="email"
-                    style={{color: "#0E5F76"}}
+                    validateTrigger={['onBlur']}
                     rules={[
                         {
                             required: true,
@@ -102,50 +78,51 @@ const CheckInCodeUnregistered = () => {
                         }
                     ]}
                 >
-                    <Input maxLength={30}/>
+                    <Input maxLength={50}/>
+                </Form.Item>
+
+                <Form.Item 
+                        label="Phone" 
+                        name="phone" 
+                        rules={[
+                            {
+                                required: true,
+                                message: 'Please input your phone number!',
+                                whitespace: true
+                            },
+                            {
+                                validator: async (_, phone) => {
+                                    if(phone !== undefined && phone !== "" && phone.length < 10){
+                                        return Promise.reject(new Error('Phone number must be valid!'));
+                                    }
+                                },
+                                validateTrigger: 'onSubmit'
+                            }
+                        ]}
+                    >
+                    <Input onChange={e => {onlyNumbers(e, form, 'phone')}} maxLength={10}/>
                 </Form.Item>
 
                 <Form.Item
-                    label="Phone"
-                    name="phone"
-                    style={{color: "#0E5F76"}}
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Enter phone!',
-                            whitespace: true
-                        }
-                    ]}
-                >
-                    <Input />
-                </Form.Item>
-
-                <Form.Item
-                    label="Check-In Code"
+                    label="Venue Code"
                     name="venueCode"
-                    style={{color: "#0E5F76"}}
                     rules={[
                         {
                             required: true,
-                            message: 'Enter Code Displayed by Venue!',
+                            message: 'Enter code displayed by venue!',
                             whitespace: true
                         }
                     ]}
                 >
-                    <Input />
+                    <Input maxLength={10}/>
                 </Form.Item>
                 
-                
-   
-                <Form.Item {...tailLayout}>
-                    <Button  type="primary" htmlType="submit">Check-in now</Button>
+                <Form.Item style={{paddingLeft: "37.5%"}}>
+                    <Button loading={loading} type="primary" htmlType="submit">Check-In</Button>
                 </Form.Item>
-
             </Form>
-            
         </div>
-        
     );
 }
 
-export default CheckInCodeUnregistered;
+export default CheckinUnregistered;

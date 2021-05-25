@@ -1,31 +1,18 @@
+import { CheckOutlined } from '@ant-design/icons';
+import { formatDate } from '../../_helpers/sharedFunctions';
 
-import { Button } from 'antd';
-import history from '../../_helpers/history';
-import PATH from '../../_constants/paths';
-
-const CheckedIn = (date, businessName) => {
-
-    const data = {
-        CheckInDate: date,
-        BusinessName: businessName,
-    }
+const CheckedIn = props => {
+    const date = props.date;
+    const businessName = props.businessName;
 
     return(
-        <div className = 'checkInMainContent' style={{maxWidth: '100%', color: '#0E5F76'}}>
-            
-            <div style={{backgroundColor: "#FDC500"}}>
-                <h1 style={{color: "#0E5F76", paddingLeft: "1%"}}>CheckedIn</h1>
-            </div> 
-                <div style = {{textAlign: 'center', fontSize: '1.2rem'}}> <br/>
-                    <h1 style = {{fontSize: '1.8rem', color: '#0E5F76'}}>{data.businessName} </h1>
-                    
-                    <div><b>Checked-In:</b></div>
-                    <div>{data.date}</div> <br/>
-                    <Button onClick={() => {history.push(PATH.checkInCodeUnregistered)}} type="primary" > New Check-In Location</Button>
-                </div>
-                
-        </div>                                                                      
-
+        <div>
+            <div style = {{textAlign: 'center'}}>
+                <h1 style = {{fontSize: '1.8rem', color: '#0E5F76'}}>{businessName} <CheckOutlined style={{fontSize: '30px', color: 'green'}} /></h1>
+                <div style = {{fontSize: '1.2rem'}}> <b>Checked in: </b> {`${formatDate(date)} at ${date.getHours()}:${date.getMinutes()}`}</div>
+                <div style = {{fontSize: '1.2rem', paddingTop: "1%"}}>{`You can show this page to the venue operator if required`}</div>
+            </div>
+        </div>
     );
 }
 
