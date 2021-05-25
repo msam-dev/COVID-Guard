@@ -1,6 +1,5 @@
  export const layout = {
     wrapperCol: {
-        offset: 10,
         span: 10,
     }
 };

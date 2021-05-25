@@ -9,7 +9,6 @@ export const layout = {
   
 export const tailLayout = {
     wrapperCol: {
-        offset: 9,
         span: 16,
     }
 };

@@ -1,5 +1,5 @@
 import { Form, Input, Button,DatePicker } from 'antd';
-import { layout, tailLayout } from './layouts';
+import { layout } from './layouts';
 import { useState } from 'react';
 import { useAuth, useAuthUpdate } from '../../Components/AuthContext/AuthContext';
 import { _markUserPositive } from '../../_helpers/endPoints';
@@ -7,6 +7,7 @@ import { validateEmail } from '../../_helpers/sharedFunctions';
 import { logout } from '../../_helpers/sharedFunctions';
 import moment from 'moment';
 import {somethingWentWrongModal, confirmationSuccessModal} from './Modals';
+
 
 const MarkCovidCase =(_) => {
 
@@ -91,7 +92,7 @@ const MarkCovidCase =(_) => {
 
                 <Form.Item
                         {...layout}
-                        label="positive test date"
+                        label="Positive test date"
                         name="testDate"
                         rules={[
                             {
@@ -103,9 +104,9 @@ const MarkCovidCase =(_) => {
                         <DatePicker disabledDate={current => { return current && current > moment().endOf('day')}}/>
                     </Form.Item>
 
-                   } <Form.Item
+                    <Form.Item
                         {...layout}
-                        label=" infectious start date"
+                        label="Infectious start date"
                         name="infectiousStartDate"
                         rules={[
                             {
@@ -117,7 +118,7 @@ const MarkCovidCase =(_) => {
                         <DatePicker disabledDate={current => { return current && current > moment().endOf('day')}}/>
                     </Form.Item>
 
-                <Form.Item {...tailLayout}>
+                <Form.Item style={{paddingLeft: '37.5%'}}>
                     <Button loading={loading} type="primary" htmlType="submit">Mark individual as positive</Button>
                     
                 </Form.Item>

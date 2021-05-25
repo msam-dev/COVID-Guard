@@ -184,11 +184,11 @@ const HealthForm = props => {
                     <Input onChange={e => {numberInputs(e, form, 'healthID')}} maxLength={11}/>
                 </Form.Item>
 
-                <Form.Item {...tailLayout}>
+                <Form.Item style={{paddingLeft: '33.5%'}}>
                     <Button loading={loading} type="primary" htmlType="submit">Sign me up</Button>
                 </Form.Item>
 
-                <Form.Item {...tailLayout}>
+                <Form.Item style={{paddingLeft: '33.5%'}}>
                     <span style={{color: "#0E5F76"}}>Not you? <u style={{cursor: "pointer"}} onClick={() => { setUserState(USER_TYPE.UNREGISTERED)}}>Click here</u></span>
                 </Form.Item>
             </Form>

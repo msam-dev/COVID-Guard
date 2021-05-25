@@ -1,6 +1,6 @@
 import { Form, Input, Button } from 'antd';
 import { useForm } from 'antd/lib/form/Form';
-import { layout2, tailLayout } from '../Helpers/Layouts';
+import { layout2 } from '../Helpers/Layouts';
 import USER_TYPE from '../../../_constants/userTypes';
 import { onlyNumbers } from '../../../_helpers/sharedFunctions';
 import { _registerGeneral } from '../../../_helpers/endPoints'; 
@@ -155,11 +155,11 @@ const GeneralForm = props => {
                     <Input.Password maxLength={30}/>
                 </Form.Item>
 
-                <Form.Item {...tailLayout}>
+                <Form.Item style={{paddingLeft: '33.5%'}}>
                     <Button loading={loading} type="primary" htmlType="submit">Sign me up</Button>
                 </Form.Item>
 
-                <Form.Item {...tailLayout}>
+                <Form.Item style={{paddingLeft: '33.5%'}}>
                     <span style={{color: "#0E5F76"}}>Not you? <u style={{cursor: "pointer"}} onClick={() => { setUserState(USER_TYPE.UNREGISTERED)}}>Click here</u></span>
                 </Form.Item>
             </Form>

@@ -1,9 +1,9 @@
 import {Modal} from 'antd'; 
 
 export const confirmationSuccessModal = email => {
-    const content = `Vaccinaction record updated for patient with email: ${email}`;
+    const content = `Patient with email: ${email} was successfully marked positive`;
     Modal.info({
-        title: 'Vaccination Confirmation Successful!',
+        title: 'Success!',
         content: <p>{content}</p>,
         onOk: () => { window.location.reload() }
     });

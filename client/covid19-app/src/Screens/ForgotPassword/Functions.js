@@ -3,14 +3,15 @@ import { forgotPasswordModal } from './Modals';
 
 export const forgotPasswordGeneral = (email, setLoading) => {
     setLoading(true);
+   
     return _forgotPasswordGeneral({email: email})
     .then(() => {
         setLoading(false);
         forgotPasswordModal(email);
     })
     .catch(err => {
-        setLoading(false);
         console.log(err);
+        setLoading(false);
         throw new Error("Email does not exist!");
     });
 }

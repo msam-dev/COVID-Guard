@@ -1,5 +1,5 @@
 import { Form, Input, Button } from 'antd';
-import { layout, tailLayout } from './layouts';
+import { layout } from './layouts';
 import USER_TYPE from '../../_constants/userTypes';
 import { useState } from 'react';
 import { isWhiteSpace } from '../../_helpers/sharedFunctions';
@@ -148,7 +148,7 @@ const ChangePassword =() => {
                     <Input.Password maxLength={30}/>
                 </Form.Item>
 
-                <Form.Item {...tailLayout}>
+                <Form.Item style={{paddingLeft: '37.5%'}}>
                     <Button loading={loading} type="primary" htmlType="submit">Change Password</Button>
                 </Form.Item>
             </Form>

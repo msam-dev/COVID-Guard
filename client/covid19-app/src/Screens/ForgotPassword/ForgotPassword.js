@@ -80,7 +80,7 @@ const ForgotPassword = () => {
                         </Radio.Group>
                     </Form.Item>
             
-                    <Form.Item {...tailLayout}>
+                    <Form.Item style={{paddingLeft: '37.5%'}}>
                         <Button loading={loading} type="primary" htmlType="submit" >Submit</Button>
                     </Form.Item>
                 </Form>

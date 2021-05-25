@@ -15,14 +15,14 @@ const GeneralNav = () => {
     return (
         <div>
             <Menu style ={{backgroundColor: "#0E5F76"}} mode="horizontal" >
-                <Item onClick={() => { history.push(PATH.home)}}>
+                <Item onClick={() => { history.push(PATH.home); window.location.reload()}}>
                     <img width={200} src={logo} alt="Logo" />
                 </Item>
                 <Item onClick={() => {history.push(PATH.checkIn)}} >
                     <div className='navbar-menuitem-text'>Venue Check-In</div>
                 </Item>
                 <Item onClick={() => {history.push(PATH.vaccineCenters)}}>
-                    <div className='navbar-menuitem-text'>Vaccine Center</div>
+                    <div className='navbar-menuitem-text'>Vaccine Centres</div>
                 </Item>
                 <Item onClick={() => {history.push(PATH.currentHotspots)}}>
                     <div className='navbar-menuitem-text'>Current Hotspots</div>

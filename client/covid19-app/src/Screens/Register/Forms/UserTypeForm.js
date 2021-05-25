@@ -16,11 +16,12 @@ export const UserTypeForm = props => {
 
     return(
         <Form style={{marginTop: "5%"}} onFinish={setUserState}>
-            <Form.Item {...layout} style={{marginBottom: '0px'}}>
+            <Form.Item {...layout} style={{marginBottom: '0px', paddingLeft: '37.5%'}}>
                 <h1 style={{color: "#0E5F76"}}>Tell us who you are...</h1>
             </Form.Item>
 
             <Form.Item 
+                style={{paddingLeft: '37.5%'}}
                 {...layout}
                 name="user"
                 rules={[
@@ -37,7 +38,7 @@ export const UserTypeForm = props => {
                 </Radio.Group>
             </Form.Item>
 
-            <Form.Item {...layout}>
+            <Form.Item {...layout} style={{paddingLeft: '37.5%'}}>
                 <Button type='primary' htmlType="submit">That's me</Button>
             </Form.Item>
         </Form>

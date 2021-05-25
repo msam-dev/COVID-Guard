@@ -7,6 +7,7 @@ import { useForm } from 'antd/lib/form/Form';
 import { useAuthUpdate } from '../../Components/AuthContext/AuthContext';
 import { loginGeneral, loginBusiness, loginHealth } from './Functions';
 import { isWhiteSpace, validateEmail } from '../../_helpers/sharedFunctions';
+import { useViewport } from '../../_helpers/viewPort';
 
 
 
@@ -15,9 +16,9 @@ const Login = () => {
     const [loading, setLoading] = useState(false);
     const [form] = useForm();
     const updateAuth = useAuthUpdate();
-
+    const { width } = useViewport();
+    const breakPoint = 900;
  
-
 
     const onFinish = () => {
         console.log("SUCCESS");
@@ -111,6 +112,7 @@ const Login = () => {
                 </Form.Item>
 
                 <Form.Item 
+                    style={{paddingLeft: "37.5%"}}
                     {...tailLayout} 
                     name="type" 
                     rules={[{ required: true }]}
@@ -122,12 +124,18 @@ const Login = () => {
                     </Radio.Group>
                 </Form.Item>
 
-                <Form.Item {...tailLayout}>
+                <Form.Item {...tailLayout} style={{paddingLeft: "37.5%"}}>
                     <Button loading={loading} type="primary" htmlType="submit">Login</Button>
-                    <span style={{paddingLeft: "19%", color: "#0E5F76"}}>Not Registered? <a href={PATH.register}><u>Click here</u></a></span>
+                    {
+                        width < breakPoint
+                        ?
+                        <div style={{color: "#0E5F76"}}>Not Registered? <a href={PATH.register}><u>Click here</u></a></div>
+                        :
+                        <span style={{paddingLeft: "19%", color: "#0E5F76"}}>Not Registered? <a href={PATH.register}><u>Click here</u></a></span>
+                    }
                 </Form.Item>
 
-                <Form.Item {...tailLayout}>
+                <Form.Item {...tailLayout} style={{paddingLeft: "37.5%"}}>
                     <span style={{color: "#0E5F76"}}>Forgot Password? <a href={PATH.forgotPassword}><u>Click here</u></a></span>
                 </Form.Item>
             </Form>

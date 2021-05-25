@@ -5,11 +5,11 @@ import { layout2 } from '../Register/Helpers/Layouts';
 import { useAuth,useAuthUpdate } from '../../Components/AuthContext/AuthContext';
 import { _editProfileHealth, _getHealthProfile } from '../../_helpers/endPoints';
 import { useState, useEffect } from 'react';
-import { logout } from '../../_helpers/sharedFunctions';
-import { theTailLayout } from './MyProfileLayout';
+import { logout, onlyNumbers } from '../../_helpers/sharedFunctions';
 import { useForm } from 'antd/lib/form/Form';
 import history from '../../_helpers/history';
 import PATH from '../../_constants/paths';
+
 
 
 const data = {
@@ -94,9 +94,17 @@ const data = {
                         name="phone" 
                         style={{color: "#0E5F76"}}
                         validateTrigger={['onBlur']}
-                        rules={[{whitespace: true}]}
+                        rules={[
+                            {
+                                validator: async (_, phone) => {
+                                    if(phone !== undefined && phone !== "" && phone.length < 10){
+                                        return Promise.reject(new Error('Phone number must be valid'));
+                                    }
+                                }
+                            }
+                        ]}
                     >
-                    <Input  maxLength={30} />
+                    <Input onChange={e => {onlyNumbers(e, form, 'phone')}} maxLength={10}/>
                 </Form.Item>
                 
                 <Form.Item 
@@ -132,7 +140,7 @@ const data = {
                     <Button  loading={loading} type="primary" htmlType="submit" >Save Changes</Button> &nbsp;&nbsp;
                     <Button onClick={() => {history.push(PATH.myProfileHealth)}} type="primary"  >Discard Changes</Button>
                 </div> <br/>
-                <Form.Item {...theTailLayout}>
+                <Form.Item style={{paddingLeft: '41%'}}>
                     <span onClick={() => {history.push(PATH.changePassword)}} style={{color: "#0E5F76"}}><u style={{cursor: "pointer"}} >Change Password</u></span>
                 </Form.Item>
 
