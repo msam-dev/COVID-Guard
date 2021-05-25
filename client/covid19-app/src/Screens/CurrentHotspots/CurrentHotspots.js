@@ -62,8 +62,7 @@ const CurrentHotspots = () => {
                             </div>
                             <div>
                                 <span style={{color: "#0E5F76"}}>
-                                    If you have been to any of these locations within a 2 week period, you must immediately 
-                                    self-quarantine, ring your local state hotline and identify yourself as a potential close contact.
+                                    If you have been to one of these locations on the date specified, you must immediately self-quarantine, ring your local state health hotline and identify yourself as a potential close contact.
                                 </span>
                             </div>
                         </div>
