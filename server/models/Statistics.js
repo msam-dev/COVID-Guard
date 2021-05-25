@@ -380,9 +380,12 @@ StatisticsSchema.statics.getPositiveBusinessesCheckinDates = async function(){
                 {$expr: {$lte: ["$checkin.date", "$testDate"]}},
             ],
         })
+        .group({_id: {business: '$checkin.business', dateVisited: {$dateToString: {date: "$checkin.date", format: "%Y-%m-%d"}}
+            }})
         .project({
-            _id: 0, business: "$checkin.business", dateVisited: "$checkin.date"
-        });
+            _id: 0, business: "$_id.business", dateVisited: "$_id.dateVisited"
+        })
+        .sort({dateVisited: -1})
 };
 
 StatisticsSchema.statics.getBusinessesDeemedHotspot24Hours = async function(){
