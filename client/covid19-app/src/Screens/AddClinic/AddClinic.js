@@ -71,13 +71,6 @@ const AddClinic = () => {
                 <Form.Item
                     label="Address Line 2"
                     name="addressLine2"
-                    rules={[
-                        {
-                            required: true,
-                            message: 'Please input the clinic address line 2!',
-                            whitespace: true
-                        }
-                    ]}
                 >
                     <Input maxLength={30}/>
                 </Form.Item>
