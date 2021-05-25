@@ -131,10 +131,10 @@ router.post('/register', asyncHandler(async (req, res) => {
 */
 
 router.post('/changepassword', authMiddleware(userType.BUSINESS), asyncHandler(async (req, res) => {
-    const { userId, currentPassword, newPassword, confirmPassword } = req.body;
+    const { userId, newPassword, confirmPassword } = req.body;
 
     // Simple validation
-    if (!userId || !currentPassword || !newPassword || !confirmPassword) {
+    if (!userId || !newPassword || !confirmPassword) {
         throw new BadRequest('Please enter all fields');
     }
 
@@ -145,9 +145,6 @@ router.post('/changepassword', authMiddleware(userType.BUSINESS), asyncHandler(a
     // Check for existing user
     const user = await BusinessUser.findById(userId).select("+password");
     if (!user) throw new BadRequest('User does not exist');
-
-    const isMatchCurrent = user.comparePassword(currentPassword);
-    if (!isMatchCurrent) throw new BadRequest('Current password doesn\'t match');
 
     user.password = newPassword;
 

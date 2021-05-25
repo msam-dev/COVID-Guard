@@ -180,7 +180,6 @@ describe("Covid App Server API Registered General Public Auth", () => {
                     .post('/api/registeredgeneralpublic/auth/changepassword')
                     .set('x-auth-token', user.accessToken)
                     .send({
-                        "currentPassword": "oldPassword",
                         "newPassword": "newPassword",
                         "confirmPassword": "newPasswordDifferent",
                     })
@@ -198,31 +197,6 @@ describe("Covid App Server API Registered General Public Auth", () => {
                 done(err);
             });
         });
-        it("returns error message 'Current password doesn\'t match'", (done) => {
-            createMockRegisteredGeneralPublicUsers(true).then((users) => {
-                let user = users[0];
-                chai.request(app)
-                    .post('/api/registeredgeneralpublic/auth/changepassword')
-                    .set('x-auth-token', user.accessToken)
-                    .send({
-                        "currentPassword": "oldPassword",
-                        "newPassword": "newPassword",
-                        "confirmPassword": "newPassword"
-                    })
-                    .then((res) => {
-                        if (res.status === 500) throw new Error(res.body.message);
-                        assert.equal(res.status, 400);
-                        assert.propertyVal(res.body, 'errCode', 400);
-                        assert.propertyVal(res.body, 'success', false);
-                        assert.propertyVal(res.body, 'message', 'Current password doesn\'t match');
-                        done();
-                    }).catch((err) => {
-                    done(err);
-                });
-            }).catch((err) => {
-                done(err);
-            });
-        });
         it("It changes a RegisteredGeneralPublicUsers password",  (done) => {
             createMockRegisteredGeneralPublicUsers(true).then((users) => {
                 let user = users[0];
@@ -230,7 +204,6 @@ describe("Covid App Server API Registered General Public Auth", () => {
                     .post('/api/registeredgeneralpublic/auth/changepassword')
                     .set('x-auth-token', user.accessToken)
                     .send({
-                        "currentPassword": user.rawPassword,
                         "newPassword": "newPassword",
                         "confirmPassword": "newPassword"
                     })
