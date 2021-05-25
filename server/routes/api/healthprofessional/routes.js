@@ -86,6 +86,8 @@ router.post('/markpatientpositive', authMiddleware(userType.HEALTH), asyncHandle
         throw new BadRequest('Please enter all fields');
     }
 
+    if((new Date(testDate)) < (new Date(infectiousStartDate))) throw new BadRequest('Test date must be later than infectious start date')
+
     // Check for existing user
     const user = await RegisteredGeneralPublic.findOne( { email: email } );
     if (!user) throw new BadRequest('User does not exist');
