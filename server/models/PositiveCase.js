@@ -2,6 +2,7 @@ const dateShortcode = require('date-shortcode')
 
 const mongoose = require('mongoose')
 const CheckIn = require("./CheckIn");
+const BusinessUser = require("./BusinessUser");
 const {Emailer} = require("../utils/general");
 const {autoPopulateField} = require("../utils/db");
 
@@ -69,6 +70,14 @@ PositiveCaseSchema.statics.sendEmailsToAffectedUsers = async function (positiveC
         }).exec();
 
     for (let positiveCheckin of positiveCheckins) {
+        const affectedBusiness = BusinessUser.findOne({business: positiveCheckin.business});
+        let msg = {
+            to: affectedBusiness.email, // Change to your recipient
+            from: process.env.SENDGRID_FROM_EMAIL, // Change to your verified sender
+            subject: 'Contact tracing',
+            html: `<strong>This message is to notify you that a positive case visited your business on ${positiveCheckin.dateVisited}</strong>`,
+        }
+        await Emailer.sendEmail(msg, true);
         let affectedCheckins = await CheckIn
             .find({
                 $and: [
@@ -94,7 +103,6 @@ PositiveCaseSchema.statics.sendEmailsToAffectedUsers = async function (positiveC
             await Emailer.sendEmail(msg, true);
             affectedCheckin.userNotified = true;
             let affectedCheckinSaved = await affectedCheckin.save();
-            console.log(affectedCheckinSaved);
         }
     }
 }
