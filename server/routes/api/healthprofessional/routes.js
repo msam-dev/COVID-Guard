@@ -1,3 +1,5 @@
+const moment = require("moment");
+
 const express = require('express')
 const router = express.Router();
 const HealthProfessional = require('../../../models/HealthProfessional');
@@ -85,6 +87,7 @@ router.post('/markpatientpositive', authMiddleware(userType.HEALTH), asyncHandle
     if (!email || !testDate || !infectiousStartDate) {
         throw new BadRequest('Please enter all fields');
     }
+    if(moment(infectiousStartDate).isSameOrAfter(moment(testDate))) throw new BadRequest('Test date must be later than infectious start date')
 
     // Check for existing user
     const user = await RegisteredGeneralPublic.findOne( { email: email } );
