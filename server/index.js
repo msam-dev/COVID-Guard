@@ -18,11 +18,12 @@ const app = express();
 const db = require("./db");
 const errorHandler = require('./middleware/errorHandler');
 const sanitizer = require("./middleware/sanitizer");
-const Statistics = require("./models/Statistics");
+const compression = require("compression");
 
 db.connect().then(r => {
     // CORS Middleware
     app.use(cors());
+    app.use(compression()); //Compress all routes
 
     // parse json body content
     app.use(express.json());
