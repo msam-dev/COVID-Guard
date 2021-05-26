@@ -50,8 +50,8 @@ db.connect().then(r => {
 
     app.listen(PORT, () => console.log(`Server started on PORT ${PORT}`));
 
-    const job = schedule.scheduleJob('*/10 * * * *', function(fireDate){
-        //Statistics.sendGovernmentMessage();
+    const job = schedule.scheduleJob({hour: 24, minute: 0}, function(fireDate){
+        Statistics.sendGovernmentMessage();
         console.log(`Message sent to government at: ${fireDate}`);
     });
 }).catch((e) => {
