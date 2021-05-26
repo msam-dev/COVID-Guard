@@ -553,7 +553,7 @@ StatisticsSchema.statics.sendGovernmentMessage = async function(date){
         from: process.env.SENDGRID_FROM_EMAIL,
         subject: `Statistics for ${date}`,
     }
-    let stats = await Statistics.getSingleton();
+    let stats = await Statistics.getSingleton(true);
     let statsObject = stats.toObject();
 
     let html = "<html><body>";
