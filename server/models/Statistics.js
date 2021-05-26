@@ -15,10 +15,6 @@ const {dailySummary} = require("../utils/general");
 
 // Create Schema
 const StatisticsSchema = new mongoose.Schema({
-        lastUpdated: {
-            type: Date,
-            default: Date.now
-        },
         covidSummary: {
             // from scraped
             totalHospitalised: {
@@ -450,42 +446,6 @@ StatisticsSchema.statics.getVaccinationsYesterday = async function () {
 
 StatisticsSchema.methods.updateData = async function(){
     // do update data
-    const covidSummaryUrl = 'https://covidlive.com.au/australia';
-
-    const covidSummaryHtml = await rp(covidSummaryUrl);
-
-    this.covidSummary.totalHospitalised = dailySummary(covidSummaryHtml, "Hospitalised").total();
-    this.covidSummary.totalDeaths = dailySummary(covidSummaryHtml, "Deaths").total();
-    this.covidSummary.totalTests = dailySummary(covidSummaryHtml, "Tests").total();
-    this.covidSummary.totalTestsLast24Hours = dailySummary(covidSummaryHtml, "Tests").net();
-    this.covidSummary.totalOverseasCasesLast24Hours = dailySummary(covidSummaryHtml, "Overseas").net();
-    this.covidSummary.totalCases = dailySummary(covidSummaryHtml, "Cases").total();
-    this.covidSummary.totalCurrentHotspotVenues = (await Statistics.getPositiveBusinessesCheckinDates()).length;
-    this.covidSummary.totalPositiveCasesLast24Hours = await Statistics.getPositiveCasesLast24Hours();
-    this.covidSummary.totalPositiveCases = await PositiveCase.countDocuments();
-    this.covidSummary.totalPositiveCasesByMonth = await Statistics.getTotalPositiveCasesByMonth();
-
-    this.checkinsSummary.totalCheckins = await CheckIn.countDocuments();
-    this.checkinsSummary.checkinsLast24Hours = await Statistics.getCheckinsLast24Hours();
-    this.checkinsSummary.checkinsByMonth = await Statistics.getCheckinByMonth();
-    this.checkinsSummary.checkinsByUserType = await Statistics.getCheckinsByUserType();
-    this.usersSummary.totalRegisteredGeneralPublicUsers = await RegisteredGeneralPublic.countDocuments();
-    this.usersSummary.generalPublicUserRegistrationsByMonth = await Statistics.getGeneralPublicUserRegistrationsByMonth();
-
-    this.businessesSummary.totalBusinesses = await Business.countDocuments();
-    this.vaccinationsSummary.totalVaccinationCentres = await VaccinationCentre.countDocuments();
-    this.vaccinationsSummary.vaccinationsYesterday = await Statistics.getVaccinationsYesterday();
-    this.vaccinationsSummary.totalVaccinations = await VaccinationRecord.countDocuments();
-    this.vaccinationsSummary.vaccinationsByType = await Statistics.getVaccinationsByType();
-    this.vaccinationsSummary.vaccinationCentresByState = await Statistics.getVaccinationCentresByState();
-    this.vaccinationsSummary.vaccinationsByStatus = await Statistics.getVaccinationsByStatus();
-    this.vaccinationsSummary.totalVaccinationCentres = await VaccinationCentre.countDocuments();
-
-    this.businessesSummary.totalBusinessesRegistered = await Business.countDocuments();
-    this.businessesSummary.businessesByState = await Statistics.getBusinessesByState();
-    this.businessesSummary.businessRegistrationsByMonth = await Statistics.getBusinessRegistrationsByMonth();
-    this.businessesSummary.businessesDeemedHotspot24Hours = await Statistics.getBusinessesDeemedHotspot24Hours();
-
     try {
         await this.update();
     } catch (e){
@@ -531,6 +491,9 @@ StatisticsSchema.methods.setData = async function(){
     this.businessesSummary.businessRegistrationsByMonth = await Statistics.getBusinessRegistrationsByMonth();
     this.businessesSummary.businessesDeemedHotspot24Hours = await Statistics.getBusinessesDeemedHotspot24Hours();
 
+};
+
+StatisticsSchema.methods.saveData = async function (){
     try {
         await this.save();
     } catch (e){
@@ -538,20 +501,17 @@ StatisticsSchema.methods.setData = async function(){
     }
 };
 
-StatisticsSchema.pre('save', function(next) {
-    this.dateUpdated = Date.now();
-    next();
-});
-
 // use Singleton pattern
 StatisticsSchema.statics.getSingleton = async function () {
         let result = await this.findOne();
         if(result) {
-            if(result.lastUpdated < moment().subtract(15, 'minutes').toDate()) result.updateData();
+            await result.setData();
+            await result.updateData();
             return result;
         } else {
             let stats = new Statistics();
             await stats.setData();
+            await stats.saveData();
             return stats;
         }
 };
@@ -569,6 +529,7 @@ StatisticsSchema.options.toObject.transform = function (doc, ret, options) {
     // remove the _id of every document before returning the result
     delete ret._id;
     ret = removeKey(ret, "_id");
+    ret = removeKey(ret, "lastUpdated");
     ret = removeKey(ret, "__v");
     return ret;
 }
@@ -594,6 +555,7 @@ StatisticsSchema.statics.sendGovernmentMessage = async function(date){
     }
     let stats = await Statistics.getSingleton();
     let statsObject = stats.toObject();
+
     let html = "<html><body>";
     for(let sCategory in statsObject){
         html += `<h2>${camel2title(sCategory)}</h2>`;
@@ -618,6 +580,9 @@ StatisticsSchema.statics.sendGovernmentMessage = async function(date){
                     html += sCategory2Value;
                 }
             }
+        }
+        if(statsObject[sCategory] instanceof Date){
+            html += statsObject[sCategory];
         }
     }
     html += '</body></html>'

@@ -19,6 +19,7 @@ const db = require("./db");
 const errorHandler = require('./middleware/errorHandler');
 const sanitizer = require("./middleware/sanitizer");
 const compression = require("compression");
+const Statistics = require("./models/Statistics");
 
 db.connect().then(r => {
     // CORS Middleware
@@ -48,9 +49,9 @@ db.connect().then(r => {
     app.use(errorHandler);
 
     app.listen(PORT, () => console.log(`Server started on PORT ${PORT}`));
-    //Statistics.sendGovernmentMessage();
 
     const job = schedule.scheduleJob('*/10 * * * *', function(fireDate){
+        //Statistics.sendGovernmentMessage();
         console.log(`Message sent to government at: ${fireDate}`);
     });
 }).catch((e) => {
