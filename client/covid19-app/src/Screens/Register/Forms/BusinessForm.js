@@ -38,6 +38,8 @@ const BusinessForm = props => {
         .then(res => {
             setLoading(true);
             if(res.phone === "") delete res.phone;
+            res.email = res.email.toLowerCase();
+            console.log(res.email);
             const firstName = res.firstName;
             
             _registerBusiness(res)

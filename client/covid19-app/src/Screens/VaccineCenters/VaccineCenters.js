@@ -49,7 +49,7 @@ const VaccineCenters = () => {
                                 <span style={{color: "#0E5F76", fontSize: "28px"}}>Nation wide COVID-19 Vaccination Centers</span>
 
                                 <div style={{width: '300px', paddingTop: "1%"}}>
-                                    <Input onChange={e => { filterCenters(e, setCenters, centers.length, centerFilter) }} placeholder="Enter your post code"/>
+                                    <Input onChange={e => { filterCenters(e, setCenters, centers.length, centerFilter) }} placeholder="Enter your postcode"/>
                                 </div>
                             </div>
                         </div>

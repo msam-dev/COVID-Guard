@@ -51,7 +51,7 @@ const CurrentHotspots = () => {
                                 <span style={{color: "#0E5F76", fontSize: "28px"}}>Current National Hotspots</span>
 
                                 <div style={{width: '300px', paddingTop: "1%"}}>
-                                    <Input onChange={e => { filterHotspots(e, setHotspots, hotspots.length, hotspotsFilter) }} placeholder="Enter your post code"/>
+                                    <Input onChange={e => { filterHotspots(e, setHotspots, hotspots.length, hotspotsFilter) }} placeholder="Enter your postcode"/>
                                 </div>
                             </div>
                         </div>

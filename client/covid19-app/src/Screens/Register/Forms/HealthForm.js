@@ -22,6 +22,7 @@ const HealthForm = props => {
         .then(res => {
             setLoading(true);
             if(res.phone === "") delete res.phone;
+            res.email = res.email.toLowerCase();
             const firstName = res.firstName;
 
             _registerHealth(res)

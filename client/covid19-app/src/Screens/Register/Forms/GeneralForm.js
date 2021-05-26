@@ -24,6 +24,8 @@ const GeneralForm = props => {
         const user = form.getFieldValue();
         setLoading(true);
         if(user.phone === "") delete user.phone;
+        user.email = user.email.toLowerCase();
+        
         _registerGeneral(user)
         .then(() => {
             setLoading(false);
