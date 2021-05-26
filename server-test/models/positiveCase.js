@@ -1,8 +1,4 @@
-const {createMockPositiveCases} = require("../../server/utils/mockData");
-const {createMockCheckIns} = require("../../server/utils/mockData");
-const {createMockGeneralPublicUsers} = require("../../server/utils/mockData");
-const {createMockRegisteredGeneralPublicUsers} = require("../../server/utils/mockData");
-const {createMockBusinesses} = require("../../server/utils/mockData");
+const {MockData} = require("../../server/utils/mockData");
 process.env.NODE_ENV = 'testing';
 const assert = require('chai').assert
 const faker = require('faker/locale/en_AU');
@@ -23,19 +19,19 @@ describe('PositiveCase', () => {
             let emailerStub = sinon.stub(Emailer, 'sendEmail').callsFake((msg) => {
                 return {}
             });
-            let businesses = await createMockBusinesses(true);
+            let businesses = await MockData.createMockBusinesses(true);
             let business = businesses[0];
             let positiveTestDate = faker.date.recent(10);
-            let registeredGeneralPublicUsers = await createMockRegisteredGeneralPublicUsers(true, 100);
-            let generalPublicUsers = await createMockGeneralPublicUsers(true, 100);
+            let registeredGeneralPublicUsers = await MockData.createMockRegisteredGeneralPublicUsers(true, 100);
+            let generalPublicUsers = await MockData.createMockGeneralPublicUsers(true, 100);
             let checkins = [];
             for(let u of registeredGeneralPublicUsers){
-                checkins = checkins.concat(await createMockCheckIns(true, 1, u, business, null, faker.date.recent(3, positiveTestDate)))
+                checkins = checkins.concat(await MockData.createMockCheckIns(true, 1, u, business, null, faker.date.recent(3, positiveTestDate)))
             }
             for(let u of generalPublicUsers){
-                checkins = checkins.concat(await createMockCheckIns(true, 1, u, business,null, faker.date.recent(3, positiveTestDate)))
+                checkins = checkins.concat(await MockData.createMockCheckIns(true, 1, u, business,null, faker.date.recent(3, positiveTestDate)))
             }
-            let positiveCases = await createMockPositiveCases(false, 1, registeredGeneralPublicUsers[0], null, positiveTestDate);
+            let positiveCases = await MockData.createMockPositiveCases(false, 1, registeredGeneralPublicUsers[0], null, positiveTestDate);
             let positiveCase = await positiveCases[0].save();
             let positiveCheckIn = checkins[0];
             for(let checkin of checkins){

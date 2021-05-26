@@ -4,7 +4,7 @@ const chai = require("chai");
 const chaiHttp = require("chai-http");
 const app = require("../../../server");
 const USER_TYPE = require("../../../server/_constants/usertypes");
-const {createMockBusinessUsers} = require("../../../server/utils/mockData");
+const {MockData} = require("../../../server/utils/mockData");
 const assert = require('chai').assert
 const bcrypt = require('bcryptjs');
 const BusinessUser = require("../../../server/models/BusinessUser");
@@ -48,7 +48,7 @@ describe("Covid App Server API BusinessOwner Auth", () => {
             });
         });
         it("it allows successful login", (done) => {
-            createMockBusinessUsers(true).then((users) => {
+            MockData.createMockBusinessUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/businessowner/auth/login')
@@ -71,7 +71,7 @@ describe("Covid App Server API BusinessOwner Auth", () => {
             });
         });
         it("it allows successful temporary login", (done) => {
-            createMockBusinessUsers(true).then(async (users) => {
+            MockData.createMockBusinessUsers(true).then(async (users) => {
                 let user = users[0];
                 let tempPassword = user.setTemporaryPassword();
                 const savedUser = await user.save();
@@ -170,7 +170,7 @@ describe("Covid App Server API BusinessOwner Auth", () => {
     });
     describe("POST /api/businessowner/auth/changepassword", () => {
         it("returns error message 'Please enter all fields'", (done) => {
-            createMockBusinessUsers(true).then((users) => {
+            MockData.createMockBusinessUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/businessowner/auth/changepassword')
@@ -190,7 +190,7 @@ describe("Covid App Server API BusinessOwner Auth", () => {
             });
         });
         it("returns error message 'Password and confirm password do not match'", (done) => {
-            createMockBusinessUsers(true).then((users) => {
+            MockData.createMockBusinessUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/businessowner/auth/changepassword')
@@ -214,7 +214,7 @@ describe("Covid App Server API BusinessOwner Auth", () => {
             });
         });
         it("It changes a BusinessUsers password", (done) => {
-            createMockBusinessUsers(true).then((users) => {
+            MockData.createMockBusinessUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/businessowner/auth/changepassword')
@@ -264,7 +264,7 @@ describe("Covid App Server API BusinessOwner Auth", () => {
             });
         });
         it("It creates a password reset request", (done) => {
-            createMockBusinessUsers(true).then((users) => {
+            MockData.createMockBusinessUsers(true).then((users) => {
                 let user = users[0];
                 // reset the history so that you get the correct call
                 global.setApiKeyStub.resetHistory();

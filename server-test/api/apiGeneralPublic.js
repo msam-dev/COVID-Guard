@@ -3,13 +3,8 @@ process.env.NODE_ENV = 'testing';
 const chai = require("chai");
 const chaiHttp = require("chai-http");
 const app = require("../../server");
-const {createMockPositiveCases} = require("../../server/utils/mockData");
-const {createMockCheckIns} = require("../../server/utils/mockData");
-const {createMockVaccinationRecord} = require("../../server/utils/mockData");
+const {MockData} = require("../../server/utils/mockData");
 const assert = require('chai').assert
-const moment = require('moment');
-const {createMockVaccinationCentres} = require("../../server/utils/mockData");
-const {createMockBusinesses} = require("../../server/utils/mockData");
 
 // Configure chai
 chai.use(chaiHttp);
@@ -46,7 +41,7 @@ describe("Covid App Server General Public Endpoints", () => {
             });
         });
         it("returns valid vaccination record", (done) => {
-            createMockVaccinationRecord(true).then((vaccinationRecords)=>
+            MockData.createMockVaccinationRecord(true).then((vaccinationRecords)=>
                 {
                     let vaccinationRecord = vaccinationRecords[0];
                         chai.request(app)
@@ -73,13 +68,12 @@ describe("Covid App Server General Public Endpoints", () => {
     describe("GET /api/generalpublic/currenthotspots", () => {
         it("returns array of hotspots", async () => {
             // create test cases
-            const testDate = Date.now();
-            let checkIns = await createMockCheckIns(true, 100);
+            let checkIns = await MockData.createMockCheckIns(true, 100);
             let i = 0;
             let positiveCases = [];
             for (let checkIn of checkIns){
                 if (i % 10 === 0) {
-                    positiveCases.push((await createMockPositiveCases(true, 1, checkIn.user))[0]);
+                    positiveCases.push((await MockData.createMockPositiveCases(true, 1, checkIn.user))[0]);
                 }
                 i++;
             }
@@ -138,7 +132,7 @@ describe("Covid App Server General Public Endpoints", () => {
             });
         });
         it("returns valid checkin", (done) => {
-            createMockBusinesses(true).then((businesses)=>
+            MockData.createMockBusinesses(true).then((businesses)=>
             {
                 let business = businesses[0];
                 chai.request(app)
@@ -168,7 +162,7 @@ describe("Covid App Server General Public Endpoints", () => {
     });
     describe("GET /api/generalpublic/vaccinationcentres", () => {
         it("returns an array of vaccine centres", (done) => {
-            createMockVaccinationCentres(true, 50).then((vaccinationCentres)=>
+            MockData.createMockVaccinationCentres(true, 50).then((vaccinationCentres)=>
             {
                 chai.request(app)
                     .get('/api/generalpublic/vaccinationcentres')
@@ -199,12 +193,12 @@ describe("Covid App Server General Public Endpoints", () => {
     });
     describe("GET /api/generalpublic/homepagestats", () => {
         it("returns homepage stats object", async () => {
-            let checkIns = await createMockCheckIns(true, 100);
+            let checkIns = await MockData.createMockCheckIns(true, 100);
             let i = 0;
             let positiveCases = [];
             for (let checkIn of checkIns){
                 if (i % 10 === 0) {
-                    positiveCases.push((await createMockPositiveCases(true, 1, checkIn.user))[0]);
+                    positiveCases.push((await MockData.createMockPositiveCases(true, 1, checkIn.user))[0]);
                 }
                 i++;
             }

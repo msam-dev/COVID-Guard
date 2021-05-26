@@ -1,11 +1,20 @@
-class ServerError extends Error {
+class BaseError extends Error {
     constructor(message) {
         super();
+        if(this.constructor === BaseError){
+            throw new Error(" Object of Abstract Class cannot be created");
+        }
         this.message = message;
         this.success = false;
         this.errCode = this.getCode();
     }
 
+    getCode() {
+        return -1;
+    }
+}
+
+class ServerError extends BaseError {
     getCode() {
         return 500;
     }

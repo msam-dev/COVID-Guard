@@ -5,14 +5,14 @@ const chaiHttp = require("chai-http");
 const app = require("../../server");
 const assert = require('chai').assert
 const BusinessOwner = require("../../server/models/BusinessUser");
-const {createMockBusinessUsers} = require("../../server/utils/mockData");
+const {MockData} = require("../../server/utils/mockData");
 // Configure chai
 chai.use(chaiHttp);
 
 describe("Covid App Server Business Owner Endpoints", () => {
     describe("GET /api/businessowner/profile", () => {
         it("returns user data", async () => {
-            let users = await createMockBusinessUsers(true);
+            let users = await MockData.createMockBusinessUsers(true);
             let user = users[0];
             const res = await chai.request(app)
                 .get('/api/businessowner/profile')
@@ -26,7 +26,7 @@ describe("Covid App Server Business Owner Endpoints", () => {
     });
     describe("POST /api/businessowner/profile", () => {
         it("returns error message 'Please enter all fields'", async () => {
-            let users = await createMockBusinessUsers(true);
+            let users = await MockData.createMockBusinessUsers(true);
             let user = users[0];
             const res = await chai.request(app)
                 .post('/api/businessowner/profile')
@@ -39,7 +39,7 @@ describe("Covid App Server Business Owner Endpoints", () => {
                 assert.propertyVal(res.body, 'message', 'Please enter all fields');
         });
         it("updates user data", async () => {
-            let users = await createMockBusinessUsers(true);
+            let users = await MockData.createMockBusinessUsers(true);
             let user = users[0];
 
             const res = await chai.request(app)
@@ -61,7 +61,7 @@ describe("Covid App Server Business Owner Endpoints", () => {
     });
     describe("GET /api/businessowner/venueinfo", () => {
         it("displays venue info", async () => {
-            let users = await createMockBusinessUsers(true);
+            let users = await MockData.createMockBusinessUsers(true);
             let user = users[0];
 
             const res = await chai.request(app)

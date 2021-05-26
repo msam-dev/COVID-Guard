@@ -32,279 +32,281 @@ const USER_TYPE = require("../_constants/usertypes");
 const {random_coordinate} = require("./general");
 faker.seed(0);
 
-async function createMockRegisteredGeneralPublicUsers(save = false, numUsers = 1) {
-    let users = {};
-    for (let i = 0; i < numUsers; i++) {
-        let user = new RegisteredGeneralPublic();
-        user.firstName = faker.name.firstName();
-        user.lastName = faker.name.lastName();
-        user.email = faker.internet.email(user.firstName, user.lastName);
-        let password = faker.internet.password();
-        user.password = password;
-        user.rawPassword = password;
-        user.phone = faker.phone.phoneNumber("0#########");
-        user.registrationDate = faker.date.recent(150);
-        user.setAccessToken();
-        if (user.email in users) continue
-        users[user.email] = user;
+class MockData {
+    static async createMockRegisteredGeneralPublicUsers(save = false, numUsers = 1) {
+        let users = {};
+        for (let i = 0; i < numUsers; i++) {
+            let user = new RegisteredGeneralPublic();
+            user.firstName = faker.name.firstName();
+            user.lastName = faker.name.lastName();
+            user.email = faker.internet.email(user.firstName, user.lastName);
+            let password = faker.internet.password();
+            user.password = password;
+            user.rawPassword = password;
+            user.phone = faker.phone.phoneNumber("0#########");
+            user.registrationDate = faker.date.recent(150);
+            user.setAccessToken();
+            if (user.email in users) continue
+            users[user.email] = user;
+        }
+        try {
+            if (save) await RegisteredGeneralPublic.insertMany(Object.values(users), {ordered: false});
+        } catch (e) {
+            console.error(e);
+        }
+        return Object.values(users);
     }
-    try {
-        if (save) await RegisteredGeneralPublic.insertMany(Object.values(users), {ordered: false});
-    } catch (e) {
-        console.error(e);
-    }
-    return Object.values(users);
-}
 
-async function createMockAddresses(save = false, numAddresses = 1, addCoordinates = false, coordinates = false) {
-    let addresses = [];
-    for (let i = 0; i < numAddresses; i++) {
-        let address = new Address();
-        address.addressLine1 = faker.address.streetAddress();
-        // need to update this
-        address.suburb = faker.address.city();
-        address.city = faker.address.city();
-        address.state = statesMap[faker.address.state()];
-        address.postcode = faker.address.zipCode();
-        if (addCoordinates) {
-            if (coordinates) {
-                address.coordinates = coordinates;
-            } else {
-                address.coordinates = (await createMockCoordinates(save, 1, address.state))[0];
+    static async createMockAddresses(save = false, numAddresses = 1, addCoordinates = false, coordinates = false) {
+        let addresses = [];
+        for (let i = 0; i < numAddresses; i++) {
+            let address = new Address();
+            address.addressLine1 = faker.address.streetAddress();
+            // need to update this
+            address.suburb = faker.address.city();
+            address.city = faker.address.city();
+            address.state = statesMap[faker.address.state()];
+            address.postcode = faker.address.zipCode();
+            if (addCoordinates) {
+                if (coordinates) {
+                    address.coordinates = coordinates;
+                } else {
+                    address.coordinates = (await MockData.createMockCoordinates(save, 1, address.state))[0];
+                }
             }
+
+            addresses.push(address);
         }
-
-        addresses.push(address);
-    }
-    try {
-        if (save) await Address.insertMany(addresses);
-    } catch (e) {
-        console.error(e);
-    }
-    return addresses;
-}
-
-async function createMockBusinesses(save = false, numBusinesses = 1, address = null) {
-    let businesses = [];
-    for (let i = 0; i < numBusinesses; i++) {
-        let business = new Business();
-        business.abn = faker.phone.phoneNumber("###########");
-        // need to update this
-        business.name = faker.company.companyName();
-        if (address) {
-            business.address = address;
-        } else {
-            business.address = (await createMockAddresses(save, 1, true))[0];
+        try {
+            if (save) await Address.insertMany(addresses);
+        } catch (e) {
+            console.error(e);
         }
-        businesses.push(business);
+        return addresses;
     }
-    try {
-        if (save) await Business.insertMany(businesses);
-    } catch (e) {
-        console.error(e);
-    }
-    return businesses;
-}
 
-async function createMockBusinessUsers(save = false, numUsers = 1, business = null) {
-    let users = {};
-    for (let i = 0; i < numUsers; i++) {
-        let user = new BusinessUser();
-        user.firstName = faker.name.firstName();
-        user.lastName = faker.name.lastName();
-        user.email = faker.internet.email(user.firstName, user.lastName);
-        let password = faker.internet.password();
-        user.password = password;
-        user.rawPassword = password;
-        user.phone = faker.phone.phoneNumber("0#########");
-        user.setAccessToken();
-        if (business) {
-            user.business = business;
-        } else {
-            user.business = (await createMockBusinesses(save))[0];
-        }
-        if (user.email in users) continue
-        user.registrationDate = faker.date.recent(150);
-        users[user.email] = user;
-    }
-    try {
-        if (save) await BusinessUser.insertMany(Object.values(users), {ordered: false});
-    } catch (e) {
-        console.error(e);
-    }
-    return Object.values(users);
-}
-
-async function createMockHealthProfessionalUsers(save = false, numUsers = 1) {
-    let users = {};
-    for (let i = 0; i < numUsers; i++) {
-        let user = new HealthProfessional();
-        user.firstName = faker.name.firstName();
-        user.lastName = faker.name.lastName();
-        user.email = faker.internet.email(user.firstName, user.lastName);
-        let password = faker.internet.password();
-        user.password = password;
-        user.rawPassword = password;
-        user.phone = faker.phone.phoneNumber("0#########");
-        user.healthID = faker.phone.phoneNumber("###########");
-        user.setAccessToken();
-        if (user.email in users) continue
-        users[user.email] = user;
-        user.registrationDate = faker.date.recent(150);
-    }
-    try {
-        if (save) await HealthProfessional.insertMany(Object.values(users), {ordered: false});
-    } catch (e) {
-        console.error(e);
-    }
-    return Object.values(users);
-}
-
-async function createMockGeneralPublicUsers(save = false, numUsers = 1) {
-    let users = {};
-    for (let i = 0; i < numUsers; i++) {
-        let user = new GeneralPublicUser();
-        user.firstName = faker.name.firstName();
-        user.lastName = faker.name.lastName();
-        user.email = faker.internet.email(user.firstName, user.lastName);
-        user.phone = faker.phone.phoneNumber("0#########");
-        if (user.email in users) continue
-        users[user.email] = user;
-    }
-    try {
-        if (save) await GeneralPublicUser.insertMany(Object.values(users), {ordered: false});
-    } catch (e) {
-        console.error(e);
-    }
-    return Object.values(users);
-}
-
-async function createMockCheckIns(save = false, numCheckIns = 1, user = null, business = null, userType = USER_TYPE.UNREGISTERED, checkinDate=null) {
-    let checkins = [];
-    for (let i = 0; i < numCheckIns; i++) {
-        let checkin = new CheckIn();
-        if(checkinDate){
-            checkin.date = checkinDate;
-        } else {
-            checkin.date = faker.date.recent(150);
-        }
-        if (user) {
-            checkin.user = user;
-            checkin.userModel = user.constructor.modelName;
-        } else {
-            let user;
-            if (userType === USER_TYPE.GENERAL) {
-                user = (await createMockRegisteredGeneralPublicUsers(save))[0];
+    static async createMockBusinesses(save = false, numBusinesses = 1, address = null) {
+        let businesses = [];
+        for (let i = 0; i < numBusinesses; i++) {
+            let business = new Business();
+            business.abn = faker.phone.phoneNumber("###########");
+            // need to update this
+            business.name = faker.company.companyName();
+            if (address) {
+                business.address = address;
             } else {
-                user = (await createMockGeneralPublicUsers(save))[0];
+                business.address = (await MockData.createMockAddresses(save, 1, true))[0];
             }
-            checkin.user = user;
-            checkin.userModel = user.constructor.modelName;
+            businesses.push(business);
         }
-        if (business) {
-            checkin.business = business;
-        } else {
-            checkin.business = (await createMockBusinesses(save))[0];
+        try {
+            if (save) await Business.insertMany(businesses);
+        } catch (e) {
+            console.error(e);
         }
-
-        checkins.push(checkin);
+        return businesses;
     }
 
-    if (save) await CheckIn.insertMany(checkins);
-
-    return checkins;
-}
-
-async function createMockPositiveCases(save = false, numCases = 1, user = null, userType = USER_TYPE.UNREGISTERED, testDate =null) {
-    let pCases = [];
-    for (let i = 0; i < numCases; i++) {
-        let pCase = new PositiveCase();
-        if(testDate){
-            pCase.testDate = testDate;
-        } else {
-            pCase.testDate = faker.date.recent(150);
-        }
-        pCase.infectiousStartDate = moment(pCase.testDate).subtract(faker.datatype.number({
-            'min': 1,
-            'max': 10
-        }), 'days').toDate();
-        if (user) {
-            pCase.user = user;
-            pCase.userModel = user.constructor.modelName;
-        } else {
-            let user;
-            if (userType === USER_TYPE.GENERAL) {
-                user = (await createMockRegisteredGeneralPublicUsers(save))[0];
+    static async createMockBusinessUsers(save = false, numUsers = 1, business = null) {
+        let users = {};
+        for (let i = 0; i < numUsers; i++) {
+            let user = new BusinessUser();
+            user.firstName = faker.name.firstName();
+            user.lastName = faker.name.lastName();
+            user.email = faker.internet.email(user.firstName, user.lastName);
+            let password = faker.internet.password();
+            user.password = password;
+            user.rawPassword = password;
+            user.phone = faker.phone.phoneNumber("0#########");
+            user.setAccessToken();
+            if (business) {
+                user.business = business;
             } else {
-                user = (await createMockGeneralPublicUsers(save))[0];
+                user.business = (await MockData.createMockBusinesses(save))[0];
             }
-            pCase.user = user;
-            pCase.userModel = user.constructor.modelName;
+            if (user.email in users) continue
+            user.registrationDate = faker.date.recent(150);
+            users[user.email] = user;
+        }
+        try {
+            if (save) await BusinessUser.insertMany(Object.values(users), {ordered: false});
+        } catch (e) {
+            console.error(e);
+        }
+        return Object.values(users);
+    }
+
+    static async createMockHealthProfessionalUsers(save = false, numUsers = 1) {
+        let users = {};
+        for (let i = 0; i < numUsers; i++) {
+            let user = new HealthProfessional();
+            user.firstName = faker.name.firstName();
+            user.lastName = faker.name.lastName();
+            user.email = faker.internet.email(user.firstName, user.lastName);
+            let password = faker.internet.password();
+            user.password = password;
+            user.rawPassword = password;
+            user.phone = faker.phone.phoneNumber("0#########");
+            user.healthID = faker.phone.phoneNumber("###########");
+            user.setAccessToken();
+            if (user.email in users) continue
+            users[user.email] = user;
+            user.registrationDate = faker.date.recent(150);
+        }
+        try {
+            if (save) await HealthProfessional.insertMany(Object.values(users), {ordered: false});
+        } catch (e) {
+            console.error(e);
+        }
+        return Object.values(users);
+    }
+
+    static async createMockGeneralPublicUsers(save = false, numUsers = 1) {
+        let users = {};
+        for (let i = 0; i < numUsers; i++) {
+            let user = new GeneralPublicUser();
+            user.firstName = faker.name.firstName();
+            user.lastName = faker.name.lastName();
+            user.email = faker.internet.email(user.firstName, user.lastName);
+            user.phone = faker.phone.phoneNumber("0#########");
+            if (user.email in users) continue
+            users[user.email] = user;
+        }
+        try {
+            if (save) await GeneralPublicUser.insertMany(Object.values(users), {ordered: false});
+        } catch (e) {
+            console.error(e);
+        }
+        return Object.values(users);
+    }
+
+    static async createMockCheckIns(save = false, numCheckIns = 1, user = null, business = null, userType = USER_TYPE.UNREGISTERED, checkinDate=null) {
+        let checkins = [];
+        for (let i = 0; i < numCheckIns; i++) {
+            let checkin = new CheckIn();
+            if(checkinDate){
+                checkin.date = checkinDate;
+            } else {
+                checkin.date = faker.date.recent(150);
+            }
+            if (user) {
+                checkin.user = user;
+                checkin.userModel = user.constructor.modelName;
+            } else {
+                let user;
+                if (userType === USER_TYPE.GENERAL) {
+                    user = (await MockData.createMockRegisteredGeneralPublicUsers(save))[0];
+                } else {
+                    user = (await MockData.createMockGeneralPublicUsers(save))[0];
+                }
+                checkin.user = user;
+                checkin.userModel = user.constructor.modelName;
+            }
+            if (business) {
+                checkin.business = business;
+            } else {
+                checkin.business = (await MockData.createMockBusinesses(save))[0];
+            }
+
+            checkins.push(checkin);
         }
 
-        pCases.push(pCase);
+        if (save) await CheckIn.insertMany(checkins);
+
+        return checkins;
     }
 
-    if (save) await PositiveCase.insertMany(pCases);
+    static async createMockPositiveCases(save = false, numCases = 1, user = null, userType = USER_TYPE.UNREGISTERED, testDate =null) {
+        let pCases = [];
+        for (let i = 0; i < numCases; i++) {
+            let pCase = new PositiveCase();
+            if(testDate){
+                pCase.testDate = testDate;
+            } else {
+                pCase.testDate = faker.date.recent(150);
+            }
+            pCase.infectiousStartDate = moment(pCase.testDate).subtract(faker.datatype.number({
+                'min': 1,
+                'max': 10
+            }), 'days').toDate();
+            if (user) {
+                pCase.user = user;
+                pCase.userModel = user.constructor.modelName;
+            } else {
+                let user;
+                if (userType === USER_TYPE.GENERAL) {
+                    user = (await MockData.createMockRegisteredGeneralPublicUsers(save))[0];
+                } else {
+                    user = (await MockData.createMockGeneralPublicUsers(save))[0];
+                }
+                pCase.user = user;
+                pCase.userModel = user.constructor.modelName;
+            }
 
-    return pCases;
-}
-
-async function createMockVaccinationRecord(save = false, numRecords = 1, user = null) {
-    let vRecords = [];
-    for (let i = 0; i < numRecords; i++) {
-        let vRecord = new VaccinationRecord();
-        vRecord.dateAdministered = faker.date.recent(150);
-        vRecord.vaccinationType = faker.random.arrayElement(VaccinationRecord.schema.path('vaccinationType').enumValues);
-        vRecord.vaccinationStatus = faker.random.arrayElement(VaccinationRecord.schema.path('vaccinationStatus').enumValues);
-        if (user) {
-            vRecord.patient = user;
-        } else {
-            vRecord.patient = (await createMockRegisteredGeneralPublicUsers(save))[0];
+            pCases.push(pCase);
         }
 
-        vRecords.push(vRecord);
+        if (save) await PositiveCase.insertMany(pCases);
+
+        return pCases;
     }
 
-    if (save) await VaccinationRecord.insertMany(vRecords);
+    static async createMockVaccinationRecord(save = false, numRecords = 1, user = null) {
+        let vRecords = [];
+        for (let i = 0; i < numRecords; i++) {
+            let vRecord = new VaccinationRecord();
+            vRecord.dateAdministered = faker.date.recent(150);
+            vRecord.vaccinationType = faker.random.arrayElement(VaccinationRecord.schema.path('vaccinationType').enumValues);
+            vRecord.vaccinationStatus = faker.random.arrayElement(VaccinationRecord.schema.path('vaccinationStatus').enumValues);
+            if (user) {
+                vRecord.patient = user;
+            } else {
+                vRecord.patient = (await MockData.createMockRegisteredGeneralPublicUsers(save))[0];
+            }
 
-    return vRecords;
-}
-
-async function createMockVaccinationCentres(save = false, numCentres = 1, address = null) {
-    let vaccinationCentres = [];
-    for (let i = 0; i < numCentres; i++) {
-        let vaccinationCentre = new VaccinationCentre();
-        vaccinationCentre.clinicName = faker.company.companyName();
-        vaccinationCentre.phone = faker.phone.phoneNumber("0#########");
-        if (address) {
-            vaccinationCentre.address = address;
-        } else {
-            vaccinationCentre.address = (await createMockAddresses(save, 1, true))[0];
+            vRecords.push(vRecord);
         }
 
-        vaccinationCentres.push(vaccinationCentre);
+        if (save) await VaccinationRecord.insertMany(vRecords);
+
+        return vRecords;
     }
 
-    if (save) await VaccinationCentre.insertMany(vaccinationCentres);
+    static async createMockVaccinationCentres(save = false, numCentres = 1, address = null) {
+        let vaccinationCentres = [];
+        for (let i = 0; i < numCentres; i++) {
+            let vaccinationCentre = new VaccinationCentre();
+            vaccinationCentre.clinicName = faker.company.companyName();
+            vaccinationCentre.phone = faker.phone.phoneNumber("0#########");
+            if (address) {
+                vaccinationCentre.address = address;
+            } else {
+                vaccinationCentre.address = (await MockData.createMockAddresses(save, 1, true))[0];
+            }
 
-    return vaccinationCentres;
-}
+            vaccinationCentres.push(vaccinationCentre);
+        }
 
-async function createMockCoordinates(save = false, numCoordinates = 1, state="NSW") {
-    let coordinates = [];
-    for (let i = 0; i < numCoordinates; i++) {
-        let coordinate = new Coordinates();
-        let coords = random_coordinate(state);
-        coordinate.latitude = coords[1];
-        coordinate.longitude = coords[0];
+        if (save) await VaccinationCentre.insertMany(vaccinationCentres);
 
-        coordinates.push(coordinate);
+        return vaccinationCentres;
     }
 
-    if (save) await Coordinates.insertMany(coordinates);
+    static async createMockCoordinates(save = false, numCoordinates = 1, state="NSW") {
+        let coordinates = [];
+        for (let i = 0; i < numCoordinates; i++) {
+            let coordinate = new Coordinates();
+            let coords = random_coordinate(state);
+            coordinate.latitude = coords[1];
+            coordinate.longitude = coords[0];
 
-    return coordinates;
+            coordinates.push(coordinate);
+        }
+
+        if (save) await Coordinates.insertMany(coordinates);
+
+        return coordinates;
+    }
 }
 
 function getRawUserData(users) {
@@ -319,13 +321,13 @@ function getRawUserData(users) {
 async function createDevData() {
     await db.connect();
     await mongoose.connection.db.dropDatabase();
-    let registeredGeneralPublicUsers = await createMockRegisteredGeneralPublicUsers(true, 10000);
+    let registeredGeneralPublicUsers = await MockData.createMockRegisteredGeneralPublicUsers(true, 10000);
     console.log("Registered General Public Users created");
     let registeredGeneralPublicUsersRaw = getRawUserData(registeredGeneralPublicUsers);
-    let healthProfessionalUsers = await createMockHealthProfessionalUsers(true, 1500);
+    let healthProfessionalUsers = await MockData.createMockHealthProfessionalUsers(true, 1500);
     console.log("Health Professional Users created");
     let healthProfessionalUsersRaw = getRawUserData(healthProfessionalUsers);
-    let businessUsers = await createMockBusinessUsers(true, 1500);
+    let businessUsers = await MockData.createMockBusinessUsers(true, 1500);
     console.log("Business Users created");
     let businessUsersRaw = getRawUserData(businessUsers);
 
@@ -342,7 +344,7 @@ async function createDevData() {
     }
     console.log("users file created");
 
-    let generalPublicUsers = await createMockGeneralPublicUsers(true, 10000);
+    let generalPublicUsers = await MockData.createMockGeneralPublicUsers(true, 10000);
     console.log("general public users created")
 
 
@@ -356,7 +358,7 @@ async function createDevData() {
             'min': 0,
             'max': 20
         }))) {
-            checkins.push(...await createMockCheckIns(false, faker.datatype.number({
+            checkins.push(...await MockData.createMockCheckIns(false, faker.datatype.number({
                 'min': 1,
                 'max': 5
             }), rUser, businessUsers[faker.datatype.number({
@@ -364,7 +366,7 @@ async function createDevData() {
                 'max': businessUsers.length - 1
             })].business, USER_TYPE.GENERAL));
 
-            checkins.push(...await createMockCheckIns(false, faker.datatype.number({
+            checkins.push(...await MockData.createMockCheckIns(false, faker.datatype.number({
                 'min': 1,
                 'max': 5
             }), gUser, businessUsers[faker.datatype.number({
@@ -376,14 +378,14 @@ async function createDevData() {
             'min': 0,
             'max': 100
         }) === 0) {
-            positiveCases.push(...await createMockPositiveCases(false, 1, rUser));
-            positiveCases.push(...await createMockPositiveCases(false, 1, gUser));
+            positiveCases.push(...await MockData.createMockPositiveCases(false, 1, rUser));
+            positiveCases.push(...await MockData.createMockPositiveCases(false, 1, gUser));
         }
         if (faker.datatype.number({
             'min': 0,
             'max': 5
         }) === 0) {
-            vaccinationRecords.push(...await createMockVaccinationRecord(false, 1, rUser));
+            vaccinationRecords.push(...await MockData.createMockVaccinationRecord(false, 1, rUser));
         }
         await CheckIn.insertMany(checkins);
         //console.log("checkins created");
@@ -394,20 +396,11 @@ async function createDevData() {
         //console.log("vaccination records created");
     }
 
-    await createMockVaccinationCentres(true, 1000);
+    await MockData.createMockVaccinationCentres(true, 1000);
     console.log("dev data created");
 }
 
 module.exports = {
-    createMockRegisteredGeneralPublicUsers,
-    createMockAddresses,
-    createMockBusinesses,
-    createMockBusinessUsers,
-    createMockHealthProfessionalUsers,
-    createMockGeneralPublicUsers,
-    createMockCheckIns,
-    createMockPositiveCases,
-    createMockVaccinationRecord,
-    createMockVaccinationCentres,
+    MockData,
     createDevData
 }

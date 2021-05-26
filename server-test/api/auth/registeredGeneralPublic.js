@@ -7,7 +7,7 @@ const USER_TYPE = require("../../../server/_constants/usertypes");
 const RegisteredGeneralPublic = require("../../../server/models/RegisteredGeneralPublic");
 const assert = require('chai').assert
 const bcrypt = require('bcryptjs');
-const {createMockRegisteredGeneralPublicUsers} = require('../../../server/utils/mockData');
+const {MockData} = require('../../../server/utils/mockData');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const sinon = require("sinon");
@@ -48,7 +48,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
             });
         });
         it("it allows successful login", (done) => {
-            createMockRegisteredGeneralPublicUsers(true).then((users) => {
+            MockData.createMockRegisteredGeneralPublicUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/login')
@@ -72,7 +72,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
             });
         });
         it("it allows successful temporary login", (done) => {
-            createMockRegisteredGeneralPublicUsers(true).then(async (users) => {
+            MockData.createMockRegisteredGeneralPublicUsers(true).then(async (users) => {
                 let user = users[0];
                 let tempPassword = user.setTemporaryPassword();
                 const savedUser = await user.save();
@@ -154,7 +154,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
     });
     describe("POST /api/registeredgeneralpublic/auth/changepassword", () => {
         it("returns error message 'Please enter all fields'", (done) => {
-            createMockRegisteredGeneralPublicUsers(true).then((users) => {
+            MockData.createMockRegisteredGeneralPublicUsers(true).then((users) => {
                 let user = users[0];
             chai.request(app)
                 .post('/api/registeredgeneralpublic/auth/changepassword')
@@ -174,7 +174,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
             });
         });
         it("returns error message 'Password and confirm password do not match'", (done) => {
-            createMockRegisteredGeneralPublicUsers(true).then((users) => {
+            MockData.createMockRegisteredGeneralPublicUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/changepassword')
@@ -198,7 +198,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
             });
         });
         it("It changes a RegisteredGeneralPublicUsers password",  (done) => {
-            createMockRegisteredGeneralPublicUsers(true).then((users) => {
+            MockData.createMockRegisteredGeneralPublicUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/registeredgeneralpublic/auth/changepassword')
@@ -250,7 +250,7 @@ describe("Covid App Server API Registered General Public Auth", () => {
             });
         });
         it("It creates a password reset request", (done) => {
-            createMockRegisteredGeneralPublicUsers(true).then((users) => {
+            MockData.createMockRegisteredGeneralPublicUsers(true).then((users) => {
                 let user = users[0];
                 // reset the history so that you get the correct call
                 global.setApiKeyStub.resetHistory();
