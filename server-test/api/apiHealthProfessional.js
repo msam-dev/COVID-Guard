@@ -7,8 +7,7 @@ const assert = require('chai').assert
 const HealthProfessional = require("../../server/models/HealthProfessional");
 const VaccinationRecord = require("../../server/models/VaccinationRecord");
 const VaccinationCentre = require("../../server/models/VaccinationCentre");
-const {createMockHealthProfessionalUsers} = require("../../server/utils/mockData");
-const {createMockRegisteredGeneralPublicUsers} = require("../../server/utils/mockData");
+const {MockData} = require("../../server/utils/mockData");
 
 // Configure chai
 chai.use(chaiHttp);
@@ -16,7 +15,7 @@ chai.use(chaiHttp);
 describe("Covid App Server Health Professional Endpoints", () => {
     describe("GET /api/healthprofessional/profile", () => {
         it("returns user data", async () => {
-            let users = await createMockHealthProfessionalUsers(true);
+            let users = await MockData.createMockHealthProfessionalUsers(true);
             let user = users[0];
 
             const res = await chai.request(app)
@@ -32,7 +31,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
     });
     describe("POST /api/healthprofessional/profile", () => {
         it("returns error message 'Please enter all fields'", async () => {
-            let users = await createMockHealthProfessionalUsers(true);
+            let users = await MockData.createMockHealthProfessionalUsers(true);
             let user = users[0];
             const res = await chai.request(app)
                 .post('/api/healthprofessional/profile')
@@ -46,7 +45,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
 
         });
         it("updates user data", async () => {
-            let users = await createMockHealthProfessionalUsers(true);
+            let users = await MockData.createMockHealthProfessionalUsers(true);
             let user = users[0];
 
             const res = await chai.request(app)
@@ -68,7 +67,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
     });
     describe("POST /api/healthprofessional/markpatientpositive", () => {
         it("returns error message 'Please enter all fields'", (done) => {
-            createMockHealthProfessionalUsers(true).then((users) => {
+            MockData.createMockHealthProfessionalUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/healthprofessional/markpatientpositive')
@@ -88,15 +87,15 @@ describe("Covid App Server Health Professional Endpoints", () => {
             });
         });
         it("it returns error message 'User does not exist'", (done) => {
-                createMockHealthProfessionalUsers(true).then((users) => {
+                MockData.createMockHealthProfessionalUsers(true).then((users) => {
                     let user = users[0];
             chai.request(app)
                 .post('/api/healthprofessional/markpatientpositive')
                 .set('x-auth-token', user.accessToken)
                 .send({
                     email:"Sienna_Hayes85@hotmail.com",
-                    testDate:'02-02-2021',
-                    infectiousStartDate:'01-26-2021',
+                    testDate:'2021-02-02',
+                    infectiousStartDate:'2021-01-26',
                 })
                 .then((res) => {
                     if (res.status === 500) throw new Error(res.body.message);
@@ -113,10 +112,10 @@ describe("Covid App Server Health Professional Endpoints", () => {
                 });
         });
         it("marks user as positive case", async () => {
-            let healthUsers = await createMockHealthProfessionalUsers(true);
+            let healthUsers = await MockData.createMockHealthProfessionalUsers(true);
             let healthUser = healthUsers[0];
 
-            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let users = await MockData.createMockRegisteredGeneralPublicUsers(true);
             let user = users[0];
 
             const res = await chai.request(app)
@@ -124,8 +123,8 @@ describe("Covid App Server Health Professional Endpoints", () => {
                 .set('x-auth-token', healthUser.accessToken)
                 .send({
                     email: user.email,
-                    testDate:'02-02-2021',
-                    infectiousStartDate:'01-26-2021',
+                    testDate:'2021-02-02',
+                    infectiousStartDate:'2021-01-26',
                 });
             assert.equal(res.status, 200);
             assert.propertyVal(res.body, 'success', true);
@@ -133,7 +132,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
     });
     describe("POST /api/healthprofessional/confirmpatientvaccinationinformation", () => {
         it("returns error message 'Please enter all fields'", (done) => {
-            createMockHealthProfessionalUsers(true).then((users) => {
+            MockData.createMockHealthProfessionalUsers(true).then((users) => {
                 let user = users[0];
             chai.request(app)
                 .post('/api/healthprofessional/confirmpatientvaccinationinformation')
@@ -153,7 +152,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
             });
         });
         it("it returns error message 'Patient does not exist'", (done) => {
-            createMockHealthProfessionalUsers(true).then((users) => {
+            MockData.createMockHealthProfessionalUsers(true).then((users) => {
                 let user = users[0];
             chai.request(app)
                 .post('/api/healthprofessional/confirmpatientvaccinationinformation')
@@ -179,9 +178,9 @@ describe("Covid App Server Health Professional Endpoints", () => {
             });
         });
         it("confirms user vaccination", async () => {
-            let patients = await createMockRegisteredGeneralPublicUsers(true);
+            let patients = await MockData.createMockRegisteredGeneralPublicUsers(true);
             let patient = patients[0];
-            let healthUsers = await createMockHealthProfessionalUsers(true);
+            let healthUsers = await MockData.createMockHealthProfessionalUsers(true);
             let healthUser = healthUsers[0];
 
             const res = await chai.request(app)
@@ -205,7 +204,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
     });
     describe("POST /api/healthprofessional/addvaccinationcentreinformation", () => {
         it("returns error message 'Please enter all fields'", (done) => {
-            createMockHealthProfessionalUsers(true).then((users) => {
+            MockData.createMockHealthProfessionalUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/healthprofessional/addvaccinationcentreinformation')
@@ -225,7 +224,7 @@ describe("Covid App Server Health Professional Endpoints", () => {
             });
         });
         it("adds vaccination centre information", async () => {
-            let healthUsers = await createMockHealthProfessionalUsers(true);
+            let healthUsers = await MockData.createMockHealthProfessionalUsers(true);
             let healthUser = healthUsers[0];
 
             const res = await chai.request(app)

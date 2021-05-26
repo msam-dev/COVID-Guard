@@ -4,7 +4,7 @@ const chai = require("chai");
 const chaiHttp = require("chai-http");
 const app = require("../../../server");
 const USER_TYPE = require("../../../server/_constants/usertypes");
-const {createMockHealthProfessionalUsers} = require("../../../server/utils/mockData");
+const {MockData} = require("../../../server/utils/mockData");
 const assert = require('chai').assert
 const bcrypt = require('bcryptjs');
 const HealthProfessionalUser = require("../../../server/models/HealthProfessional");
@@ -48,7 +48,7 @@ describe("Covid App Server API Health Professional Auth", () => {
             });
         });
         it("it allows successful login", (done) => {
-            createMockHealthProfessionalUsers(true).then((users) => {
+            MockData.createMockHealthProfessionalUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/healthprofessional/auth/login')
@@ -71,7 +71,7 @@ describe("Covid App Server API Health Professional Auth", () => {
             });
         });
         it("it allows successful temporary login", (done) => {
-            createMockHealthProfessionalUsers(true).then(async (users) => {
+            MockData.createMockHealthProfessionalUsers(true).then(async (users) => {
                 let user = users[0];
                 let tempPassword = user.setTemporaryPassword();
                 const savedUser = await user.save();
@@ -156,7 +156,7 @@ describe("Covid App Server API Health Professional Auth", () => {
     });
     describe("POST /api/healthprofessional/auth/changepassword", () => {
         it("returns error message 'Please enter all fields'", (done) => {
-            createMockHealthProfessionalUsers(true).then((users) => {
+            MockData.createMockHealthProfessionalUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/healthprofessional/auth/changepassword')
@@ -176,7 +176,7 @@ describe("Covid App Server API Health Professional Auth", () => {
             });
         });
         it("returns error message 'Password and confirm password do not match'", (done) => {
-            createMockHealthProfessionalUsers(true).then((users) => {
+            MockData.createMockHealthProfessionalUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/healthprofessional/auth/changepassword')
@@ -200,7 +200,7 @@ describe("Covid App Server API Health Professional Auth", () => {
             });
         });
         it("It changes a HealthProfessionalUsers password", (done) => {
-            createMockHealthProfessionalUsers(true).then((users) => {
+            MockData.createMockHealthProfessionalUsers(true).then((users) => {
                 let user = users[0];
                 chai.request(app)
                     .post('/api/healthprofessional/auth/changepassword')
@@ -254,7 +254,7 @@ describe("Covid App Server API Health Professional Auth", () => {
             });
         });
         it("It creates a password reset request", (done) => {
-            createMockHealthProfessionalUsers(true).then((users) => {
+            MockData.createMockHealthProfessionalUsers(true).then((users) => {
                 let user = users[0];
                 // reset the history so that you get the correct call
                 global.setApiKeyStub.resetHistory();

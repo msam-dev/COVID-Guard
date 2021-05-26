@@ -5,8 +5,7 @@ const chaiHttp = require("chai-http");
 const app = require("../../server");
 const assert = require('chai').assert
 const RegisteredGeneralPublic = require("../../server/models/RegisteredGeneralPublic");
-const {createMockRegisteredGeneralPublicUsers, createMockVaccinationRecord} = require("../../server/utils/mockData");
-const {createMockBusinesses} = require("../../server/utils/mockData");
+const {MockData} = require("../../server/utils/mockData");
 
 // Configure chai
 chai.use(chaiHttp);
@@ -14,7 +13,7 @@ chai.use(chaiHttp);
 describe("Covid App Server Registered General Public Endpoints", () => {
     describe("POST /api/registeredgeneralpublic/checkin", () => {
         it("returns error message 'Please enter all fields'", async () => {
-            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let users = await MockData.createMockRegisteredGeneralPublicUsers(true);
             let user = users[0];
             const res = await chai.request(app)
                 .post('/api/registeredgeneralpublic/checkin')
@@ -26,7 +25,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
                 assert.propertyVal(res.body, 'message', 'Please enter all fields');
         });
         it("it returns error message 'Business venue does not exist'", async () => {
-            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let users = await MockData.createMockRegisteredGeneralPublicUsers(true);
             let user = users[0];
             const res = await chai.request(app)
                 .post('/api/registeredgeneralpublic/checkin')
@@ -41,8 +40,8 @@ describe("Covid App Server Registered General Public Endpoints", () => {
                     assert.propertyVal(res.body, 'message', 'Business venue does not exist');
         });
         it("returns valid checkin", async () => {
-            let businesses = await createMockBusinesses(true);
-            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let businesses = await MockData.createMockBusinesses(true);
+            let users = await MockData.createMockRegisteredGeneralPublicUsers(true);
             let business = businesses[0];
             let user = users[0];
             return chai.request(app)
@@ -63,7 +62,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
         });
     describe("GET /api/registeredgeneralpublic/profile", () => {
         it("returns user data", async () => {
-            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let users = await MockData.createMockRegisteredGeneralPublicUsers(true);
             let user = users[0];
 
             const res = await chai.request(app)
@@ -79,7 +78,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
     });
     describe("POST /api/registeredgeneralpublic/profile", () => {
         it("returns error message 'Please enter all fields'", async () => {
-            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let users = await MockData.createMockRegisteredGeneralPublicUsers(true);
             let user = users[0];
             const res = await chai.request(app)
                 .post('/api/registeredgeneralpublic/profile')
@@ -92,7 +91,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
                     assert.propertyVal(res.body, 'message', 'Please enter all fields');
         });
         it("updates user data", async () => {
-            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let users = await MockData.createMockRegisteredGeneralPublicUsers(true);
             let user = users[0];
 
             const res = await chai.request(app)
@@ -114,7 +113,7 @@ describe("Covid App Server Registered General Public Endpoints", () => {
     });
     describe("GET /api/registeredgeneralpublic/vaccinationstatus", () => {
         it("returns user vaccination status (0 records)", async () => {
-            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let users = await MockData.createMockRegisteredGeneralPublicUsers(true);
             let user = users[0];
 
             const res = await chai.request(app)
@@ -124,9 +123,9 @@ describe("Covid App Server Registered General Public Endpoints", () => {
             assert.equal(res.body.vaccinationRecords.length, 0);
         });
         it("returns user vaccination status (5 records)", async () => {
-            let users = await createMockRegisteredGeneralPublicUsers(true);
+            let users = await MockData.createMockRegisteredGeneralPublicUsers(true);
             let user = users[0];
-            let vaccinationRecords = await createMockVaccinationRecord(true, 5, user);
+            let vaccinationRecords = await MockData.createMockVaccinationRecord(true, 5, user);
 
             const res = await chai.request(app)
                 .get('/api/registeredgeneralpublic/vaccinationstatus')
