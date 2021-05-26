@@ -70,7 +70,8 @@ PositiveCaseSchema.statics.sendEmailsToAffectedUsers = async function (positiveC
         }).exec();
 
     for (let positiveCheckin of positiveCheckins) {
-        const affectedBusiness = BusinessUser.findOne({business: positiveCheckin.business});
+        const affectedBusiness = await BusinessUser.findOne({business : positiveCheckin.business});
+        if(!affectedBusiness) throw new Error("Business does not exist");
         let msg = {
             to: affectedBusiness.email, // Change to your recipient
             from: process.env.SENDGRID_FROM_EMAIL, // Change to your verified sender

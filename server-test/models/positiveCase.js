@@ -19,8 +19,8 @@ describe('PositiveCase', () => {
             let emailerStub = sinon.stub(Emailer, 'sendEmail').callsFake((msg) => {
                 return {}
             });
-            let businesses = await MockData.createMockBusinesses(true);
-            let business = businesses[0];
+            let businessUsers = await MockData.createMockBusinessUsers(true);
+            let business = businessUsers[0].business;
             let positiveTestDate = faker.date.recent(10);
             let registeredGeneralPublicUsers = await MockData.createMockRegisteredGeneralPublicUsers(true, 100);
             let generalPublicUsers = await MockData.createMockGeneralPublicUsers(true, 100);
