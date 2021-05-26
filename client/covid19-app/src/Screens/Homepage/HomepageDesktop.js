@@ -256,7 +256,7 @@ const HomepageDesktop = props => {
                         extra={<ExperimentOutlined style={iconStyle}/>}  
                         headStyle={{ color: '#0E5F76'}}
                     >
-                        <p>Number of vaccinstions administered yesterday</p>
+                        <p>Number of vaccinations administered yesterday</p>
                         <div style={cardDiv}/>
                     </Card>
                 </Col>
