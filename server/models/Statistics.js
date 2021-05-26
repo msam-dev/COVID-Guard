@@ -453,7 +453,7 @@ StatisticsSchema.methods.updateData = async function(){
     }
 };
 
-StatisticsSchema.methods.setData = async function(){
+StatisticsSchema.methods.setData = async function(all=false){
     // do update data
     const covidSummaryUrl = 'https://covidlive.com.au/australia';
 
@@ -468,27 +468,27 @@ StatisticsSchema.methods.setData = async function(){
     this.covidSummary.totalCurrentHotspotVenues = (await Statistics.getPositiveBusinessesCheckinDates()).length;
     this.covidSummary.totalPositiveCasesLast24Hours = await Statistics.getPositiveCasesLast24Hours();
     this.covidSummary.totalPositiveCases = await PositiveCase.countDocuments();
-    this.covidSummary.totalPositiveCasesByMonth = await Statistics.getTotalPositiveCasesByMonth();
+    if(all) this.covidSummary.totalPositiveCasesByMonth = await Statistics.getTotalPositiveCasesByMonth();
 
     this.checkinsSummary.totalCheckins = await CheckIn.countDocuments();
     this.checkinsSummary.checkinsLast24Hours = await Statistics.getCheckinsLast24Hours();
-    this.checkinsSummary.checkinsByMonth = await Statistics.getCheckinByMonth();
-    this.checkinsSummary.checkinsByUserType = await Statistics.getCheckinsByUserType();
+    if(all) this.checkinsSummary.checkinsByMonth = await Statistics.getCheckinByMonth();
+    if(all) this.checkinsSummary.checkinsByUserType = await Statistics.getCheckinsByUserType();
     this.usersSummary.totalRegisteredGeneralPublicUsers = await RegisteredGeneralPublic.countDocuments();
-    this.usersSummary.generalPublicUserRegistrationsByMonth = await Statistics.getGeneralPublicUserRegistrationsByMonth();
+    if(all) this.usersSummary.generalPublicUserRegistrationsByMonth = await Statistics.getGeneralPublicUserRegistrationsByMonth();
 
     this.businessesSummary.totalBusinesses = await Business.countDocuments();
     this.vaccinationsSummary.totalVaccinationCentres = await VaccinationCentre.countDocuments();
     this.vaccinationsSummary.vaccinationsYesterday = await Statistics.getVaccinationsYesterday();
     this.vaccinationsSummary.totalVaccinations = await VaccinationRecord.countDocuments();
-    this.vaccinationsSummary.vaccinationsByType = await Statistics.getVaccinationsByType();
-    this.vaccinationsSummary.vaccinationCentresByState = await Statistics.getVaccinationCentresByState();
-    this.vaccinationsSummary.vaccinationsByStatus = await Statistics.getVaccinationsByStatus();
+    if(all) this.vaccinationsSummary.vaccinationsByType = await Statistics.getVaccinationsByType();
+    if(all) this.vaccinationsSummary.vaccinationCentresByState = await Statistics.getVaccinationCentresByState();
+    if(all) this.vaccinationsSummary.vaccinationsByStatus = await Statistics.getVaccinationsByStatus();
     this.vaccinationsSummary.totalVaccinationCentres = await VaccinationCentre.countDocuments();
 
     this.businessesSummary.totalBusinessesRegistered = await Business.countDocuments();
-    this.businessesSummary.businessesByState = await Statistics.getBusinessesByState();
-    this.businessesSummary.businessRegistrationsByMonth = await Statistics.getBusinessRegistrationsByMonth();
+    if(all) this.businessesSummary.businessesByState = await Statistics.getBusinessesByState();
+    if(all) this.businessesSummary.businessRegistrationsByMonth = await Statistics.getBusinessRegistrationsByMonth();
     this.businessesSummary.businessesDeemedHotspot24Hours = await Statistics.getBusinessesDeemedHotspot24Hours();
 
 };
@@ -502,15 +502,15 @@ StatisticsSchema.methods.saveData = async function (){
 };
 
 // use Singleton pattern
-StatisticsSchema.statics.getSingleton = async function () {
+StatisticsSchema.statics.getSingleton = async function (all=false) {
         let result = await this.findOne();
         if(result) {
-            await result.setData();
+            await result.setData(all);
             await result.updateData();
             return result;
         } else {
             let stats = new Statistics();
-            await stats.setData();
+            await stats.setData(all);
             await stats.saveData();
             return stats;
         }
