@@ -152,7 +152,7 @@ router.get('/vaccinationcentres', asyncHandler(async (req, res) => {
  * @access  Public
  */
 
-router.get('/homepagestats', cache(1), asyncHandler(async (req, res) => {
+router.get('/homepagestats', cache(10), asyncHandler(async (req, res) => {
     let statistics = await Statistics.getSingleton();
     let stats = {
         covidSummary:
