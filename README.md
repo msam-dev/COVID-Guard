@@ -35,3 +35,4 @@ This will open your browser at localhost:3000 by default <br />
 Once everything has compiled, add '/login' at the end of the browser URL to see the sample login page I have created <br />
 Then you can open your browser at localhost:5000 <br />
 Once everything has compiled, add '/api' at the end of the browser URL to see the sample message I have created <br />
+Other environment variables that can be set are GOVERMENT_EMAIL, REACT_APP_GOOGLE_API_KEY, SENDGRID_API_KEY, SENDGRID_FROM_EMAIL, SENDGRID_TO_EMAIL, PRODUCTION_DB_NAME
