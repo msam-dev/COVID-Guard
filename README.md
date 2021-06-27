@@ -1,37 +1,37 @@
 COVID Guard a fully functional software application designed to provide information and functionality that can assist in the government’s response to the COVID-19 pandemic.
-It was developed by a team of 6 students including myself as a university group project.
+It was developed by a team of 6 students including myself as a university group project.<br>
 My responsibilities were primarily, although not limited to team management, front end design, front end development and documentation. The data presented on the site is generated and not based on real information as specified by our lecturer.
 
-Key system functionality includes:
-  • Login/Registration for multiple user types
-  • Contact tracing system
-  • Venue Check in.
-  • Search a list of vaccine centres.
-  • Profile Editing.
-  • Vaccine authentication system.
-  • Search and view new hotspots.
-  • Venue Code Generation (for Check In).
+Key system functionality includes:<br>
+  • Login/Registration for multiple user types<br>
+  • Contact tracing system<br>
+  • Venue Check in.<br>
+  • Search a list of vaccine centres.<br>
+  • Profile Editing.<br>
+  • Vaccine authentication system.<br>
+  • Search and view new hotspots.<br>
+  • Venue Code Generation (for Check In).<br>
 
-Technologies Used
-  • HTML
-  • CSS
-  • Express
-  • Figma
-  • React
-  • Node
-  • Ant Design
-  • Figma
-  • Heroku
+Technologies Used<br>
+  • HTML<br>
+  • CSS<br>
+  • Express<br>
+  • Figma<br>
+  • React<br>
+  • Node<br>
+  • Ant Design<br>
+  • Figma<br>
+  • Heroku<br>
 
-If you wish to test the COVID GUARD system here are some existing randomly generated accounts you can login with:
-General Public
-Email: Sienna_Hayes85@hotmail.com
-Password: TqIEJuENlnSNVFx
+If you wish to test the COVID GUARD system here are some existing randomly generated accounts you can login with:<br>
+<b>General Public<br></b>
+Email: Sienna_Hayes85@hotmail.com<br>
+Password: TqIEJuENlnSNVFx<br>
 
-Venue Owner
-Email: Eliza_Goldner@hotmail.com
-Password: YRY3K5L2LkROda7
+<b>Venue Owner<br></b>
+Email: Eliza_Goldner@hotmail.com<br>
+Password: YRY3K5L2LkROda7<br>
 
-Health Professional
-Email: Paige.Turner@hotmail.com
-Password: QH_INZJn8a6k1zG
+<b>Health Professional<br></b>
+Email: Paige.Turner@hotmail.com<br>
+Password: QH_INZJn8a6k1zG<br>
