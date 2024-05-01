@@ -1,5 +1,7 @@
-COVID Guard a fully functional software application designed to provide information and functionality that can assist in the government’s response to the COVID-19 pandemic.
-It was developed by a team of 6 students including myself as a university group project.<br>
+(This project was created for a university group assingment.)
+
+COVID Guard is a fully functional software application designed to provide information and functionality that can assist in the government’s response to the COVID-19 pandemic.
+
 My responsibilities were primarily, although not limited to team management, front end design, front end development and documentation. The data presented on the site is generated and not based on real information as specified by our lecturer.
 
 Key system functionality includes:<br>
