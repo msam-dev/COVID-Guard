@@ -1,3 +1,7 @@
+### IMPORTANT NOTE: The free hosting for this application has **expired** so the website is no longer live. 
+
+&nbsp;
+
 (This project was created for a university group assingment.)
 
 COVID Guard is a fully functional software application designed to provide information and functionality that can assist in the government’s response to the COVID-19 pandemic.
